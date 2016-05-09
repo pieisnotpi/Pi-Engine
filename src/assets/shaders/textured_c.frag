@@ -1,0 +1,22 @@
+#version 150
+
+in vec4 Color;
+in vec2 TexCoord;
+
+out vec4 FragColor;
+
+uniform sampler2D sampler;
+
+void main()
+{
+    vec4 texVal = texture(sampler, TexCoord);
+
+    if(Color.w != 0 && texVal.w != 0)
+    {
+        texVal.x = (Color.x*Color.w + texVal.x*texVal.w)/2;
+        texVal.y = (Color.y*Color.w + texVal.y*texVal.w)/2;
+        texVal.z = (Color.z*Color.w + texVal.z*texVal.w)/2;
+    }
+
+    FragColor = texVal;
+}

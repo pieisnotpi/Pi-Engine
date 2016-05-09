@@ -1,0 +1,96 @@
+package com.pieisnotpi.engine.rendering.textures;
+
+public class Sprite
+{
+    // Exact coordinates for the sprite
+    public int x0, x1, y0, y1;
+
+    // Coordinates converted to a 0-1 scale
+    public float uvx0, uvy0, uvx1, uvy1;
+
+    public Texture texture;
+
+    public Sprite(Texture texture, int x0, int y0, int x1, int y1)
+    {
+        float xMult = (float) 1/texture.width, yMult = (float) 1/texture.height;
+
+        this.x0 = x0;
+        this.x1 = x1;
+        this.y0 = y0;
+        this.y1 = y1;
+
+        uvx0 = x0*xMult;
+        uvx1 = x1*xMult;
+
+        uvy0 = y0*yMult;
+        uvy1 = y1*yMult;
+
+        if(uvy0 > uvy1)
+        {
+            uvy0 -= 0.0001f;
+            uvy1 += 0.0001f;
+        }
+        else
+        {
+            uvy0 += 0.0001f;
+            uvy1 -= 0.0001f;
+        }
+
+        this.texture = texture;
+    }
+
+    public Sprite(Texture texture, int x0, int y0, int x1, int y1, boolean invertX, boolean invertY)
+    {
+        float xMult = (float) 1/texture.width, yMult = (float) 1/texture.height;
+
+        this.x0 = x0;
+        this.x1 = x1;
+        this.y0 = y0;
+        this.y1 = y1;
+
+        if(invertX)
+        {
+            uvx0 = (texture.width - x0)*xMult;
+            uvx1 = (texture.width - x1)*xMult;
+        }
+        else
+        {
+            uvx0 = x0*xMult;
+            uvx1 = x1*xMult;
+        }
+
+        if(invertY)
+        {
+            uvy0 = (texture.height - y0)*yMult;
+            uvy1 = (texture.height - y1)*yMult;
+        }
+        else
+        {
+            uvy0 = y0*yMult;
+            uvy1 = y1*yMult;
+        }
+
+        if(uvy0 > uvy1 || invertY)
+        {
+            uvy0 -= 0.0001f;
+            uvy1 += 0.0001f;
+        }
+        else
+        {
+            uvy0 += 0.0001f;
+            uvy1 -= 0.0001f;
+        }
+
+        this.texture = texture;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (super.equals(obj)) return true;
+
+        if (obj == null || !obj.getClass().equals(getClass())) return false;
+
+        Sprite temp = (Sprite) obj;
+        return !(texture == null || !texture.equals(temp.texture)) && temp.uvx0 == uvx0 && temp.uvy0 == uvy0 && temp.uvx1 == uvx1 && temp.uvy1 == uvy1;
+    }
+}
