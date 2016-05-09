@@ -42,7 +42,7 @@ public class PiEngine
         System.setProperty("org.lwjgl.librarypath", "libs/lwjgl/native");
 
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
-        if(glfwInit() != GLFW_TRUE) throw new IllegalStateException("Unable to initialize GLFW");
+        if(!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);

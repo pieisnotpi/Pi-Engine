@@ -45,7 +45,7 @@ public abstract class GameInstance
             {
                 Window window = windows.get(i);
 
-                if(glfwWindowShouldClose(window.windowID) == GLFW_FALSE) allClosed = false;
+                if(!glfwWindowShouldClose(window.windowID)) allClosed = false;
                 else
                 {
                     Logger.SYSTEM.log("Window '" + window.name + "' has been terminated");
