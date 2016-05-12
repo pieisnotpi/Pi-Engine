@@ -2,8 +2,8 @@ package com.pieisnotpi.engine.rendering.shapes;
 
 import com.pieisnotpi.engine.scene.Scene;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public abstract class Circle
 {
@@ -27,7 +27,7 @@ public abstract class Circle
     protected void assemble()
     {
         double angle = (Math.PI*2)/sides;
-        vertices = new Vector<>(sides);
+        vertices = new ArrayList<>(sides);
 
         for(int i = 0; i <= sides; i++)
         {

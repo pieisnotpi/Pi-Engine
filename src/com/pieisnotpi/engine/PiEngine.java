@@ -10,11 +10,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class PiEngine
 {
-    // GLFW error callback
-    private static GLFWErrorCallback errorCallback;
     // Current game instance
     public static GameInstance instance;
-
     // Matrix IDs
     public static final int ORTHO_ID = 0, CAMERA_3D_ID = 1, CAMERA_2D_ID = 2;
     // Shader IDs (initialized in Window)
@@ -41,6 +38,7 @@ public class PiEngine
 
         System.setProperty("org.lwjgl.librarypath", "libs/lwjgl/native");
 
+        GLFWErrorCallback errorCallback;
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         if(!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 

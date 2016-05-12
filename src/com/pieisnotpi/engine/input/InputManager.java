@@ -20,7 +20,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class InputManager
 {
     public List<Keybind> keybinds = new ArrayList<>();
-    public List<MouseBind> mousebinds = new ArrayList<>();
+    public List<Mousebind> mousebinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public Vector2d cursorPos = new Vector2d();
     public Vector2f localCursorPos = new Vector2f();
@@ -89,9 +89,9 @@ public class InputManager
             }
         }));
 
-        mousebinds.add(new MouseBind(GLFW_MOUSE_BUTTON_1, false, (value) -> window.scene.onLeftClick(), (value) -> window.scene.onLeftRelease()));
-        mousebinds.add(new MouseBind(GLFW_MOUSE_BUTTON_2, false, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightRelease()));
-        mousebinds.add(new MouseBind(GLFW_MOUSE_BUTTON_3, false, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleRelease()));
+        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_1, false, (value) -> window.scene.onLeftClick(), (value) -> window.scene.onLeftRelease()));
+        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_2, false, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightRelease()));
+        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_3, false, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleRelease()));
 
         keybinds.add(new Keybind(GLFW_KEY_W, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveZ(-MOVE_AMOUNT); }, null));
         keybinds.add(new Keybind(GLFW_KEY_S, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveZ(MOVE_AMOUNT); }, null));
@@ -107,8 +107,10 @@ public class InputManager
     {
         if(!window.focused) return;
 
-        keybinds.forEach(keybind ->
+        for(int i = 0; i < keybinds.size(); i++)
         {
+            Keybind keybind = keybinds.get(i);
+
             if(keybind.active)
             {
                 int temp = glfwGetKey(window.windowID, keybind.key);
@@ -124,10 +126,12 @@ public class InputManager
                     keybind.press();
                 }
             }
-        });
+        }
 
-        mousebinds.forEach(mousebind ->
+        for(int i = 0; i < mousebinds.size(); i++)
         {
+            Mousebind mousebind = mousebinds.get(i);
+
             if(mousebind.active)
             {
                 int temp = glfwGetMouseButton(window.windowID, mousebind.button);
@@ -143,10 +147,11 @@ public class InputManager
                     mousebind.press();
                 }
             }
-        });
+        }
 
-        joybinds.forEach(joybind ->
+        for(int i = 0; i < joybinds.size(); i++)
         {
+            Joybind joybind = joybinds.get(i);
             Joystick joystick = joysticks[joybind.joystick];
 
             if(joybind.enabled && joystick != null)
@@ -181,7 +186,7 @@ public class InputManager
                     joybind.press(value);
                 }
             }
-        });
+        }
 
         if(hideCursor)
         {

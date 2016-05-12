@@ -2,7 +2,6 @@ package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Camera;
-import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.objects.Ball;
 import com.pieisnotpi.game.objects.Crate;
 import com.pieisnotpi.game.objects.FloorTile;
@@ -12,7 +11,7 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhysicsTestScene extends Scene
+public class PhysicsTestScene extends PauseScene
 {
     private List<Ball> balls = new ArrayList<>();
     private List<Crate> crates = new ArrayList<>();
@@ -30,6 +29,8 @@ public class PhysicsTestScene extends Scene
         float xOffset = -16*FloorTile.scale;
 
         for(int i = 0; i < 30; i++) tiles.add(new FloorTile(xOffset += FloorTile.scale, -0.8f, 0, this));
+
+
     }
 
     public void updatePhysics()

@@ -9,16 +9,15 @@ import com.pieisnotpi.engine.utility.BufferUtility;
 import org.joml.Matrix4f;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class ShaderProgram
 {
-    public List<ShaderFile> shaders;
+    public ShaderFile[] shaders;
     public List<Renderable> buffer;
     protected VertexArray array;
     protected Matrix4f perspective;
@@ -29,10 +28,10 @@ public abstract class ShaderProgram
 
     public ShaderProgram(ShaderFile... shaders)
     {
-        this.shaders = Arrays.asList(shaders);
+        this.shaders = shaders;
 
         program = glCreateProgram();
-        buffer = new Vector<>(1000, 100);
+        buffer = new ArrayList<>(1000);
     }
 
     public void init()
@@ -132,17 +131,17 @@ public abstract class ShaderProgram
 
     public String toString()
     {
-        String temp = "";
+        StringBuilder temp = new StringBuilder();
 
-        for(int i = 0; i < shaders.size(); i++)
+        for(int i = 0; i < shaders.length; i++)
         {
-            ShaderFile s = shaders.get(i);
+            ShaderFile s = shaders[i];
 
-            if(i != shaders.size() - 1) temp += "s" + i + ": " + s + ", ";
-            else temp += "s" + i + ": " + s;
+            if(i != shaders.length - 1) temp.append("s").append(i).append(": ").append(s).append(", ");
+            else temp.append("s").append(i).append(": ").append(s);
         }
 
-        return temp;
+        return temp.toString();
     }
 
     public void finalize() throws Throwable

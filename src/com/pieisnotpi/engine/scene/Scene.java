@@ -2,6 +2,9 @@ package com.pieisnotpi.engine.scene;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.game_objects.GameObject;
+import com.pieisnotpi.engine.input.Joybind;
+import com.pieisnotpi.engine.input.Keybind;
+import com.pieisnotpi.engine.input.Mousebind;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Window;
@@ -15,7 +18,6 @@ import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public abstract class Scene
 {
@@ -24,16 +26,17 @@ public abstract class Scene
     public Window window;
     public Color clearColor = new Color(0, 0, 0);
     public List<Camera> cameras = new ArrayList<>();
-    public List<GameObject> gameObjects = new ArrayList<>();
-    public List<Renderable> renderables;
+    public List<GameObject> gameObjects = new ArrayList<>(20);
+    public List<Renderable> renderables = new ArrayList<>(100);
+    public List<Keybind> keybinds = new ArrayList<>();
+    public List<Joybind> joybinds = new ArrayList<>();
+    public List<Mousebind> mousebinds = new ArrayList<>();
     public Vector2f lastCursorPos = new Vector2f();
     public ColorQuad tint;
 
     protected Scene() {}
 
     public boolean shouldUpdate = true, shouldUpdatePhysics = true, paused = false;
-
-    private Vector2f motionless = new Vector2f(0, 0);
 
     public void onLeftClick() { gameObjects.forEach(GameObject::onLeftClick); }
     public void onRightClick() { gameObjects.forEach(GameObject::onRightClick); }
@@ -58,14 +61,8 @@ public abstract class Scene
         gameObjects.forEach(gameObject -> gameObject.onWindowResize(res));
     }
 
-    protected void allocateBuffer(int capacity)
-    {
-        renderables = new Vector<>(capacity);
-    }
-
     public void init()
     {
-        if(renderables == null) allocateBuffer(100);
         fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.ORTHO_ID, this);
         pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.ORTHO_ID, this);
         pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.ORTHO_ID, this);
@@ -100,11 +97,9 @@ public abstract class Scene
 
     public void setWindow(Window window)
     {
-        cameras.forEach(Camera::unregisterInputs);
-
+        unregisterInputs();
         this.window = window;
-
-        cameras.forEach(Camera::registerInputs);
+        registerInputs();
 
         if(window != null) onWindowResize(window.res);
     }
@@ -119,21 +114,57 @@ public abstract class Scene
         renderables.remove(renderable);
     }
 
-    public void togglePause()
+    public void addKeybind(Keybind keybind)
     {
-        paused = !paused;
+        keybinds.add(keybind);
+        if(window != null) window.inputManager.keybinds.add(keybind);
+    }
 
-        for(Camera camera : cameras)
-            for(int i = 0; i < camera.joybinds.size(); i++)
-                if(i != camera.pauseSlot && i != camera.fullscreenSlot)
-                    camera.joybinds.get(i).enabled = !paused;
+    public void addJoybind(Joybind joybind)
+    {
+        joybinds.add(joybind);
+        if(window != null) window.inputManager.joybinds.add(joybind);
+    }
 
-        shouldUpdate = !paused;
-        shouldUpdatePhysics = !paused;
+    public void addMousebind(Mousebind mousebind)
+    {
+        mousebinds.add(mousebind);
+        if(window != null) window.inputManager.mousebinds.add(mousebind);
+    }
 
-        if(paused) pausedText.enable();
-        else pausedText.disable();
+    public void removeKeybind(Keybind keybind)
+    {
+        keybinds.remove(keybind);
+        if(window != null) window.inputManager.keybinds.remove(keybind);
+    }
 
-        tint.toggle();
+    public void removeJoybind(Joybind joybind)
+    {
+        joybinds.remove(joybind);
+        if(window != null) window.inputManager.joybinds.remove(joybind);
+    }
+
+    public void removeMousebind(Mousebind mousebind)
+    {
+        mousebinds.remove(mousebind);
+        if(window != null) window.inputManager.mousebinds.remove(mousebind);
+    }
+
+    private void registerInputs()
+    {
+        if(window == null) return;
+
+        window.inputManager.keybinds.addAll(keybinds);
+        window.inputManager.joybinds.addAll(joybinds);
+        window.inputManager.mousebinds.addAll(mousebinds);
+    }
+
+    private void unregisterInputs()
+    {
+        if(window == null) return;
+
+        window.inputManager.keybinds.removeAll(keybinds);
+        window.inputManager.joybinds.removeAll(joybinds);
+        window.inputManager.mousebinds.removeAll(mousebinds);
     }
 }

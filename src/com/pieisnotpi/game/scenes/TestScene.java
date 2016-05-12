@@ -1,16 +1,15 @@
 package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.HoverEffect;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
-import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.game.ControlCamera;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Grass;
 
-public class TestScene extends Scene
+public class TestScene extends PauseScene
 {
     protected Text text3D, text3D2;
     protected Block[][] blocks = new Block[9][9];
@@ -19,7 +18,7 @@ public class TestScene extends Scene
     {
         super.init();
 
-        cameras.add(new Camera(0, 0, 1, 1, 90, 0, this));
+        cameras.add(new ControlCamera(0, 0, 1, 1, 90, 0, this));
         clearColor.set(0.125f, 0.729f, 0.918f);
 
         float xOffset = -(blocks.length/2f)*Block.SIZE, zOffset = -(blocks[0].length/2f)*Block.SIZE;

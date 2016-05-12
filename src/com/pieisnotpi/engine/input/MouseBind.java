@@ -1,13 +1,13 @@
 package com.pieisnotpi.engine.input;
 
-public class MouseBind
+public class Mousebind
 {
     public int button;
     public boolean allowHolding, prevStatus = false, active = true;
     public Object parent;
     private InputHandler press, release;
 
-    public MouseBind(int button, boolean allowHolding, InputHandler onPress, InputHandler onRelease)
+    public Mousebind(int button, boolean allowHolding, InputHandler onPress, InputHandler onRelease)
     {
         this.button = button;
         this.allowHolding = allowHolding;
