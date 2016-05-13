@@ -11,19 +11,28 @@ public class Joystick
     public boolean connected = false;
     public String name;
 
+    private FloatBuffer axis;
+    private ByteBuffer buttons;
+
     public Joystick(int joy)
     {
         this.joystick = joy;
         name = glfwGetJoystickName(joy);
     }
 
+    public void retrieveValues()
+    {
+        axis = glfwGetJoystickAxes(joystick);
+        buttons = glfwGetJoystickButtons(joystick);
+    }
+
     public FloatBuffer getAxis()
     {
-        return glfwGetJoystickAxes(joystick);
+        return axis;
     }
 
     public ByteBuffer getButtons()
     {
-        return glfwGetJoystickButtons(joystick);
+        return buttons;
     }
 }

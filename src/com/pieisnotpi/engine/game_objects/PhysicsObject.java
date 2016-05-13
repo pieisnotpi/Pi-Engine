@@ -7,6 +7,10 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 
+/**
+ * A GameObject that implements the necessary parts for use with Jbox2D
+ */
+
 public class PhysicsObject extends GameObject
 {
     public Body body;
@@ -14,11 +18,13 @@ public class PhysicsObject extends GameObject
     public Fixture fixture;
     public Shape shape;
 
-    public void init(float x, float y, float density, BodyType bodyType, Shape shape)
+    public void init(float x, float y, float density, boolean shouldSleep, boolean shouldRotate, BodyType bodyType, Shape shape)
     {
         def = new BodyDef();
         def.type = bodyType;
         def.position.set(toPhysicsCoord(x), toPhysicsCoord(y));
+        def.fixedRotation = !shouldRotate;
+        def.allowSleep = shouldSleep;
 
         this.shape = shape;
 

@@ -70,7 +70,7 @@ public class Window
     }
 
     /**
-     * Used to initialize a window with a shared GL context. Necessary for multiple windows
+     * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
      * @param name Name of the window
      * @param width Width of the window
      * @param height Height of the window
@@ -109,7 +109,7 @@ public class Window
     }
 
     /**
-     * Used to initialize a window with a shared GL context and specific refresh rate. Necessary for multiple windows
+     * Used to initialize a window with a shared GL context and specific refresh rate. Shared GL context is necessary for multiple windows.
      * @param name Name of the window
      * @param width Width of the window
      * @param height Height of the window

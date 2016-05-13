@@ -149,6 +149,8 @@ public class InputManager
             }
         }
 
+        for(Joystick joystick : joysticks) if(joystick != null) joystick.retrieveValues();
+
         for(int i = 0; i < joybinds.size(); i++)
         {
             Joybind joybind = joybinds.get(i);

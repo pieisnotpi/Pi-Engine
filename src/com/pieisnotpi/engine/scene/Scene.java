@@ -9,7 +9,6 @@ import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
-import com.pieisnotpi.engine.rendering.shapes.types.colored.ColorQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
@@ -19,12 +18,17 @@ import org.joml.Vector2i;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The base class for scenes, the foundation of the engine's user interface.
+ * All scenes used by the game should extend this class.
+ */
+
 public abstract class Scene
 {
     public World world;
-    public Text fps, pps, pausedText;
+    public Text fps, pps;
     public Window window;
-    public Color clearColor = new Color(0, 0, 0);
+    public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
     public List<Renderable> renderables = new ArrayList<>(100);
@@ -32,11 +36,10 @@ public abstract class Scene
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
     public Vector2f lastCursorPos = new Vector2f();
-    public ColorQuad tint;
 
     protected Scene() {}
 
-    public boolean shouldUpdate = true, shouldUpdatePhysics = true, paused = false;
+    public boolean shouldUpdate = true, shouldUpdatePhysics = true;
 
     public void onLeftClick() { gameObjects.forEach(GameObject::onLeftClick); }
     public void onRightClick() { gameObjects.forEach(GameObject::onRightClick); }
@@ -51,13 +54,6 @@ public abstract class Scene
 
     public void onWindowResize(Vector2i res)
     {
-        float ratio = (float) res.x/res.y;
-
-        tint.points[0].set(-ratio, -ratio, 0.7f);
-        tint.points[1].set(ratio, -ratio, 0.7f);
-        tint.points[2].set(-ratio, ratio, 0.7f);
-        tint.points[3].set(ratio, ratio, 0.7f);
-
         gameObjects.forEach(gameObject -> gameObject.onWindowResize(res));
     }
 
@@ -65,16 +61,7 @@ public abstract class Scene
     {
         fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.ORTHO_ID, this);
         pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.ORTHO_ID, this);
-        pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.ORTHO_ID, this);
         world = new World(new Vec2(0, -9.81f));
-
-        pausedText.setX(pausedText.getX() - pausedText.getWidth()/2);
-        pausedText.setY(pausedText.getY() - pausedText.getHeight()/2);
-        pausedText.disable();
-
-        tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.ORTHO_ID, this);
-        tint.transparent = true;
-        tint.unregister();
 
         fps.alignmentID = Text.LEFT;
         pps.alignmentID = Text.LEFT;

@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * A camera that automatically registers keybinds/joybinds for camera movement
+ * Can be used in a scene that extends PauseScene to enable automatic pausing
  */
 
 public class ControlCamera extends Camera

@@ -6,9 +6,7 @@ import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
-import com.pieisnotpi.engine.utility.Timer;
 import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 
 public class Crate extends PhysicsObject
@@ -17,8 +15,6 @@ public class Crate extends PhysicsObject
 
     public final static float scale = 0.1f;
     private static Sprite sprite = new Sprite(Texture.getTexture("crate"), 0, 0, 16, 16);
-
-    private Timer timer = new Timer(false, 1000);
 
     public Crate(float x, float y, float z, Scene scene)
     {
@@ -32,7 +28,7 @@ public class Crate extends PhysicsObject
         PolygonShape t = new PolygonShape();
         t.setAsBox(toPhysicsCoord(scale)/2, toPhysicsCoord(scale)/2);
 
-        init(x, y, 1, BodyType.DYNAMIC, t);
+        init(x, y, 1, true, true, BodyType.DYNAMIC, t);
 
         fixture.setFriction(1.5f);
         fixture.setRestitution(0);
@@ -40,8 +36,6 @@ public class Crate extends PhysicsObject
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
-
-        timer.start();
     }
 
     public void physicsUpdate()
@@ -63,8 +57,6 @@ public class Crate extends PhysicsObject
             quad.setX(x);
             quad.setY(y);
         }
-
-        if(timer.isFinished()) body.applyLinearImpulse(new Vec2(0, 20), body.getWorldCenter());
     }
 
     public void setX(float x)

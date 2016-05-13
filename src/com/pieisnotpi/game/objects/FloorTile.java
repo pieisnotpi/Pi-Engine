@@ -28,7 +28,7 @@ public class FloorTile extends PhysicsObject
         PolygonShape t = new PolygonShape();
         t.setAsBox(scale/PiEngine.PIXELS_PER_METER /2, scale/PiEngine.PIXELS_PER_METER /2);
 
-        init(x, y, 1, BodyType.STATIC, t);
+        init(x, y, 1, true, false, BodyType.STATIC, t);
 
         fixture.m_friction = 2f;
 
