@@ -36,8 +36,6 @@ public class PiEngine
     {
         assert inst != null;
 
-        System.setProperty("org.lwjgl.librarypath", "libs/lwjgl/native");
-
         GLFWErrorCallback errorCallback;
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         if(!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
