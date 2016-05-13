@@ -1,6 +1,10 @@
 package com.pieisnotpi.engine.input.joysticks;
 
-@SuppressWarnings("ALL")
+/**
+ * Controller axis/button maps for the Xbox 360/One controllers.
+ * Unfortunately, the Xbox button's inputs cannot be retrieved, meaning it cannot be used within this engine.
+ */
+
 public class Xbox
 {
     public static final int

@@ -35,13 +35,13 @@ public class PhysicsObject extends GameObject
     public void setX(float x)
     {
         this.x = x;
-        body.getPosition().set(toPhysicsCoord(x), body.getPosition().y);
+        body.getPosition().x = toPhysicsCoord(x);
     }
 
     public void setY(float y)
     {
         this.y = y;
-        body.getPosition().set(body.getPosition().x, toPhysicsCoord(y));
+        body.getPosition().y = toPhysicsCoord(y);
     }
 
     /**

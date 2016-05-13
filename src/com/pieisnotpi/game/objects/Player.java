@@ -64,25 +64,25 @@ public class Player extends PhysicsObject
 
         if(lastJoyName.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joy.joystick, Xbox.AXIS_LSTICK_X, false, true, (value) -> body.getLinearVelocity().set(moveAmount*value, body.getLinearVelocity().y), null));
+            joybinds.add(new Joybind(joy.joystick, Xbox.AXIS_LSTICK_X, false, true, (value) -> body.getLinearVelocity().x = moveAmount*value, null));
             joybinds.add(new Joybind(joy.joystick, Xbox.BUTTON_A, true, true, (value) ->
             {
                 if(jumpTimer++ < maxJumpTimer)
                 {
-                    if(body.getLinearVelocity().y < 0) body.getLinearVelocity().set(body.getLinearVelocity().x, 0);
-                    body.getLinearVelocity().addLocal(0, jumpAmount);
+                    if(body.getLinearVelocity().y < 0) body.getLinearVelocity().y = 0;
+                    body.getLinearVelocity().y += jumpAmount;
                 }
             }, (value) -> jumpTimer = 0));
         }
         else
         {
-            joybinds.add(new Joybind(joy.joystick, DS4.AXIS_LSTICK_X, false, true, (value) -> body.getLinearVelocity().set(moveAmount*value, body.getLinearVelocity().y), null));
+            joybinds.add(new Joybind(joy.joystick, DS4.AXIS_LSTICK_X, false, true, (value) -> body.getLinearVelocity().x = moveAmount*value, null));
             joybinds.add(new Joybind(joy.joystick, DS4.BUTTON_X, true, true, (value) ->
             {
                 if(jumpTimer++ < maxJumpTimer)
                 {
-                    if(body.getLinearVelocity().y < 0) body.getLinearVelocity().set(body.getLinearVelocity().x, 0);
-                    body.getLinearVelocity().addLocal(0, jumpAmount);
+                    if(body.getLinearVelocity().y < 0) body.getLinearVelocity().y = 0;
+                    body.getLinearVelocity().y += jumpAmount;
                 }
             }, (value) -> jumpTimer = 0));
         }
