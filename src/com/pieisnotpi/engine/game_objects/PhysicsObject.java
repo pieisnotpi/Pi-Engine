@@ -18,13 +18,11 @@ public class PhysicsObject extends GameObject
     public Fixture fixture;
     public Shape shape;
 
-    public void init(float x, float y, float density, boolean shouldSleep, boolean shouldRotate, BodyType bodyType, Shape shape)
+    public void init(float x, float y, float density, BodyType bodyType, Shape shape)
     {
         def = new BodyDef();
         def.type = bodyType;
         def.position.set(toPhysicsCoord(x), toPhysicsCoord(y));
-        def.fixedRotation = !shouldRotate;
-        def.allowSleep = shouldSleep;
 
         this.shape = shape;
 
@@ -49,7 +47,7 @@ public class PhysicsObject extends GameObject
      * @return val, in physics coordinates
      */
 
-    protected float toPhysicsCoord(float val)
+    public static float toPhysicsCoord(float val)
     {
         return val/PiEngine.PIXELS_PER_METER;
     }
@@ -59,8 +57,14 @@ public class PhysicsObject extends GameObject
      * @return val, in render coordinates
      */
 
-    protected float toRenderCoord(float val)
+    public static float toRenderCoord(float val)
     {
         return val*PiEngine.PIXELS_PER_METER;
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+        scene.world.destroyBody(body);
     }
 }

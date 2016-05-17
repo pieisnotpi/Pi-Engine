@@ -10,7 +10,7 @@ public class Camera
 {
     public Scene scene;
     public Vector2f rot = new Vector2f();
-    public Vector3f location, up = new Vector3f(0, 1, 0);
+    public Vector3f position, up = new Vector3f(0, 1, 0);
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float localX, localY, localWidth, localHeight, fov, ratio = -1;
@@ -26,7 +26,7 @@ public class Camera
 
     public Camera(Vector3f location, float localX, float localY, float localWidth, float localHeight, float fov, Scene scene)
     {
-        this.location = location;
+        this.position = location;
         this.localX = localX;
         this.localY = localY;
         this.localWidth = localWidth;
@@ -56,36 +56,36 @@ public class Camera
         if(rot.y < -90) rot.y = -89.9f;
         if(rot.y > 90) rot.y = 89.9f;
 
-        lookAt.set(location.x, location.y, location.z - 10);
+        lookAt.set(position.x, position.y, position.z - 10);
 
-        MathUtility.rotateAxisX(rot.y, location.y, location.z, lookAt);
-        MathUtility.rotateAxisY(rot.x, location.x, location.z, lookAt);
+        MathUtility.rotateAxisX(rot.y, position.y, position.z, lookAt);
+        MathUtility.rotateAxisY(rot.x, position.x, position.z, lookAt);
 
         return lookAt;
     }
 
     public void moveX(float x)
     {
-        location.x += x*Math.cos(Math.toRadians(rot.x));
-        location.z += x*Math.sin(Math.toRadians(rot.x));
+        position.x += x*Math.cos(Math.toRadians(rot.x));
+        position.z += x*Math.sin(Math.toRadians(rot.x));
     }
 
     public void moveY(float y)
     {
-        location.y += y;
+        position.y += y;
     }
 
     public void moveZ(float z)
     {
-        location.x += z*Math.sin(Math.toRadians(rot.x + 180));
-        location.z -= z*Math.cos(Math.toRadians(rot.x + 180));
+        position.x += z*Math.sin(Math.toRadians(rot.x + 180));
+        position.z -= z*Math.cos(Math.toRadians(rot.x + 180));
     }
 
     public void forceMatrixUpdate()
     {
         matrices[0].setOrtho2D(-ratio, ratio, -1, 1);
-        matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(location, getLookAt(), up);
-        matrices[2].setOrtho2D(-ratio, ratio, -1, 1).translate(location.x/10, location.y/10, 0);
+        matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(position, getLookAt(), up);
+        matrices[2].setOrtho2D(-ratio, ratio, -1, 1).lookAt(position, getLookAt(), up);
 
         ratioUpdated = false;
     }
@@ -95,15 +95,15 @@ public class Camera
         if(scene.window == null) return;
 
         if(ratioUpdated) forceMatrixUpdate();
-        else if(!location.equals(prevLocation) || !rot.equals(prevRot))
+        else if(!position.equals(prevLocation) || !rot.equals(prevRot))
         {
             Vector3f lookAt = getLookAt();
 
-            matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(location, lookAt, up);
-            matrices[2].setOrtho2D(-ratio, ratio, -1, 1).translate(-location.x/10, location.y/10, 0).lookAt(location, lookAt, up);
+            matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(position, lookAt, up);
+            matrices[2].setOrtho2D(-ratio, ratio, -1, 1).lookAt(position, lookAt, up);
         }
 
-        prevLocation.set(location);
+        prevLocation.set(position);
         prevRot.set(rot);
     }
 }

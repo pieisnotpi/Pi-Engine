@@ -111,4 +111,11 @@ public class EditorTile extends UiObject
 
         foreShowing = false;
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        foreground.unregister();
+        background.unregister();
+    }
 }

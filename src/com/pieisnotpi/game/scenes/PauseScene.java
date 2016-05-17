@@ -41,6 +41,8 @@ public abstract class PauseScene extends Scene
         tint.points[1].set(ratio, -ratio, 0.7f);
         tint.points[2].set(-ratio, ratio, 0.7f);
         tint.points[3].set(ratio, ratio, 0.7f);
+
+        super.onWindowResize(res);
     }
 
     public void togglePause()

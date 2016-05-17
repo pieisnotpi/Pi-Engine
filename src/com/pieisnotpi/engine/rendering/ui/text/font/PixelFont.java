@@ -105,7 +105,7 @@ public class PixelFont extends Font
         sprites.add(new CharSprite(new Sprite(texture, 30, 67, 33, 64, false, true), '.', 0, 0));
         sprites.add(new CharSprite(new Sprite(texture, 37, 70, 44, 61, false, true), '/', 0, 0));
         sprites.add(new CharSprite(new Sprite(texture, 44, 70, 37, 61, false, true), '\\', 0, 0));
-        sprites.add(new CharSprite(new Sprite(texture, 57, 70, 60, 61, false, true), ':', 0, -2));
+        sprites.add(new CharSprite(new Sprite(texture, 57, 70, 60, 61, false, true), ':', 1, -2));
         sprites.add(new CharSprite(new Sprite(texture, 65, 70, 69, 61, false, true), ';', 0, -1));
         sprites.add(new CharSprite(new Sprite(texture, 73, 69, 80, 62, false, true), '<', 0, 1));
         sprites.add(new CharSprite(new Sprite(texture, 82, 69, 89, 62, false, true), '>', 0, 1));

@@ -49,4 +49,10 @@ public class Tile extends UiObject
     {
         if(!activated) quad.setQuadColors(blankColor);
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        quad.unregister();
+    }
 }

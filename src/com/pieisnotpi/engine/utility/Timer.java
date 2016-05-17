@@ -4,7 +4,7 @@ public class Timer
 {
     private int time;
     private long startTime;
-    private boolean started = false, shouldStop = true;
+    private boolean started = false, shouldStop = true, shouldForceFinish = false;
 
     /**
      * A blank timer intended to be used for dynamic time amounts
@@ -69,6 +69,12 @@ public class Timer
 
     public boolean isFinished()
     {
+        if(shouldForceFinish)
+        {
+            shouldForceFinish = false;
+            return true;
+        }
+
         if(!started) return false;
 
         if(System.currentTimeMillis() - startTime > time)
@@ -81,13 +87,30 @@ public class Timer
         return false;
     }
 
+    /**
+     * @return The specified time interval for the timer
+     */
+
     public int getTime()
     {
         return time;
     }
 
+    /**
+     * @return Whether or not the timer has been started
+     */
+
     public boolean isStarted()
     {
         return started;
+    }
+
+    /**
+     * Force the timer to return true on the next isFinished() call
+     */
+
+    public void forceFinish()
+    {
+        shouldForceFinish = true;
     }
 }

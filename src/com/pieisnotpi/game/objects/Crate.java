@@ -28,7 +28,7 @@ public class Crate extends PhysicsObject
         PolygonShape t = new PolygonShape();
         t.setAsBox(toPhysicsCoord(scale)/2, toPhysicsCoord(scale)/2);
 
-        init(x, y, 1, true, true, BodyType.DYNAMIC, t);
+        init(x, y, 1, BodyType.DYNAMIC, t);
 
         fixture.setFriction(1.5f);
         fixture.setRestitution(0);
@@ -36,6 +36,8 @@ public class Crate extends PhysicsObject
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
+
+        body.setSleepingAllowed(true);
     }
 
     public void physicsUpdate()
@@ -69,5 +71,11 @@ public class Crate extends PhysicsObject
     {
         super.setY(y);
         quad.setY(y);
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+        quad.unregister();
     }
 }

@@ -35,6 +35,7 @@ public abstract class GameObject
     public void setZRot(float rot, float cx, float cy) { addToZRot(rot - zRot, cx, cy); }
     public void setScene(Scene scene) { this.scene = scene; }
     public void setMatrixID(int matrixID) { this.matrixID = matrixID; }
+    public void destroy() { scene.gameObjects.remove(this); }
 
     public void onLeftClick() {}
     public void onLeftRelease() {}
@@ -63,4 +64,11 @@ public abstract class GameObject
     public float getZRot() { return zRot; }
     public int getMatrixID() { return matrixID; }
     public Scene getScene() { return scene; }
+
+    public void finalize() throws Throwable
+    {
+        super.finalize();
+
+        destroy();
+    }
 }

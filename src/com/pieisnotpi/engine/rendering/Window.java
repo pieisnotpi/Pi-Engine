@@ -38,7 +38,7 @@ public class Window
     private long share;
     private boolean alive = true, fullscreen, staticRefreshRate, initialized = false;
 
-    private GameUpdate drawUpdate, gameUpdate, inputUpdate, physicsUpdate;
+    private GameUpdate drawUpdate, inputUpdate;
 
     protected Logger logger;
     protected Monitor curMonitor;
@@ -238,14 +238,7 @@ public class Window
             if(time.length() >= 5) time = time.substring(0, 5);
             scene.fps.setText(drawUpdate.updates + "fps/" + time + "mspf");
         });
-        gameUpdate = new GameUpdate(60, () -> scene.update());
         inputUpdate = new GameUpdate(1, () -> inputManager.pollInputs());
-        physicsUpdate = new GameUpdate(60, () -> scene.updatePhysics(), () ->
-        {
-            String time = "" + (float) physicsUpdate.totalTimeTaken /physicsUpdate.updates;
-            if(time.length() >= 5) time = time.substring(0, 5);
-            scene.pps.setText(physicsUpdate.updates + "pps/" + time + "mspp");
-        });
 
         inputManager.keybinds.add(new Keybind(GLFW_KEY_F11, false, (value) -> setFullscreen(!fullscreen), null));
 
@@ -338,8 +331,6 @@ public class Window
     {
         glfwShowWindow(windowID);
 
-        PiEngine.instance.updates.add(gameUpdate);
-        PiEngine.instance.updates.add(physicsUpdate);
         PiEngine.instance.updates.add(drawUpdate);
         PiEngine.instance.updates.add(inputUpdate);
     }
@@ -348,8 +339,6 @@ public class Window
     {
         glfwHideWindow(windowID);
 
-        PiEngine.instance.updates.remove(gameUpdate);
-        PiEngine.instance.updates.remove(physicsUpdate);
         PiEngine.instance.updates.remove(drawUpdate);
         PiEngine.instance.updates.remove(inputUpdate);
     }

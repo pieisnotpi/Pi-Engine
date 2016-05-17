@@ -10,6 +10,7 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
+import com.pieisnotpi.engine.updates.GameUpdate;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 import org.joml.Vector2f;
@@ -36,6 +37,9 @@ public abstract class Scene
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
     public Vector2f lastCursorPos = new Vector2f();
+
+    private GameUpdate physicsUpdate, gameUpdate;
+    protected int physicsPollsPerSecond = 60, updatesPerSecond = 60;
 
     protected Scene() {}
 
@@ -65,20 +69,32 @@ public abstract class Scene
 
         fps.alignmentID = Text.LEFT;
         pps.alignmentID = Text.LEFT;
+
+        physicsUpdate = new GameUpdate(physicsPollsPerSecond, this::updatePhysics, () ->
+        {
+            String time = "" + (float) physicsUpdate.totalTimeTaken/physicsUpdate.updates;
+            if(time.length() >= 5) time = time.substring(0, 5);
+            pps.setText(physicsUpdate.updates + "pps/" + time + "mspp");
+        });
+
+        gameUpdate = new GameUpdate(60, this::update);
+
+        PiEngine.instance.updates.add(physicsUpdate);
+        PiEngine.instance.updates.add(gameUpdate);
     }
 
     public void update()
     {
-        if(!shouldUpdate) return;
+        if(!shouldUpdate || window == null) return;
 
         gameObjects.forEach(GameObject::update);
     }
 
     public void updatePhysics()
     {
-        if(!shouldUpdatePhysics) return;
+        if(!shouldUpdatePhysics || window == null) return;
 
-        world.step(1/60f, 20, 10);
+        world.step(1f/physicsPollsPerSecond, 20, 10);
         gameObjects.forEach(GameObject::physicsUpdate);
     }
 
@@ -135,6 +151,18 @@ public abstract class Scene
     {
         mousebinds.remove(mousebind);
         if(window != null) window.inputManager.mousebinds.remove(mousebind);
+    }
+
+    public void setPhysicsPollsPerSecond(int pps)
+    {
+        physicsPollsPerSecond = pps;
+        physicsUpdate.setFrequency(pps);
+    }
+
+    public void setUpdatesPerSecond(int ups)
+    {
+        updatesPerSecond = ups;
+        gameUpdate.setFrequency(ups);
     }
 
     private void registerInputs()

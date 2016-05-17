@@ -267,4 +267,10 @@ public class Text extends UiObject
 
         return width;
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        unregister();
+    }
 }

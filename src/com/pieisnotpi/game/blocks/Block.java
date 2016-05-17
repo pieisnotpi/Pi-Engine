@@ -65,4 +65,11 @@ public class Block extends GameObject
     {
         cubes.forEach(TexCube::unregister);
     }
+
+    public void destroy()
+    {
+        super.destroy();
+
+        disable();
+    }
 }

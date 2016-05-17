@@ -44,4 +44,10 @@ public class SpriteButton extends UiObject
     {
         base.setColors(blank, blank, blank, blank);
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        base.unregister();
+    }
 }

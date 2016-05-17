@@ -78,4 +78,11 @@ public class TextField extends UiObject
     {
         if(key == GLFW_KEY_LEFT_SHIFT) shiftHeld = false;
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        text.destroy();
+        base.unregister();
+    }
 }

@@ -184,4 +184,11 @@ public class Button extends UiObject
         base.addToZRot(rot, cx, cy);
         text.addToZRot(rot, cx, cy);
     }
+
+    public void destroy()
+    {
+        super.destroy();
+        text.destroy();
+        base.unregister();
+    }
 }
