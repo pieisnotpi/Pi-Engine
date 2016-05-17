@@ -18,6 +18,8 @@ public class PhysicsObject extends GameObject
     public Fixture fixture;
     public Shape shape;
 
+    public static final float offset = toRenderCoord(1);
+
     public void init(float x, float y, float density, BodyType bodyType, Shape shape)
     {
         def = new BodyDef();
@@ -52,6 +54,11 @@ public class PhysicsObject extends GameObject
         return val/PiEngine.PIXELS_PER_METER;
     }
 
+    public static float toPhysicsCoord(float val, float radius)
+    {
+        return val/PiEngine.PIXELS_PER_METER + offset - radius;
+    }
+
     /**
      * @param val A coordinate, in physics coordinates
      * @return val, in render coordinates
@@ -60,6 +67,16 @@ public class PhysicsObject extends GameObject
     public static float toRenderCoord(float val)
     {
         return val*PiEngine.PIXELS_PER_METER;
+    }
+
+    public static float toRenderCoord(float val, float radius)
+    {
+        return val*PiEngine.PIXELS_PER_METER + offset - radius;
+    }
+
+    public static float calcOffset(float radius)
+    {
+        return offset - radius;
     }
 
     public void destroy()

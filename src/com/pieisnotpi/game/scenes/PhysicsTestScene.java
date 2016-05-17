@@ -1,6 +1,7 @@
 package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.game_objects.PhysicsObject;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.game.objects.*;
@@ -37,10 +38,10 @@ public class PhysicsTestScene extends PauseScene
 
         clearColor.set(0.4f, 0.4f, 1);
 
-        float xOffset = -30*FloorTile.scale;
-        for(int i = 0; i < 60; i++) tiles.add(new FloorTile(xOffset += FloorTile.scale - 0.0001f*i, -0.8f, 0, this));
+        float xOffset = -30*FloorTile.scale - PhysicsObject.offset - FloorTile.scale/2;
+        for(int i = 0; i < 60; i++) tiles.add(new FloorTile(xOffset += FloorTile.scale, -0.8f, 0, this));
         xOffset = -30*FloorTile.scale;
-        for(int i = 0; i < 60; i++) tiles.add(new FloorTile(xOffset += FloorTile.scale - 0.0001f*i, 0.8f, 0, this));
+        for(int i = 0; i < 60; i++) tiles.add(new FloorTile(xOffset += FloorTile.scale, 0.8f, 0, this));
 
         players.add(new Player(-0.05f, 0.2f, 0.2f, 0, this));
         truck = new Truck(-0.05f, 0.2f, 0.2f, this);
@@ -76,7 +77,7 @@ public class PhysicsTestScene extends PauseScene
         if(rightStatus) for(Crate crate : crates)
         {
             Vec2 pos = crate.body.getPosition().mul(PiEngine.PIXELS_PER_METER);
-            Vec2 force = new Vec2(lastCursorPos.x, lastCursorPos.y).subLocal(pos).mulLocal(-PiEngine.PIXELS_PER_METER *1.5f);
+            Vec2 force = new Vec2(lastCursorPos.x, lastCursorPos.y).subLocal(pos).mulLocal(-PiEngine.PIXELS_PER_METER*1.5f);
             crate.body.applyLinearImpulse(force, crate.body.getWorldCenter());
         }
 
@@ -123,8 +124,8 @@ public class PhysicsTestScene extends PauseScene
             Vector2f pos = window.inputManager.localCursorPos;
             float cx = cameras.get(0).position.x, cy = cameras.get(0).position.y;
 
-            //crates.add(new Crate(cx + pos.x - Crate.scale/2, cy + pos.y - Crate.scale/2, 0.2f, this));
-            wheels.add(new Wheel(cx + pos.x - Wheel.radius, cy + pos.y - Wheel.radius, 0.2f, this));
+            //crates.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), 0.2f, this));
+            wheels.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, this));
         }
         // Left Shift
         else if(key == 340)
@@ -132,7 +133,7 @@ public class PhysicsTestScene extends PauseScene
             Vector2f pos = window.inputManager.localCursorPos;
             float cx = cameras.get(0).position.x, cy = cameras.get(0).position.y;
 
-            players.add(new Player(cx + pos.x - Crate.scale/2, cy + pos.y - Crate.scale/2, 0.2f, players.size(), this));
+            players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, players.size(), this));
         }
         // Space
         else if(key == 32)
@@ -163,5 +164,15 @@ public class PhysicsTestScene extends PauseScene
     public void onRightRelease()
     {
         rightStatus = false;
+    }
+
+    private float cursorXToWorldX(float x, float radius)
+    {
+        return cameras.get(0).position.x + x - radius - PhysicsObject.calcOffset(radius);
+    }
+
+    private float cursorYToWorldY(float y, float radius)
+    {
+        return cameras.get(0).position.y + y - radius - PhysicsObject.calcOffset(radius);
     }
 }

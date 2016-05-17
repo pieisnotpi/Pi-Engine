@@ -26,16 +26,15 @@ public class FloorTile extends PhysicsObject
         this.scene = scene;
 
         PolygonShape t = new PolygonShape();
-        t.setAsBox(scale/PiEngine.PIXELS_PER_METER /2, scale/PiEngine.PIXELS_PER_METER /2);
+        t.setAsBox(toPhysicsCoord(scale)/2, toPhysicsCoord(scale)/2);
 
         init(x, y, 1, BodyType.STATIC, t);
 
-        fixture.m_friction = 2f;
-
-        quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
+        quad = new TexQuad(x + calcOffset(scale/2), y + calcOffset(scale/2), z, scale, scale, z, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
 
+        fixture.setFriction(2);
         body.setSleepingAllowed(true);
     }
 

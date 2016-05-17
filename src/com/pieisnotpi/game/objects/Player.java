@@ -31,8 +31,8 @@ public class Player extends PhysicsObject
     private int joystick, jumpTimer = 0;
     protected TexQuad quad;
 
-    private static final int maxJumpTimer = 4;
-    public final static float scale = 0.1f, moveAmount = 2, maxSpeed = 20, jumpAmount = 5, maxJumpSpeed = 20, force = 16;
+    private static final int maxJumpTimer = 8;
+    public final static float scale = 0.1f, moveAmount = 2, maxSpeed = 20, jumpAmount = 10, maxJumpSpeed = 80, force = 16;
     private static Sprite sprite = new Sprite(Texture.getTexture("crate"), 0, 0, 16, 16);
 
     private Timer timer = new Timer(true, 2000);
@@ -100,8 +100,8 @@ public class Player extends PhysicsObject
 
     public void physicsUpdate()
     {
-        x = toRenderCoord(body.getPosition().x);
-        y = toRenderCoord(body.getPosition().y);
+        x = toRenderCoord(body.getPosition().x, scale/2);
+        y = toRenderCoord(body.getPosition().y, scale/2);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
@@ -165,14 +165,14 @@ public class Player extends PhysicsObject
                 if(v < 0) body.getLinearVelocity().y = 0;
 
                 if(v > maxJumpSpeed) body.getLinearVelocity().y = maxJumpSpeed;
-                else body.getLinearVelocity().y += jumpAmount;
+                else body.getLinearVelocity().y -= jumpAmount;
             }
             else
             {
                 if(v > 0) body.getLinearVelocity().y = 0;
 
                 if(v < -maxJumpSpeed) body.getLinearVelocity().y = -maxJumpSpeed;
-                else body.getLinearVelocity().y -= jumpAmount;
+                else body.getLinearVelocity().y += jumpAmount;
             }
         }
     }

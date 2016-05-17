@@ -6,17 +6,17 @@ import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
-import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.BodyType;
 
-public class Wheel extends PhysicsObject
+public class Truck extends PhysicsObject
 {
     protected TexQuad quad;
 
-    public final static float radius = 0.1f;
-    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 62, 12, 50, false, true);
+    public final static float width = 5/10f, height = 3/10f;
+    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 48, 80, 0, false, true);
 
-    public Wheel(float x, float y, float z, Scene scene)
+    public Truck(float x, float y, float z, Scene scene)
     {
         this.x = x;
         this.y = y;
@@ -25,23 +25,23 @@ public class Wheel extends PhysicsObject
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
 
-        CircleShape t = new CircleShape();
-        t.setRadius(toPhysicsCoord(radius));
+        PolygonShape t = new PolygonShape();
+        t.setAsBox(toPhysicsCoord(width)/2, toPhysicsCoord(height)/2);
 
-        init(x, y, 1, BodyType.DYNAMIC, t);
+        init(x, y, 4, BodyType.DYNAMIC, t);
 
         fixture.setFriction(2);
         fixture.setRestitution(0);
 
-        quad = new TexQuad(x, y, z, radius*2, radius*2, 0, sprite, matrixID, scene);
+        quad = new TexQuad(x, y, z, width, height, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
     }
 
     public void physicsUpdate()
     {
-        x = toRenderCoord(body.getPosition().x, radius);
-        y = toRenderCoord(body.getPosition().y, radius);
+        x = toRenderCoord(body.getPosition().x, width/2);
+        y = toRenderCoord(body.getPosition().y, height/2);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
