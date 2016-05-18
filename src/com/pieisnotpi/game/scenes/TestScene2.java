@@ -29,7 +29,14 @@ public class TestScene2 extends PauseScene
 
         for(int x = 0; x < blocks.length; x++)
         {
-            for(int y = 0; y < blocks[0].length; y++) blocks[x][y] = new Stone(xOffset, 0, zOffset += Block.SIZE, this);
+            for(int y = 0; y < blocks[0].length; y++)
+            {
+                blocks[x][y] = new Stone(xOffset, 0, zOffset += Block.SIZE, this);
+                if(x < blocks.length - 1) blocks[x][y].cubes.get(0).sides[2].unregister();
+                if(x > 0) blocks[x][y].cubes.get(0).sides[1].unregister();
+                if(y < blocks[0].length - 1) blocks[x][y].cubes.get(0).sides[3].unregister();
+                if(y > 0) blocks[x][y].cubes.get(0).sides[0].unregister();
+            }
 
             zOffset = -(blocks[0].length/2f)*Block.SIZE;
             xOffset += Block.SIZE;

@@ -4,6 +4,7 @@ import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class Camera extends GameObject
@@ -43,11 +44,11 @@ public class Camera extends GameObject
         scene.gameObjects.add(this);
     }
 
-    public void setRatio(float ratio)
+    public void onWindowResize(Vector2i res)
     {
-        if(Float.floatToIntBits(this.ratio) == Float.floatToIntBits(ratio)) return;
+        super.onWindowResize(res);
 
-        this.ratio = ratio;
+        this.ratio = (float) res.x/res.y;
         ratioUpdated = true;
     }
 
