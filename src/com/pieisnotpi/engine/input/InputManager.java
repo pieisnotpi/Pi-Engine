@@ -197,8 +197,8 @@ public class InputManager
 
             float xMovement = localCursorPos.x*ROT_AMOUNT*mouseSensitivity, yMovement = localCursorPos.y*ROT_AMOUNT*mouseSensitivity;
 
-            window.scene.cameras.get(0).rot.x += xMovement;
-            window.scene.cameras.get(0).rot.y += yMovement;
+            window.scene.cameras.get(0).addToXRot(xMovement);
+            window.scene.cameras.get(0).addToYRot(yMovement);
 
             if(!cursorStatus)
             {

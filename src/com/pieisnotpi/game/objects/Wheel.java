@@ -13,7 +13,7 @@ public class Wheel extends PhysicsObject
 {
     protected TexQuad quad;
 
-    public final static float radius = 0.1f;
+    public final static float radius = 0.05f;
     static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 62, 12, 50, false, true);
 
     public Wheel(float x, float y, float z, Scene scene)
@@ -28,7 +28,7 @@ public class Wheel extends PhysicsObject
         CircleShape t = new CircleShape();
         t.setRadius(toPhysicsCoord(radius));
 
-        init(x, y, 1, BodyType.DYNAMIC, t);
+        init(x, y, 2, BodyType.DYNAMIC, t);
 
         fixture.setFriction(2);
         fixture.setRestitution(0);
@@ -38,7 +38,7 @@ public class Wheel extends PhysicsObject
         scene.gameObjects.add(this);
     }
 
-    public void physicsUpdate()
+    public void drawUpdate()
     {
         x = toRenderCoord(body.getPosition().x, radius);
         y = toRenderCoord(body.getPosition().y, radius);
@@ -57,6 +57,11 @@ public class Wheel extends PhysicsObject
             quad.setX(x);
             quad.setY(y);
         }
+    }
+
+    public void physicsUpdate()
+    {
+        body.applyAngularImpulse(8);
     }
 
     public void setX(float x)

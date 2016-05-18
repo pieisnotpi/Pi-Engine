@@ -1,4 +1,4 @@
-package com.pieisnotpi.game;
+package com.pieisnotpi.game.cameras;
 
 import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Keybind;
@@ -8,7 +8,6 @@ import com.pieisnotpi.engine.input.joysticks.Xbox;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.scenes.PauseScene;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +28,12 @@ public class ControlCamera extends Camera
 
     public ControlCamera(float localX, float localY, float localWidth, float localHeight, float fov, int joystick, Scene scene)
     {
-        this(new Vector3f(0, 0, 0), localX, localY, localWidth, localHeight, fov, joystick, scene);
+        this(0, 0, 0, localX, localY, localWidth, localHeight, fov, joystick, scene);
     }
 
-    public ControlCamera(Vector3f location, float localX, float localY, float localWidth, float localHeight, float fov, int joystick, Scene scene)
+    public ControlCamera(float x, float y, float z, float localX, float localY, float localWidth, float localHeight, float fov, int joystick, Scene scene)
     {
-        super(location, localX, localY, localWidth, localHeight, fov, scene);
+        super(x, y, z, localX, localY, localWidth, localHeight, fov, scene);
         this.joystick = joystick;
     }
 
@@ -73,8 +72,8 @@ public class ControlCamera extends Camera
 
         if(lastJoyName.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, true, (value) -> rot.x += joySensitivity*rotAmount*value, null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, true, (value) -> rot.y += joySensitivity*rotAmount*value, null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, true, (value) -> addToXRot(joySensitivity*rotAmount*value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, true, (value) -> addToYRot(joySensitivity*rotAmount*value), null));
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, true, (value) -> moveX(moveAmount*value), null));
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, true, (value) -> moveZ(moveAmount*-value), null));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, true, (value) -> moveY(moveAmount), null));
@@ -93,8 +92,8 @@ public class ControlCamera extends Camera
         }
         else
         {
-            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_X, false, true, (value) -> rot.x += joySensitivity*rotAmount *value, null));
-            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_Y, false, true, (value) ->  rot.y -= joySensitivity*rotAmount *value, null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_X, false, true, (value) -> addToXRot(joySensitivity*rotAmount*value), null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_Y, false, true, (value) -> addToYRot(-joySensitivity*rotAmount*value), null));
             joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_X, false, true, (value) -> moveX(moveAmount*value), null));
             joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_Y, false, true, (value) -> moveZ(moveAmount*value), null));
             joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, true, (value) -> moveY(moveAmount), null));

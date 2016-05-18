@@ -4,7 +4,6 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.types.ColorShader;
 import com.pieisnotpi.engine.rendering.shaders.types.TextShader;
@@ -277,12 +276,13 @@ public class Window
 
         int prevShaderID = -1;
 
+        scene.drawUpdate();
+
         for(Camera camera : scene.cameras)
         {
             camera.setRatio(ratio);
-            camera.update();
 
-            double rot = Math.toRadians(camera.rot.x);
+            double rot = Math.toRadians(camera.getXRot());
 
             scene.renderables.sort((o1, o2) ->
             {
@@ -292,22 +292,25 @@ public class Window
                     if(o1.getMatrixID() == PiEngine.CAMERA_3D_ID) z1 *= Math.cos(rot);
                     if(o2.getMatrixID() == PiEngine.CAMERA_3D_ID) z2 *= Math.cos(rot);
 
-                    if(z1 > z2) return 1;
-                    else if(z1 < z2) return -1;
-                    else return 0;
+                    return Float.compare(z1, z2);
                 }
-                else if(o1.transparent) return 1;
-                else if(o2.transparent) return -1;
-                else if(o1.getShaderID() > o2.getShaderID()) return -1;
-                else if(o1.getShaderID() < o2.getShaderID()) return 1;
-                else return 0;
+
+                if(o1.transparent) return 1;
+                if(o2.transparent) return -1;
+
+                return Integer.compare(o1.getShaderID(), o2.getShaderID());
             });
 
             float viewX = camera.localX*res.x, viewY = camera.localY*res.y, viewWidth = camera.localWidth*res.x, viewHeight = camera.localHeight*res.y, viewRatio;
 
             glViewport((int) viewX, (int) viewY, (int) viewWidth, (int) viewHeight);
 
-            for(Renderable renderable : scene.renderables)
+            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).addVertex(renderable));
+            shaders.forEach(ShaderProgram::compileVertices);
+            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).drawNext(camera));
+            shaders.forEach(ShaderProgram::clear);
+
+            /*for(Renderable renderable : scene.renderables)
             {
                 ShaderProgram shader = shaders.get(renderable.getShaderID());
 
@@ -321,7 +324,7 @@ public class Window
                 prevShaderID = renderable.getShaderID();
             }
 
-            if(prevShaderID != -1 && shaders.get(prevShaderID).buffer.size() > 0) shaders.get(prevShaderID).draw(camera);
+            if(prevShaderID != -1 && shaders.get(prevShaderID).buffer.size() > 0) shaders.get(prevShaderID).draw(camera);*/
         }
 
         glfwSwapBuffers(windowID);

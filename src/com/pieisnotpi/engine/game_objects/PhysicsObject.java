@@ -54,11 +54,6 @@ public class PhysicsObject extends GameObject
         return val/PiEngine.PIXELS_PER_METER;
     }
 
-    public static float toPhysicsCoord(float val, float radius)
-    {
-        return val/PiEngine.PIXELS_PER_METER + offset - radius;
-    }
-
     /**
      * @param val A coordinate, in physics coordinates
      * @return val, in render coordinates

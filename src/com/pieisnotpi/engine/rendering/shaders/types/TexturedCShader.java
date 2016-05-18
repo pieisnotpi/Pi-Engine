@@ -36,10 +36,9 @@ public class TexturedCShader extends ShaderProgram
     {
         FloatBuffer vertBuffer, colorBuffer, coordsBuffer;
 
-        int size = getBufferSize();
-        if(size == 0) return;
+        if(bufferSize == 0) return;
 
-        if(this.vertex.value.capacity()/(size*3) == buffer.size())
+        if(this.vertex.value.capacity()/(bufferSize*3) == buffer.size())
         {
             vertBuffer = vertex.value;
             colorBuffer = color.value;
@@ -51,9 +50,9 @@ public class TexturedCShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(size*3*buffer.size());
-            colorBuffer = BufferUtils.createFloatBuffer(size*4*buffer.size());
-            coordsBuffer = BufferUtils.createFloatBuffer(size*2*buffer.size());
+            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
+            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4*buffer.size());
+            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2*buffer.size());
         }
 
         for(Renderable renderable : buffer)

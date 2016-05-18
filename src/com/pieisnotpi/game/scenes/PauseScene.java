@@ -6,7 +6,7 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.colored.ColorQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
-import com.pieisnotpi.game.ControlCamera;
+import com.pieisnotpi.game.cameras.ControlCamera;
 import org.joml.Vector2i;
 
 /**

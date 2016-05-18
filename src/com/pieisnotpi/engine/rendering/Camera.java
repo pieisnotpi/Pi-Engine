@@ -1,32 +1,32 @@
 package com.pieisnotpi.engine.rendering;
 
+import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Camera
+public class Camera extends GameObject
 {
-    public Scene scene;
-    public Vector2f rot = new Vector2f();
-    public Vector3f position, up = new Vector3f(0, 1, 0);
+    public Vector3f up = new Vector3f(0, 1, 0);
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float localX, localY, localWidth, localHeight, fov, ratio = -1;
+    protected float orthoZoom = 0;
 
-    private Vector2f prevRot = new Vector2f();
-    private Vector3f lookAt, prevLocation = new Vector3f();
-    private boolean ratioUpdated = false;
+    private Vector3f lookAt, position = new Vector3f();
+    protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, orthoUpdated = false;
 
     public Camera(float localX, float localY, float localWidth, float localHeight, float fov, Scene scene)
     {
-        this(new Vector3f(0, 0, 0), localX, localY, localWidth, localHeight, fov, scene);
+        this(0, 0, 0, localX, localY, localWidth, localHeight, fov, scene);
     }
 
-    public Camera(Vector3f location, float localX, float localY, float localWidth, float localHeight, float fov, Scene scene)
+    public Camera(float x, float y, float z, float localX, float localY, float localWidth, float localHeight, float fov, Scene scene)
     {
-        this.position = location;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         this.localX = localX;
         this.localY = localY;
         this.localWidth = localWidth;
@@ -34,13 +34,13 @@ public class Camera
         this.fov = fov;
         this.scene = scene;
 
-        location.add(-1, -1, -1, prevLocation);
-
-        lookAt = new Vector3f(location.x, location.y, location.z - 10);
+        lookAt = new Vector3f(x, y, z - 10);
 
         matrices[0] = new Matrix4f().ortho2D(-1, 1, -1, 1);
         matrices[1] = new Matrix4f().perspective((float) Math.toRadians(fov), 1, 0.01f, 50);
         matrices[2] = new Matrix4f().ortho2D(-1, 1, -1, 1);
+
+        scene.gameObjects.add(this);
     }
 
     public void setRatio(float ratio)
@@ -53,57 +53,125 @@ public class Camera
 
     public Vector3f getLookAt()
     {
-        if(rot.y < -90) rot.y = -89.9f;
-        if(rot.y > 90) rot.y = 89.9f;
+        if(yRot < -90) yRot = -89.9f;
+        if(yRot > 90) yRot = 89.9f;
 
-        lookAt.set(position.x, position.y, position.z - 10);
+        lookAt.set(x, y, z - 10);
 
-        MathUtility.rotateAxisX(rot.y, position.y, position.z, lookAt);
-        MathUtility.rotateAxisY(rot.x, position.x, position.z, lookAt);
+        MathUtility.rotateAxisX(yRot, y, z, lookAt);
+        MathUtility.rotateAxisY(xRot, x, z, lookAt);
 
         return lookAt;
     }
 
-    public void moveX(float x)
+    public void setX(float nx)
     {
-        position.x += x*Math.cos(Math.toRadians(rot.x));
-        position.z += x*Math.sin(Math.toRadians(rot.x));
+        x = nx;
+        positionUpdated = true;
     }
 
-    public void moveY(float y)
+    public void setY(float ny)
     {
-        position.y += y;
+        y = ny;
+        positionUpdated = true;
     }
 
-    public void moveZ(float z)
+    public void setZ(float nz)
     {
-        position.x += z*Math.sin(Math.toRadians(rot.x + 180));
-        position.z -= z*Math.cos(Math.toRadians(rot.x + 180));
+        z = nz;
+        positionUpdated = true;
+    }
+
+    public void setOrthoZoom(float nz)
+    {
+        orthoZoom = nz;
+
+    }
+
+    public void moveX(float a)
+    {
+        x += a*Math.cos(Math.toRadians(xRot));
+        z += a*Math.sin(Math.toRadians(xRot));
+
+        positionUpdated = true;
+    }
+
+    public void moveY(float a)
+    {
+        y += a;
+
+        positionUpdated = true;
+    }
+
+    public void moveZ(float a)
+    {
+        x += a*Math.sin(Math.toRadians(xRot + 180));
+        z -= a*Math.cos(Math.toRadians(xRot + 180));
+
+        positionUpdated = true;
     }
 
     public void forceMatrixUpdate()
     {
+        position.set(x, y, z);
+
         matrices[0].setOrtho2D(-ratio, ratio, -1, 1);
         matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(position, getLookAt(), up);
-        matrices[2].setOrtho2D(-ratio, ratio, -1, 1).lookAt(position, getLookAt(), up);
+        matrices[2].setOrtho2D(-ratio*getZoomChange(), ratio*getZoomChange(), -1*getZoomChange(), 1*getZoomChange()).lookAt(position, getLookAt(), up);
 
         ratioUpdated = false;
+        positionUpdated = false;
+        rotationUpdated = false;
     }
 
-    public void update()
+    public void drawUpdate()
     {
         if(scene.window == null) return;
 
         if(ratioUpdated) forceMatrixUpdate();
-        else if(!position.equals(prevLocation) || !rot.equals(prevRot))
+        else if(positionUpdated || rotationUpdated || orthoUpdated)
         {
             Vector3f lookAt = getLookAt();
+            position.set(x, y, z);
 
             matrices[1].setPerspective((float) Math.toRadians(fov), ratio, 0.01f, 100).lookAt(position, lookAt, up);
-            matrices[2].setOrtho2D(-ratio, ratio, -1, 1).lookAt(position, lookAt, up);
+            matrices[2].setOrtho2D(-ratio*getZoomChange(), ratio*getZoomChange(), -1*getZoomChange(), 1*getZoomChange()).lookAt(position, lookAt, up);
         }
 
-        prevLocation.set(position);
-        prevRot.set(rot);
+        ratioUpdated = false;
+        positionUpdated = false;
+        rotationUpdated = false;
+        orthoUpdated = false;
+    }
+
+    private float getZoomChange()
+    {
+        float r = 1 - orthoZoom;
+
+        if(r <= 0) r = 0.0001f;
+
+        return r;
+    }
+
+    public void addToXRot(float amount, float cy, float cz)
+    {
+        if(amount == 0) return;
+        rotationUpdated = true;
+        super.addToXRot(amount, cy, cz);
+    }
+
+    public void addToYRot(float amount, float cx, float cz)
+    {
+        if(amount == 0) return;
+        rotationUpdated = true;
+        super.addToYRot(amount, cx, cz);
+    }
+
+    public void addToZRot(float amount, float cx, float cy)
+    {
+        if(amount == 0) return;
+        rotationUpdated = true;
+        MathUtility.rotateAxisZ(amount, cx, cy, up);
+        super.addToZRot(amount, cx, cy);
     }
 }

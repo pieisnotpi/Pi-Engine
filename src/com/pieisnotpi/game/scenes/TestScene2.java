@@ -8,15 +8,15 @@ import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.HoverEffect;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
-import com.pieisnotpi.game.ControlCamera;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Stone;
+import com.pieisnotpi.game.cameras.ControlCamera;
 
 public class TestScene2 extends PauseScene
 {
     protected TexCircle circle;
     protected Text text3D, text3D2;
-    protected Block[][] blocks = new Block[9][9];
+    protected Block[][] blocks = new Block[30][30];
 
     public void init()
     {

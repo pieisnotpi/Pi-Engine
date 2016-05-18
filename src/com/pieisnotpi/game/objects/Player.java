@@ -28,11 +28,13 @@ public class Player extends PhysicsObject
     public List<Joybind> joybinds = new ArrayList<>();
     private String lastJoyName = "";
     private PhysicsTestScene s;
-    private int joystick, jumpTimer = 0;
+    public int joystick;
+    private int jumpTimer = 0;
     protected TexQuad quad;
 
-    private static final int maxJumpTimer = 8;
-    public final static float scale = 0.1f, moveAmount = 2, maxSpeed = 20, jumpAmount = 10, maxJumpSpeed = 80, force = 16;
+    private static final int maxJumpTimer = 10;
+    private static final float moveAmount = 2, maxSpeed = 20, jumpAmount = 20, maxJumpSpeed = 50, force = 16, gravity = 2;
+    public final static float scale = 0.1f;
     private static Sprite sprite = new Sprite(Texture.getTexture("crate"), 0, 0, 16, 16);
 
     private Timer timer = new Timer(true, 2000);
@@ -55,7 +57,7 @@ public class Player extends PhysicsObject
 
         fixture.setFriction(0.8f);
         fixture.setRestitution(0);
-        body.setGravityScale(2);
+        body.setGravityScale(gravity);
 
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
 
@@ -73,15 +75,17 @@ public class Player extends PhysicsObject
 
         if(lastJoyName.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joy.joystick, Xbox.AXIS_LSTICK_X, false, true, this::move, null));
-            joybinds.add(new Joybind(joy.joystick, Xbox.BUTTON_A, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, true, this::shiftGravity, null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, true, this::move, null));
+            joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_B, true, false, (value) -> body.setGravityScale(-body.getGravityScale()), null));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_X, true, false, (value) -> force(), null));
         }
         else
         {
-            joybinds.add(new Joybind(joy.joystick, DS4.AXIS_LSTICK_X, false, true, this::move, null));
-            joybinds.add(new Joybind(joy.joystick, DS4.BUTTON_X, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_Y, false, true, this::shiftGravity, null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_X, false, true, this::move, null));
+            joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
             joybinds.add(new Joybind(joystick, DS4.BUTTON_CIRCLE, true, false, (value) -> body.setGravityScale(-body.getGravityScale()), null));
             joybinds.add(new Joybind(joystick, DS4.BUTTON_SQUARE, true, false, (value) -> force(), null));
         }
@@ -98,7 +102,7 @@ public class Player extends PhysicsObject
         }
     }
 
-    public void physicsUpdate()
+    public void drawUpdate()
     {
         x = toRenderCoord(body.getPosition().x, scale/2);
         y = toRenderCoord(body.getPosition().y, scale/2);
@@ -150,30 +154,43 @@ public class Player extends PhysicsObject
 
     private void move(float amount)
     {
-        if((amount < 0 && body.getLinearVelocity().x > -maxSpeed) || (amount > 0 && body.getLinearVelocity().x < maxSpeed))
-            body.getLinearVelocity().x += moveAmount*amount;
+        float xDif = (float) (moveAmount*amount*Math.cos(Math.toRadians(s.camera.getZRot()))),
+              yDif = (float) (moveAmount*amount*Math.sin(Math.toRadians(s.camera.getZRot()))),
+              xSpeed = body.getLinearVelocity().x,
+              ySpeed = body.getLinearVelocity().y,
+              dif = (float) Math.sqrt(xDif*xDif + yDif*yDif),
+              speed = (float) Math.sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
+
+        if((dif < 0 && dif + speed > -maxSpeed) || (dif > 0 && dif + speed < maxSpeed)) body.getLinearVelocity().addLocal(xDif, yDif);
     }
 
     private void jump()
     {
         if(jumpTimer++ < maxJumpTimer)
         {
-            float v = body.getLinearVelocity().y;
+            float xDif = (float) (jumpAmount*Math.sin(Math.toRadians(s.camera.getZRot()))),
+                  yDif = (float) (jumpAmount*Math.cos(Math.toRadians(s.camera.getZRot()))),
+                  xSpeed = body.getLinearVelocity().x,
+                  ySpeed = body.getLinearVelocity().y,
+                  dif = (float) Math.sqrt(xDif*xDif + yDif*yDif),
+                  speed = (float) Math.sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
 
-            if(body.getGravityScale() < 0)
+            if((dif < 0 && dif + speed > -maxJumpSpeed) || (dif > 0 && dif + speed < maxJumpSpeed)) body.getLinearVelocity().addLocal(xDif, yDif);
+
+            /*if(body.getGravityScale() < 0)
             {
-                if(v < 0) body.getLinearVelocity().y = 0;
+                if(speedY < 0) body.getLinearVelocity().y = 0;
 
-                if(v > maxJumpSpeed) body.getLinearVelocity().y = maxJumpSpeed;
+                if(speedY > maxJumpSpeed) body.getLinearVelocity().y = maxJumpSpeed;
                 else body.getLinearVelocity().y -= jumpAmount;
             }
             else
             {
-                if(v > 0) body.getLinearVelocity().y = 0;
+                if(speedY > 0) body.getLinearVelocity().y = 0;
 
-                if(v < -maxJumpSpeed) body.getLinearVelocity().y = -maxJumpSpeed;
+                if(speedY < -maxJumpSpeed) body.getLinearVelocity().y = -maxJumpSpeed;
                 else body.getLinearVelocity().y += jumpAmount;
-            }
+            }*/
         }
     }
 
@@ -201,5 +218,11 @@ public class Player extends PhysicsObject
         }
 
         if(!appliedForce) timer.forceFinish();
+    }
+
+    public void shiftGravity(float amount)
+    {
+        /*if(body.getGravityScale() < 0) body.setGravityScale(-gravity - amount*1.5f);
+        else body.setGravityScale(gravity - amount*1.5f);*/
     }
 }

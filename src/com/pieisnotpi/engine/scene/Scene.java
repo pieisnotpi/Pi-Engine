@@ -90,6 +90,13 @@ public abstract class Scene
         gameObjects.forEach(GameObject::update);
     }
 
+    public void drawUpdate()
+    {
+        if(window == null) return;
+
+        gameObjects.forEach(GameObject::drawUpdate);
+    }
+
     public void updatePhysics()
     {
         if(!shouldUpdatePhysics || window == null) return;

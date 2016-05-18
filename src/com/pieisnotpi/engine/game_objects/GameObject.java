@@ -14,6 +14,7 @@ public abstract class GameObject
     protected float x = 0, y = 0, z = 0, xRot = 0, yRot = 0, zRot = 0;
 
     public void update() {}
+    public void drawUpdate() {}
     public void physicsUpdate() {}
     public void enable() { enabled = true; }
     public void disable() { enabled = false; }

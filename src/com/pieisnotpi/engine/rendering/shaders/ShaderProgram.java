@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public abstract class ShaderProgram
 {
-    public ShaderFile[] shaders;
+    protected ShaderFile[] shaders;
     public List<Renderable> buffer;
     protected VertexArray array;
     protected Matrix4f perspective;
@@ -25,13 +25,17 @@ public abstract class ShaderProgram
     public int program, shaderID;
     protected String perspName;
     protected Window window;
+    private int current = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
+    protected int bufferSize = 0;
+
+    Texture currentTex = null;
 
     public ShaderProgram(ShaderFile... shaders)
     {
         this.shaders = shaders;
 
         program = glCreateProgram();
-        buffer = new ArrayList<>(1000);
+        buffer = new ArrayList<>(100);
     }
 
     public void init()
@@ -44,9 +48,39 @@ public abstract class ShaderProgram
         array.init(program);
     }
 
+    public void compileVertices() {}
+
     public void addVertex(Renderable... renderables)
     {
-        for(Renderable renderable : renderables) if(!buffer.contains(renderable)) buffer.add(renderable);
+        for(Renderable renderable : renderables) if(!buffer.contains(renderable))
+        {
+            buffer.add(renderable);
+            bufferSize += renderable.getVertCount();
+        }
+    }
+
+    public void drawNext(Camera camera)
+    {
+        Renderable renderable = buffer.get(current);
+
+        if(current == 0) vertCount = -renderable.getVertCount();
+
+        int matrixID = renderable.getMatrixID();
+
+        if(matrixID != lastMatrix) setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[matrixID]));
+        if(renderable.getTexture() != null && lastSampler != renderable.getTexture().getSamplerID()) setUniformInt("sampler", renderable.getTexture().getSamplerID());
+
+        if(renderable.getTexture() != null && !renderable.getTexture().equals(currentTex))
+        {
+            currentTex = renderable.getTexture();
+            currentTex.bind();
+        }
+
+        lastMatrix = matrixID;
+
+        glDrawArrays(renderable.getDrawMode(), vertCount += renderable.getVertCount(), renderable.getVertCount());
+
+        current++;
     }
 
     public void draw(Camera camera)
@@ -83,8 +117,6 @@ public abstract class ShaderProgram
 
         buffer.clear();
     }
-
-    public void compileVertices() {}
 
     public void use()
     {
@@ -151,10 +183,15 @@ public abstract class ShaderProgram
         glDeleteProgram(program);
     }
 
-    protected int getBufferSize()
+    public void clear()
     {
-        int size = 0;
-        for (Renderable renderable : buffer) size += renderable.getVertCount();
-        return size;
+        buffer.clear();
+
+        currentTex = null;
+        current = 0;
+        vertCount = -100;
+        lastMatrix = -1;
+        lastSampler = -1;
+        bufferSize = 0;
     }
 }
