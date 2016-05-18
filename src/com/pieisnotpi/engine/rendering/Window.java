@@ -280,8 +280,6 @@ public class Window
 
         for(Camera camera : scene.cameras)
         {
-            camera.setRatio(ratio);
-
             double rot = Math.toRadians(camera.getXRot());
 
             scene.renderables.sort((o1, o2) ->

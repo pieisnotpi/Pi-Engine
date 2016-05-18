@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.textured.TexCircle;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
+import com.pieisnotpi.engine.rendering.ui.button.Button;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.HoverEffect;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
@@ -29,11 +30,20 @@ public class TestScene2 extends PauseScene
 
         for(int x = 0; x < blocks.length; x++)
         {
-            for(int y = 0; y < blocks[0].length; y++) blocks[x][y] = new Stone(xOffset, 0, zOffset += Block.SIZE, this);
+            for(int y = 0; y < blocks[0].length; y++)
+            {
+                blocks[x][y] = new Stone(xOffset, 0, zOffset += Block.SIZE, this);
+                if(x < blocks.length - 1) blocks[x][y].cubes.get(0).sides[2].unregister();
+                if(x > 0) blocks[x][y].cubes.get(0).sides[1].unregister();
+                if(y < blocks[0].length - 1) blocks[x][y].cubes.get(0).sides[3].unregister();
+                if(y > 0) blocks[x][y].cubes.get(0).sides[0].unregister();
+            }
 
             zOffset = -(blocks[0].length/2f)*Block.SIZE;
             xOffset += Block.SIZE;
         }
+
+        Button button = new Button("howdy", 12, 0, 0, 0.2f, PiEngine.ORTHO_ID, this);
 
         circle = new TexCircle(0, 1, 1, Block.SIZE/2f, 50, new Sprite(Texture.getTexture("stone"), 16, 0, 32, 16), PiEngine.CAMERA_3D_ID, this);
 
