@@ -32,9 +32,10 @@ public class Window
     public float ratio;
     public long windowID;
     public boolean focused = true;
+    public static int lastShaderID = -1, lastTextureID = -1;
 
     private int vsync, refreshRate;
-    private long share;
+    private long share, time = 0;
     private boolean alive = true, fullscreen, staticRefreshRate, initialized = false;
 
     private GameUpdate drawUpdate, inputUpdate;
@@ -233,9 +234,11 @@ public class Window
             glfwPollEvents();
         }, () ->
         {
-            String time = "" + (float) drawUpdate.totalTimeTaken /drawUpdate.updates;
+            String time = "" + (float) this.time/drawUpdate.updates;
             if(time.length() >= 5) time = time.substring(0, 5);
             scene.fps.setText(drawUpdate.updates + "fps/" + time + "mspf");
+
+            this.time = 0;
         });
         inputUpdate = new GameUpdate(1, () -> inputManager.pollInputs());
 
@@ -243,8 +246,8 @@ public class Window
 
         setWindowPos(curMonitor.position.x + (curMonitor.size.x - originalRes.x)/2, curMonitor.position.y + (curMonitor.size.y - originalRes.y)/2);
         setRefreshRate(refreshRate);
-        setFullscreen(fullscreen);
         setVsync(vsync);
+        setFullscreen(fullscreen);
 
         initialized = true;
     }
@@ -255,8 +258,9 @@ public class Window
 
         if(this.scene != null)
         this.scene.setWindow(null);
-
         this.scene = scene;
+        setName(scene.name);
+
         scene.setWindow(this);
         scene.onWindowResize(res);
 
@@ -269,12 +273,10 @@ public class Window
 
         ratio = (float) res.x/res.y;
 
-        if(glfwGetCurrentContext() != windowID) glfwMakeContextCurrent(windowID);
+        if(windowID != PiEngine.currentContext) glfwMakeContextCurrent(windowID);
+
         glClearColor(scene.clearColor.red, scene.clearColor.green, scene.clearColor.blue, scene.clearColor.alpha);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        int prevShaderID = -1;
 
         scene.drawUpdate();
 
@@ -292,9 +294,9 @@ public class Window
 
                     return Float.compare(z1, z2);
                 }
-
-                if(o1.transparent) return 1;
-                if(o2.transparent) return -1;
+                else if(o1.transparent) return 1;
+                else if(o2.transparent) return -1;
+                //else return 0;
 
                 return Integer.compare(o1.getShaderID(), o2.getShaderID());
             });
@@ -305,24 +307,19 @@ public class Window
 
             scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).addVertex(renderable));
             shaders.forEach(ShaderProgram::compileVertices);
-            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).drawNext(camera));
-            shaders.forEach(ShaderProgram::clear);
 
-            /*for(Renderable renderable : scene.renderables)
+            long t = System.currentTimeMillis();
+
+            scene.renderables.forEach(renderable ->
             {
-                ShaderProgram shader = shaders.get(renderable.getShaderID());
+                ShaderProgram s = shaders.get(renderable.getShaderID());
 
-                if(renderable.getShaderID() == prevShaderID || prevShaderID == -1) shader.addVertex(renderable);
-                else
-                {
-                    shaders.get(prevShaderID).draw(camera);
-                    shader.addVertex(renderable);
-                }
+                s.drawNext(camera);
+            });
 
-                prevShaderID = renderable.getShaderID();
-            }
+            time += System.currentTimeMillis() - t;
 
-            if(prevShaderID != -1 && shaders.get(prevShaderID).buffer.size() > 0) shaders.get(prevShaderID).draw(camera);*/
+            shaders.forEach(ShaderProgram::clear);
         }
 
         glfwSwapBuffers(windowID);

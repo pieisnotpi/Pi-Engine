@@ -18,6 +18,8 @@ public class PhysicsObject extends GameObject
     public Fixture fixture;
     public Shape shape;
 
+    public boolean bodyAlive = false;
+
     public static final float offset = toRenderCoord(1);
 
     public void init(float x, float y, float density, BodyType bodyType, Shape shape)
@@ -30,6 +32,8 @@ public class PhysicsObject extends GameObject
 
         body = scene.world.createBody(def);
         fixture = body.createFixture(shape, density);
+
+        bodyAlive = true;
     }
 
     public void setX(float x)
@@ -77,6 +81,11 @@ public class PhysicsObject extends GameObject
     public void destroy()
     {
         super.destroy();
-        scene.world.destroyBody(body);
+        if(scene.world.getBodyCount() > 0 && bodyAlive)
+        {
+            scene.world.destroyBody(body);
+            bodyAlive = false;
+        }
+
     }
 }

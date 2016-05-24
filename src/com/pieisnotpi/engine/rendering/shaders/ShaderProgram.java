@@ -28,8 +28,6 @@ public abstract class ShaderProgram
     private int current = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
     protected int bufferSize = 0;
 
-    Texture currentTex = null;
-
     public ShaderProgram(ShaderFile... shaders)
     {
         this.shaders = shaders;
@@ -62,65 +60,42 @@ public abstract class ShaderProgram
     public void drawNext(Camera camera)
     {
         Renderable renderable = buffer.get(current);
+        Texture tex = renderable.getTexture();
+        int matrixID = renderable.getMatrixID();
 
         if(current == 0) vertCount = -renderable.getVertCount();
 
-        int matrixID = renderable.getMatrixID();
-
-        if(matrixID != lastMatrix) setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[matrixID]));
-        if(renderable.getTexture() != null && lastSampler != renderable.getTexture().getSamplerID()) setUniformInt("sampler", renderable.getTexture().getSamplerID());
-
-        if(renderable.getTexture() != null && !renderable.getTexture().equals(currentTex))
+        if(matrixID != lastMatrix)
         {
-            currentTex = renderable.getTexture();
-            currentTex.bind();
+            setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[lastMatrix = matrixID]));
         }
 
-        lastMatrix = matrixID;
+        if(tex != null)
+        {
+            if(tex.getSamplerID() != lastSampler)
+            {
+                setUniformInt("sampler", lastSampler = tex.getSamplerID());
+            }
+
+            if(tex.getTexID() != Window.lastTextureID)
+            {
+                Window.lastTextureID = tex.getTexID();
+                renderable.texture.bind();
+            }
+        }
 
         glDrawArrays(renderable.getDrawMode(), vertCount += renderable.getVertCount(), renderable.getVertCount());
 
         current++;
     }
 
-    public void draw(Camera camera)
-    {
-        compileVertices();
-        use();
-
-        Texture currentTex = null;
-        int lastMatrix = -1, lastSampler = -1;
-
-        int current = -100;
-
-        for(int i = 0; i < buffer.size(); i++)
-        {
-            Renderable renderable = buffer.get(i);
-
-            if(i == 0) current = -renderable.getVertCount();
-
-            int matrixID = renderable.getMatrixID();
-
-            if(matrixID != lastMatrix) setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[matrixID]));
-            if(renderable.getTexture() != null && lastSampler != renderable.getTexture().getSamplerID()) setUniformInt("sampler", renderable.getTexture().getSamplerID());
-
-            if(renderable.getTexture() != null && !renderable.getTexture().equals(currentTex))
-            {
-                currentTex = renderable.getTexture();
-                currentTex.bind();
-            }
-
-            lastMatrix = matrixID;
-
-            glDrawArrays(renderable.getDrawMode(), current += renderable.getVertCount(), renderable.getVertCount());
-        }
-
-        buffer.clear();
-    }
-
     public void use()
     {
+        if(Window.lastShaderID == program) return;
+
         glUseProgram(program);
+
+        Window.lastShaderID = program;
 
         if(array != null) array.bind();
         else Logger.SHADER_PROGRAM.err("Attempted to bind a null array, shader program must be corrupt");
@@ -187,11 +162,9 @@ public abstract class ShaderProgram
     {
         buffer.clear();
 
-        currentTex = null;
+        lastMatrix = -1;
         current = 0;
         vertCount = -100;
-        lastMatrix = -1;
-        lastSampler = -1;
         bufferSize = 0;
     }
 }

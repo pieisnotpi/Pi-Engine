@@ -51,6 +51,8 @@ public abstract class PauseScene extends Scene
 
         for(Camera camera : cameras)
         {
+            if(!camera.getClass().isInstance(ControlCamera.class)) continue;
+
             ControlCamera c = (ControlCamera) camera;
 
             for(int i = 0; i < c.joybinds.size(); i++)

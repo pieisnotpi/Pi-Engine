@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class ColorShader extends ShaderProgram
 {
-    //private static Shader vertShader = new Shader("/assets/shaders/color.vert", GL_VERTEX_SHADER), fragShader = new Shader("/assets/shaders/color.frag", GL_FRAGMENT_SHADER);
     private Attribute vertex, colors;
 
     public ColorShader()
@@ -36,11 +35,18 @@ public class ColorShader extends ShaderProgram
         FloatBuffer vertBuffer, colorBuffer;
 
         if(bufferSize == 0) return;
+        int capacity = vertex.value.capacity()/(bufferSize*3);
 
         if(this.vertex.value.capacity()/(bufferSize*3) == buffer.size())
         {
             vertBuffer = vertex.value;
             colorBuffer = colors.value;
+
+            if(capacity > buffer.size())
+            {
+                vertBuffer.limit(bufferSize*3*buffer.size());
+                colorBuffer.limit(bufferSize*4*buffer.size());
+            }
 
             vertBuffer.position(0);
             colorBuffer.position(0);

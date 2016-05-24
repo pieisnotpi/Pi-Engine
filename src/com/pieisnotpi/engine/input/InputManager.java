@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.input;
 
+import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.joysticks.Joystick;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Window;
@@ -167,7 +168,7 @@ public class InputManager
                     if(axis != null && axis.limit() > joybind.axis) value = axis.get(joybind.axis);
                     else value = 0;
 
-                    if(value > -0.15f && value < 0.15f) value = 0;
+                    if(value > -0.1f && value < 0.1f) value = 0;
                 }
                 else
                 {
@@ -192,6 +193,8 @@ public class InputManager
 
         if(hideCursor)
         {
+            window.scene.gameObjects.forEach(GameObject::onMouseExited);
+
             if(localCursorPos.x > -0.001 && localCursorPos.x < 0.001) localCursorPos.x = 0;
             if(localCursorPos.y > -0.001 && localCursorPos.y < 0.001) localCursorPos.y = 0;
 

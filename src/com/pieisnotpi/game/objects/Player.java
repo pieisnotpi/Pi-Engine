@@ -6,9 +6,11 @@ import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.joysticks.DS4;
 import com.pieisnotpi.engine.input.joysticks.Joystick;
 import com.pieisnotpi.engine.input.joysticks.Xbox;
+import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
+import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.Timer;
 import com.pieisnotpi.game.scenes.PhysicsTestScene;
@@ -17,6 +19,7 @@ import org.jbox2d.dynamics.BodyType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A player test class, only used in the physics test scene. Summoned with left shift.
@@ -30,14 +33,17 @@ public class Player extends PhysicsObject
     private PhysicsTestScene s;
     public int joystick;
     private int jumpTimer = 0;
+    private float moveSpeedX = 0, moveSpeedY = 0, jumpSpeedX = 0, jumpSpeedY = 0;
     protected TexQuad quad;
 
     private static final int maxJumpTimer = 10;
-    private static final float moveAmount = 2, maxSpeed = 20, jumpAmount = 20, maxJumpSpeed = 50, force = 16, gravity = 2;
+    private static final float moveAmount = 2, maxSpeed = 10, jumpAmount = 2, maxJumpSpeed = 20, force = 3, gravity = 2;
     public final static float scale = 0.1f;
     private static Sprite sprite = new Sprite(Texture.getTexture("crate"), 0, 0, 16, 16);
 
-    private Timer timer = new Timer(true, 2000);
+    private Timer timer = new Timer(true, 1500);
+    private Text number;
+    private final float xOffset = scale/4, yOffset = scale + 0.001f;
 
     public Player(float x, float y, float z, int joystick, Scene scene)
     {
@@ -60,6 +66,17 @@ public class Player extends PhysicsObject
         body.setGravityScale(gravity);
 
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
+        quad.transparent = false;
+
+        Random r = new Random();
+
+        Color numColor = new Color(0, 0, 0);
+
+        if(joystick == 0) numColor.set(1, 0, 0);
+        else if(joystick == 1) numColor.set(0, 1, 0);
+        else if(joystick == 2) numColor.set(0, 0, 1);
+
+        number = new Text((joystick + 1) + "", 6, x + xOffset, y + yOffset, z, numColor, new Color(0, 0, 0, 0), matrixID, scene);
 
         scene.gameObjects.add(this);
 
@@ -77,21 +94,20 @@ public class Player extends PhysicsObject
         {
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, true, this::shiftGravity, null));
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, true, this::move, null));
-            joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
-            joybinds.add(new Joybind(joystick, Xbox.BUTTON_B, true, false, (value) -> body.setGravityScale(-body.getGravityScale()), null));
+            joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, true, (value) -> jump(), (value) -> jumpTimer = -1));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_X, true, false, (value) -> force(), null));
         }
         else
         {
             joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_Y, false, true, this::shiftGravity, null));
             joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_X, false, true, this::move, null));
-            joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, true, (value) -> jump(), (value) -> jumpTimer = 0));
-            joybinds.add(new Joybind(joystick, DS4.BUTTON_CIRCLE, true, false, (value) -> body.setGravityScale(-body.getGravityScale()), null));
+            joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, true, (value) -> jump(), (value) -> jumpTimer = -1));
             joybinds.add(new Joybind(joystick, DS4.BUTTON_SQUARE, true, false, (value) -> force(), null));
         }
 
         registerInputs();
     }
+
 
     public void update()
     {
@@ -106,6 +122,9 @@ public class Player extends PhysicsObject
     {
         x = toRenderCoord(body.getPosition().x, scale/2);
         y = toRenderCoord(body.getPosition().y, scale/2);
+
+        number.setX(x + xOffset);
+        number.setY(y + yOffset);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
@@ -149,48 +168,43 @@ public class Player extends PhysicsObject
     {
         super.destroy();
         quad.unregister();
+        number.destroy();
         unregisterInputs();
+    }
+
+    private void flipGravity()
+    {
+        body.setGravityScale(-body.getGravityScale());
     }
 
     private void move(float amount)
     {
-        float xDif = (float) (moveAmount*amount*Math.cos(Math.toRadians(s.camera.getZRot()))),
-              yDif = (float) (moveAmount*amount*Math.sin(Math.toRadians(s.camera.getZRot()))),
-              xSpeed = body.getLinearVelocity().x,
-              ySpeed = body.getLinearVelocity().y,
-              dif = (float) Math.sqrt(xDif*xDif + yDif*yDif),
-              speed = (float) Math.sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
+        double a = Math.toRadians(s.camera.getZRot());
 
-        if((dif < 0 && dif + speed > -maxSpeed) || (dif > 0 && dif + speed < maxSpeed)) body.getLinearVelocity().addLocal(xDif, yDif);
+        float cos = (float) Math.cos(a), sin = (float) Math.sin(a), dif = moveAmount*amount, xSpeed = body.getLinearVelocity().y*sin + body.getLinearVelocity().x*cos;
+
+        if((dif < 0 && dif + xSpeed > -maxSpeed) || (dif > 0 && dif + xSpeed < maxSpeed)) body.getLinearVelocity().addLocal(cos*dif, sin*dif);
     }
 
     private void jump()
     {
         if(jumpTimer++ < maxJumpTimer)
         {
-            float xDif = (float) (jumpAmount*Math.sin(Math.toRadians(s.camera.getZRot()))),
-                  yDif = (float) (jumpAmount*Math.cos(Math.toRadians(s.camera.getZRot()))),
-                  xSpeed = body.getLinearVelocity().x,
-                  ySpeed = body.getLinearVelocity().y,
-                  dif = (float) Math.sqrt(xDif*xDif + yDif*yDif),
-                  speed = (float) Math.sqrt(xSpeed*xSpeed + ySpeed*ySpeed);
+            float rot = s.camera.getZRot();
+            double a = Math.toRadians(rot);
 
-            if((dif < 0 && dif + speed > -maxJumpSpeed) || (dif > 0 && dif + speed < maxJumpSpeed)) body.getLinearVelocity().addLocal(xDif, yDif);
+            float cos = (float) Math.cos(a), sin = (float) Math.sin(a), dif = jumpAmount, ySpeed = -body.getLinearVelocity().x*sin + body.getLinearVelocity().y*cos;
 
-            /*if(body.getGravityScale() < 0)
+            if(body.getGravityScale() > 0 && ySpeed < maxJumpSpeed)
             {
-                if(speedY < 0) body.getLinearVelocity().y = 0;
-
-                if(speedY > maxJumpSpeed) body.getLinearVelocity().y = maxJumpSpeed;
-                else body.getLinearVelocity().y -= jumpAmount;
+                if(ySpeed < 0) body.getLinearVelocity().addLocal(ySpeed*sin, -ySpeed*cos);
+                body.getLinearVelocity().addLocal(-sin*dif, cos*dif);
             }
-            else
+            else if(body.getGravityScale() < 0 && ySpeed > -maxJumpSpeed)
             {
-                if(speedY > 0) body.getLinearVelocity().y = 0;
-
-                if(speedY < -maxJumpSpeed) body.getLinearVelocity().y = -maxJumpSpeed;
-                else body.getLinearVelocity().y += jumpAmount;
-            }*/
+                if(ySpeed > 0) body.getLinearVelocity().addLocal(-ySpeed*sin, ySpeed*cos);
+                body.getLinearVelocity().addLocal(sin*dif, -cos*dif);
+            }
         }
     }
 

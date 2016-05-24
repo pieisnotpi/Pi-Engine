@@ -13,6 +13,8 @@ public class OptionsScene extends Scene
         super.init();
         fps.disable();
 
+        name = "Options";
+
         cameras.add(new Camera(0, 0, 1, 1, 90, this));
 
         clearColor.set(0.5f, 0.5f, 0.5f);

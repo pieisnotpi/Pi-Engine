@@ -39,13 +39,22 @@ public class TextShader extends ShaderProgram
         FloatBuffer vertBuffer, coordsBuffer, textColorBuffer, outlineColorBuffer;
 
         if(bufferSize == 0) return;
+        int capacity = vertex.value.capacity()/(bufferSize*3);
 
-        if(this.vertex.value.capacity()/(bufferSize*3) == buffer.size())
+        if(capacity == buffer.size())
         {
             vertBuffer = vertex.value;
             coordsBuffer = coords.value;
             textColorBuffer = textColor.value;
             outlineColorBuffer = outlineColor.value;
+
+            if(capacity > buffer.size())
+            {
+                vertBuffer.limit(bufferSize*3*buffer.size());
+                coordsBuffer.limit(bufferSize*2*buffer.size());
+                textColorBuffer.limit(bufferSize*4*buffer.size());
+                outlineColorBuffer.limit(bufferSize*4*buffer.size());
+            }
 
             vertBuffer.position(0);
             coordsBuffer.position(0);

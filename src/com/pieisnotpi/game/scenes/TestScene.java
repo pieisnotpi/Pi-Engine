@@ -20,6 +20,8 @@ public class TestScene extends PauseScene
     {
         super.init();
 
+        name = "Test Scene 1";
+
         //cameras.add(new ControlCamera(0, 0, 1, 1, 90, 0, this));
         cameras.add(c = new TransitionCamera(0, 0, 1, 1, 90, 0.01f, 0.1f, 0, this));
         clearColor.set(0.125f, 0.729f, 0.918f);

@@ -121,7 +121,7 @@ public class TransitionCamera extends Camera
         setOrthoZoom(orthoZoom + dif);
     }
 
-    public void update()
+    public void drawUpdate()
     {
         /*if(moveX < -speedMin || moveX > speedMin) transitionX(moveX);
         if(moveY < -speedMin || moveX > speedMin) transitionY(moveY);
@@ -139,6 +139,6 @@ public class TransitionCamera extends Camera
         if(rotZ != 0) transitionZRot(rotZ);
         if(zoom != 0) transitionOrthoZoom(zoom);
 
-        super.update();
+        super.drawUpdate();
     }
 }

@@ -14,7 +14,7 @@ public class FloorTile extends PhysicsObject
     protected TexQuad quad;
 
     public final static float scale = 0.1f;
-    private static final Sprite sprite = new Sprite(Texture.getTexture("grass"), 16, 0, 32, 16);
+    private static final Sprite sprite = new Sprite(Texture.getTexture("tiles"), 16, 32, 32, 16);
 
     public FloorTile(float x, float y, float z, Scene scene)
     {

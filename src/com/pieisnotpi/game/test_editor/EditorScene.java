@@ -20,6 +20,8 @@ public class EditorScene extends Scene
     {
         super.init();
 
+        name = "Editor";
+
         cameras.add(new Camera(0, 0, 1, 1, 90, this));
         clearColor.set(0.6f, 0.6f, 0.6f);
 

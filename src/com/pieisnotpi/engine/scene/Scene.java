@@ -29,6 +29,7 @@ public abstract class Scene
     public World world;
     public Text fps, pps;
     public Window window;
+    public String name = "Scene";
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
@@ -100,6 +101,7 @@ public abstract class Scene
     public void updatePhysics()
     {
         if(!shouldUpdatePhysics || window == null) return;
+
 
         world.step(1f/physicsPollsPerSecond, 20, 10);
         gameObjects.forEach(GameObject::physicsUpdate);

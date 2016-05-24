@@ -22,6 +22,8 @@ public class TestScene2 extends PauseScene
     {
         super.init();
 
+        name = "Test Scene 2";
+
         cameras.add(new ControlCamera(0, 0, 1, 1, 90, 0, this));
         clearColor.set(0.918f, 0.729f, 0.125f);
 

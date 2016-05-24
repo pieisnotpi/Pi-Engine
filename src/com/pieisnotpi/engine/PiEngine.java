@@ -26,6 +26,8 @@ public class PiEngine
     public static int glMajor = -1, glMinor = -1;
     // GL Capabilities
     public static GLCapabilities capabilities;
+    // Current GLFW context
+    public static long currentContext = -1;
 
     /**
      * Initializes the Pi Engine

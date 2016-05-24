@@ -14,7 +14,7 @@ public class Game
             Logger.SYSTEM.log("Debug mode active");
         }
 
-        System.setProperty("org.lwjgl.librarypath", "libs/lwjgl/native");
+        System.setProperty("org.lwjgl.librarypath", "natives");
 
         PiEngine.start(new MainInstance());
 

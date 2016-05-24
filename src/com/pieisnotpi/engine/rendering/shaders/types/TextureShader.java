@@ -37,15 +37,23 @@ public class TextureShader extends ShaderProgram
         FloatBuffer vertBuffer, coordsBuffer;
 
         if(bufferSize == 0) return;
+        int capacity = vertex.value.capacity()/(bufferSize*3);
 
-        if(this.vertex.value.capacity()/(bufferSize*3) == buffer.size())
+        if(capacity >= buffer.size())
         {
             vertBuffer = vertex.value;
             coordsBuffer = coords.value;
 
+            if(capacity > buffer.size())
+            {
+                vertBuffer.limit(bufferSize*3*buffer.size());
+                coordsBuffer.limit(bufferSize*2*buffer.size());
+            }
+
             vertBuffer.position(0);
             coordsBuffer.position(0);
         }
+
         else
         {
             vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
