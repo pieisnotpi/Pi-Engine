@@ -36,7 +36,7 @@ class MainInstance extends GameInstance
         options.init();
         physics.init();
 
-        window.setScene(testScene2);
+        window.setScene(physics);
 
         for(Window w : windows)
         {

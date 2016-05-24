@@ -14,6 +14,7 @@ public class EditorTile extends UiObject
     boolean foreShowing = true, backShowing = true;
     private EditorScene actualScene;
     private Color highlightColor = new Color(0.8f, 0.8f, 0.8f), blankColor = new Color(0, 0, 0, 0), backgroundColor = new Color(0.3f, 0.3f, 0.3f);
+    private boolean leftStatus = false, rightStatus = false, middleStatus = false, placed = false, destroyed = false;
 
     public EditorTile(float x, float y, float z, float scale, Sprite sprite, Scene scene)
     {
@@ -34,14 +35,9 @@ public class EditorTile extends UiObject
         scene.gameObjects.add(this);
     }
 
-    public void onKeyPressed(int key)
+    public void update()
     {
-        if(key == 0x101 && mouseHoverStatus) System.out.printf("%b,%b%n", foreSprite.equals(foreground.getQuadSprite()), backSprite.equals(background.getQuadSprite()));
-    }
-
-    public void onLeftClick()
-    {
-        if(mouseHoverStatus)
+        if(leftStatus && !placed && mouseHoverStatus)
         {
             if(!foreground.registered) foreground.register();
 
@@ -51,12 +47,11 @@ public class EditorTile extends UiObject
 
             foreground.setQuadSprite(foreSprite);
             foreground.setQuadColors(blankColor);
-        }
-    }
 
-    public void onRightClick()
-    {
-        if(mouseHoverStatus)
+            placed = true;
+        }
+
+        if(rightStatus && !placed && mouseHoverStatus)
         {
             if(!background.registered) background.register();
 
@@ -66,26 +61,64 @@ public class EditorTile extends UiObject
 
             background.setQuadSprite(backSprite);
             background.setQuadColors(backgroundColor);
+
+            placed = true;
         }
+
+        if(middleStatus && !destroyed)
+        {
+            if(mouseHoverStatus)
+            {
+                if(foreShowing)
+                {
+                    foreground.unregister();
+                    foreShowing = false;
+                    destroyed = true;
+                }
+                else if(backShowing)
+                {
+                    background.unregister();
+                    backShowing = false;
+                    destroyed = true;
+                }
+
+                onMouseEntered();
+            }
+            else destroyed = false;
+        }
+    }
+
+    public void onLeftClick()
+    {
+        leftStatus = true;
+    }
+
+    public void onLeftRelease()
+    {
+        leftStatus = false;
+        placed = false;
+    }
+
+    public void onRightClick()
+    {
+        rightStatus = true;
+    }
+
+    public void onRightRelease()
+    {
+        rightStatus = false;
+        placed = false;
     }
 
     public void onMiddleClick()
     {
-        if(mouseHoverStatus)
-        {
-            if(foreShowing)
-            {
-                foreground.unregister();
-                foreShowing = false;
-            }
-            else if(backShowing)
-            {
-                background.unregister();
-                backShowing = false;
-            }
+        middleStatus = true;
+    }
 
-            onMouseEntered();
-        }
+    public void onMiddleRelease()
+    {
+        middleStatus = false;
+        destroyed = false;
     }
 
     public void onMouseEntered()

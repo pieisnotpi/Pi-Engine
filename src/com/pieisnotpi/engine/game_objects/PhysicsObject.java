@@ -11,7 +11,7 @@ import org.jbox2d.dynamics.Fixture;
  * A GameObject that implements the necessary parts for use with Jbox2D
  */
 
-public class PhysicsObject extends GameObject
+public abstract class PhysicsObject extends GameObject
 {
     public Body body;
     public BodyDef def;

@@ -5,7 +5,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-@SuppressWarnings("ALL")
 public abstract class GameObject
 {
     protected Scene scene;

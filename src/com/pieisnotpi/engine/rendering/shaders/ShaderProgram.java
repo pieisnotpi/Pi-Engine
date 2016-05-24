@@ -17,16 +17,16 @@ import static org.lwjgl.opengl.GL20.*;
 
 public abstract class ShaderProgram
 {
-    protected ShaderFile[] shaders;
     public List<Renderable> buffer;
+    protected Window window;
+    protected String perspName;
     protected VertexArray array;
+    protected ShaderFile[] shaders;
     protected Matrix4f perspective;
 
     public int program, shaderID;
-    protected String perspName;
-    protected Window window;
-    private int current = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
     protected int bufferSize = 0;
+    private int current = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
 
     public ShaderProgram(ShaderFile... shaders)
     {
@@ -72,9 +72,14 @@ public abstract class ShaderProgram
 
         if(tex != null)
         {
-            if(tex.getSamplerID() != lastSampler) setUniformInt("sampler", lastSampler = tex.getSamplerID());
+            if(tex.getTexID() != Window.lastTextureID)
+            {
+                tex.bind();
+                setUniformInt("sampler", lastSampler = tex.getSamplerID());
+            }
+            else if(lastSampler == -1) setUniformInt("sampler", lastSampler = tex.getSamplerID());
 
-            if(tex.getTexID() != Window.lastTextureID) tex.bind();
+            if(tex.getSamplerID() != lastSampler) setUniformInt("sampler", lastSampler = tex.getSamplerID());
         }
 
         glDrawArrays(renderable.getDrawMode(), vertCount += renderable.getVertCount(), renderable.getVertCount());
@@ -111,6 +116,7 @@ public abstract class ShaderProgram
         if(location > -1) glUniform3fv(location, value);
         else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
     }
+
     public void setUniformVec4(String name, FloatBuffer value)
     {
         use();
@@ -155,6 +161,7 @@ public abstract class ShaderProgram
     {
         buffer.clear();
 
+        lastSampler = -1;
         lastMatrix = -1;
         current = 0;
         vertCount = -100;

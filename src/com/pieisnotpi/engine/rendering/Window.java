@@ -298,9 +298,10 @@ public class Window
                 }
                 else if(o1.transparent) return 1;
                 else if(o2.transparent) return -1;
-                //else return 0;
 
-                return Integer.compare(o1.getShaderID(), o2.getShaderID());
+                int s = Integer.compare(o1.getShaderID(), o2.getShaderID());
+                if(s != 0) return s;
+                else return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
             });
 
             float viewX = camera.localX*res.x, viewY = camera.localY*res.y, viewWidth = camera.localWidth*res.x, viewHeight = camera.localHeight*res.y, viewRatio;
@@ -309,14 +310,7 @@ public class Window
 
             scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).addVertex(renderable));
             shaders.forEach(ShaderProgram::compileVertices);
-
-            scene.renderables.forEach(renderable ->
-            {
-                ShaderProgram s = shaders.get(renderable.getShaderID());
-
-                s.drawNext(camera);
-            });
-
+            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).drawNext(camera));
             shaders.forEach(ShaderProgram::clear);
         }
 
