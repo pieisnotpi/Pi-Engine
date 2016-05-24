@@ -271,6 +271,8 @@ public class Window
     {
         if(scene == null) return;
 
+        long t = System.currentTimeMillis();
+
         ratio = (float) res.x/res.y;
 
         if(windowID != PiEngine.currentContext) glfwMakeContextCurrent(windowID);
@@ -308,8 +310,6 @@ public class Window
             scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).addVertex(renderable));
             shaders.forEach(ShaderProgram::compileVertices);
 
-            long t = System.currentTimeMillis();
-
             scene.renderables.forEach(renderable ->
             {
                 ShaderProgram s = shaders.get(renderable.getShaderID());
@@ -317,12 +317,12 @@ public class Window
                 s.drawNext(camera);
             });
 
-            time += System.currentTimeMillis() - t;
-
             shaders.forEach(ShaderProgram::clear);
         }
 
         glfwSwapBuffers(windowID);
+
+        time += System.currentTimeMillis() - t;
     }
 
     public void show()
