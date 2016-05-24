@@ -46,21 +46,8 @@ public class PhysicsTestScene extends PauseScene
 
         final float xOffset = -(size/2f)*FloorTile.scale - PhysicsObject.calcOffset(FloorTile.scale/2), yOffset = -(size/2f)*FloorTile.scale - PhysicsObject.calcOffset(FloorTile.scale/2);
 
-        /*for(int x = 0; x < size; x++)
-        {
-            for(int y = 0; y < size; y++)
-            {
-                if(x == 0 || x == size - 1 || y == 0 || y == size - 1)
-                {
-                    tiles.add(new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, 0.2f, this));
-                }
-            }
-        }*/
-
         reset();
 
-        /*players.add(new Player(-0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 0, this));
-        players.add(new Player(0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 1, this));*/
         winner = new Text("", 12, 0, 0.1f, 0.7f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.ORTHO_ID, this);
         winner.alignmentID = Text.CENTERED;
     }
