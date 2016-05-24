@@ -19,7 +19,7 @@ class MainInstance extends GameInstance
 
     public void init()
     {
-        window = new Window("Pi Engine", 600, 600, true, 0);
+        window = new Window("Pi Engine", 600, 600, false, 0);
         window.init();
 
         windows.add(window);

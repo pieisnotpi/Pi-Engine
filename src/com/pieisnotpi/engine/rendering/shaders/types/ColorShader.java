@@ -37,15 +37,15 @@ public class ColorShader extends ShaderProgram
         if(bufferSize == 0) return;
         int capacity = vertex.value.capacity()/(bufferSize*3);
 
-        if(this.vertex.value.capacity()/(bufferSize*3) == buffer.size())
+        if(capacity >= buffer.size())
         {
             vertBuffer = vertex.value;
             colorBuffer = colors.value;
 
             if(capacity > buffer.size())
             {
-                vertBuffer.limit(bufferSize*3*buffer.size());
-                colorBuffer.limit(bufferSize*4*buffer.size());
+                vertBuffer.limit(bufferSize*3);
+                colorBuffer.limit(bufferSize*4);
             }
 
             vertBuffer.position(0);
@@ -53,8 +53,8 @@ public class ColorShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
-            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4*buffer.size());
+            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
+            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
         }
 
         for(Renderable renderable : buffer)

@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.rendering.textures;
 
 import com.pieisnotpi.engine.output.Logger;
+import com.pieisnotpi.engine.rendering.Window;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -82,6 +83,8 @@ public class Texture
     {
         glActiveTexture(GL_TEXTURE0 + samplerID);
         glBindTexture(GL_TEXTURE_2D, texID);
+
+        Window.lastTextureID = texID;
     }
 
     public void compileTexture(Image image)

@@ -41,7 +41,7 @@ public class TextShader extends ShaderProgram
         if(bufferSize == 0) return;
         int capacity = vertex.value.capacity()/(bufferSize*3);
 
-        if(capacity == buffer.size())
+        if(capacity >= buffer.size())
         {
             vertBuffer = vertex.value;
             coordsBuffer = coords.value;
@@ -50,10 +50,10 @@ public class TextShader extends ShaderProgram
 
             if(capacity > buffer.size())
             {
-                vertBuffer.limit(bufferSize*3*buffer.size());
-                coordsBuffer.limit(bufferSize*2*buffer.size());
-                textColorBuffer.limit(bufferSize*4*buffer.size());
-                outlineColorBuffer.limit(bufferSize*4*buffer.size());
+                vertBuffer.limit(bufferSize*3);
+                coordsBuffer.limit(bufferSize*2);
+                textColorBuffer.limit(bufferSize*4);
+                outlineColorBuffer.limit(bufferSize*4);
             }
 
             vertBuffer.position(0);
@@ -63,10 +63,10 @@ public class TextShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
-            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2*buffer.size());
-            textColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4*buffer.size());
-            outlineColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4*buffer.size());
+            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
+            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
+            textColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
+            outlineColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
         }
 
         for(Renderable renderable : buffer)

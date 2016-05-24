@@ -46,18 +46,17 @@ public class TextureShader extends ShaderProgram
 
             if(capacity > buffer.size())
             {
-                vertBuffer.limit(bufferSize*3*buffer.size());
-                coordsBuffer.limit(bufferSize*2*buffer.size());
+                vertBuffer.limit(bufferSize*3);
+                coordsBuffer.limit(bufferSize*2);
             }
 
             vertBuffer.position(0);
             coordsBuffer.position(0);
         }
-
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
-            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2*buffer.size());
+            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
+            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
         }
 
         for(Renderable renderable : buffer)

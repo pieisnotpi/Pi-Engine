@@ -47,9 +47,9 @@ public class TexturedCShader extends ShaderProgram
 
             if(capacity > buffer.size())
             {
-                vertBuffer.limit(bufferSize*3*buffer.size());
-                colorBuffer.limit(bufferSize*4*buffer.size());
-                coordsBuffer.limit(bufferSize*2*buffer.size());
+                vertBuffer.limit(bufferSize*3);
+                colorBuffer.limit(bufferSize*4);
+                coordsBuffer.limit(bufferSize*2);
             }
 
             vertBuffer.position(0);
@@ -58,9 +58,9 @@ public class TexturedCShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3*buffer.size());
-            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4*buffer.size());
-            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2*buffer.size());
+            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
+            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
+            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
         }
 
         for(Renderable renderable : buffer)

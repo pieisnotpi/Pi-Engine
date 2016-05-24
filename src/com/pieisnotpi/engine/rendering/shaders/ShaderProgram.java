@@ -72,16 +72,9 @@ public abstract class ShaderProgram
 
         if(tex != null)
         {
-            if(tex.getSamplerID() != lastSampler)
-            {
-                setUniformInt("sampler", lastSampler = tex.getSamplerID());
-            }
+            if(tex.getSamplerID() != lastSampler) setUniformInt("sampler", lastSampler = tex.getSamplerID());
 
-            if(tex.getTexID() != Window.lastTextureID)
-            {
-                Window.lastTextureID = tex.getTexID();
-                renderable.texture.bind();
-            }
+            if(tex.getTexID() != Window.lastTextureID) tex.bind();
         }
 
         glDrawArrays(renderable.getDrawMode(), vertCount += renderable.getVertCount(), renderable.getVertCount());
