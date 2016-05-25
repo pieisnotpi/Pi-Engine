@@ -39,7 +39,7 @@ public class Truck extends PhysicsObject
 
         scene.gameObjects.add(this);
 
-        setCenter(x + width/2, y + height/2, z);
+        defaultCenter();
     }
 
     public void physicsUpdate()

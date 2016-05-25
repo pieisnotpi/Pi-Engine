@@ -82,7 +82,7 @@ public class Player extends PhysicsObject
 
         body.setSleepingAllowed(false);
 
-        setCenter(x + width/2, y + height/2, z);
+        defaultCenter();
     }
 
     public void updateBindings(Joystick joy)

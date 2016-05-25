@@ -39,7 +39,7 @@ public class FloorTile extends PhysicsObject
         fixture.setFriction(2);
         body.setSleepingAllowed(true);
 
-        setCenter(x + width/2, y + height/2, z);
+        defaultCenter();
     }
 
     public void destroy()

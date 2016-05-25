@@ -40,7 +40,7 @@ public class Crate extends PhysicsObject
         scene.gameObjects.add(this);
         body.setSleepingAllowed(true);
 
-        setCenter(x + width/2, y + height/2, z);
+        defaultCenter();
     }
 
     public void physicsUpdate()

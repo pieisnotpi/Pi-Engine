@@ -12,6 +12,11 @@ public abstract class GameObject
     protected boolean enabled = true;
     protected float x = 0, y = 0, z = 0, width = 0, height = 0, depth = 0, cx = 0, cy = 0, cz = 0, xRot = 0, yRot = 0, zRot = 0;
 
+    public void defaultCenter()
+    {
+        setCenter(x + width/2, y + height/2, z + depth/2);
+    }
+
     public void setCenter(float x, float y, float z)
     {
         if(xRot != 0 && (y != cy || z != cz))

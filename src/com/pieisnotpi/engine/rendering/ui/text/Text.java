@@ -174,7 +174,7 @@ public class Text extends UiObject
         align();
         register();
 
-        setCenter( x + width/2, y + height/2, z);
+        defaultCenter();
     }
 
     public void onWindowResize(Vector2i res)

@@ -39,7 +39,7 @@ public class Wheel extends PhysicsObject
 
         scene.gameObjects.add(this);
 
-        setCenter(x + radius, y + radius, z);
+        defaultCenter();
     }
 
     public void drawUpdate()
