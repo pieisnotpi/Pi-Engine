@@ -21,9 +21,11 @@ public class Wheel extends PhysicsObject
         this.x = x;
         this.y = y;
         this.z = z;
-
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
+
+        width = radius*2;
+        height = radius*2;
 
         CircleShape t = new CircleShape();
         t.setRadius(toPhysicsCoord(radius));
@@ -36,6 +38,8 @@ public class Wheel extends PhysicsObject
         quad = new TexQuad(x, y, z, radius*2, radius*2, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
+
+        setCenter(x + radius, y + radius, z);
     }
 
     public void drawUpdate()

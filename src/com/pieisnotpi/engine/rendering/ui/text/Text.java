@@ -63,36 +63,7 @@ public class Text extends UiObject
     public void update()
     {
         if(effectsEnabled) effects.forEach(textEffect -> textEffect.process(this));
-    }
-
-    public float getX()
-    {
-        return x;
-    }
-
-    public float getY()
-    {
-        return y;
-    }
-
-    public float getZ()
-    {
-        return z;
-    }
-
-    public float getWidth()
-    {
-        return width;
-    }
-
-    public float getHeight()
-    {
-        return height;
-    }
-
-    public float getScale()
-    {
-        return scale;
+        super.update();
     }
 
     public Font getFont()
@@ -115,7 +86,7 @@ public class Text extends UiObject
 
         for(TextQuad c : chars) c.setX(dif + c.getX());
 
-        x = value;
+        super.setX(value);
     }
 
     public void setY(float value)
@@ -128,7 +99,7 @@ public class Text extends UiObject
 
         for(TextQuad c : chars) c.setY(dif + c.getY());
 
-        y = value;
+        super.setY(value);
     }
 
     public void setZ(float value)
@@ -137,23 +108,25 @@ public class Text extends UiObject
 
         float t = 0;
         for(TextQuad c : chars) c.setZ(value + (t+=0.001f));
+
+        super.setZ(value);
     }
 
-    public void addToXRot(float amount, float cy, float cz)
+    public void addToXRot(float amount)
     {
         for(TextQuad c : chars) c.rotateX(amount, cy, cz);
 
         zRot += amount;
     }
 
-    public void addToYRot(float amount, float cx, float cz)
+    public void addToYRot(float amount)
     {
         for(TextQuad c : chars) c.rotateY(amount, cx, cz);
 
         zRot += amount;
     }
 
-    public void addToZRot(float amount, float cx, float cy)
+    public void addToZRot(float amount)
     {
         for(TextQuad c : chars) c.rotateZ(amount, cx, cy);
 
@@ -200,6 +173,8 @@ public class Text extends UiObject
 
         align();
         register();
+
+        setCenter( x + width/2, y + height/2, z);
     }
 
     public void onWindowResize(Vector2i res)

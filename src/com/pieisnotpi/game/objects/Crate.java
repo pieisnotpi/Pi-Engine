@@ -21,6 +21,8 @@ public class Crate extends PhysicsObject
         this.x = x;
         this.y = y;
         this.z = z;
+        width = scale;
+        height = scale;
 
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
@@ -36,8 +38,9 @@ public class Crate extends PhysicsObject
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
-
         body.setSleepingAllowed(true);
+
+        setCenter(x + width/2, y + height/2, z);
     }
 
     public void physicsUpdate()

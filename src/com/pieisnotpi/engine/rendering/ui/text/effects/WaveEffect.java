@@ -32,7 +32,7 @@ public class WaveEffect implements TextEffect
         {
             TextQuad c = chars.get(i);
 
-            float offset = text.getFont().pixelScale*text.getScale()*c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*i)*speed)));
+            float offset = text.getFont().pixelScale*text.scale*c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*i)*speed)));
 
             c.setY(offset + text.getY() + sine);
         }

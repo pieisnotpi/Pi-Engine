@@ -24,7 +24,7 @@ public class HoverEffect implements TextEffect
 
         for(TextQuad c : chars)
         {
-            float offset = text.getFont().pixelScale*text.getScale()*c.cSprite.offsetY;
+            float offset = text.getFont().pixelScale*text.scale*c.cSprite.offsetY;
             c.setY(offset + text.getY() + ((float) sine));
         }
 

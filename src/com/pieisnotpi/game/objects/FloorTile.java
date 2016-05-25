@@ -21,6 +21,8 @@ public class FloorTile extends PhysicsObject
         this.x = x;
         this.y = y;
         this.z = z;
+        width = scale;
+        height = scale;
 
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
@@ -36,6 +38,8 @@ public class FloorTile extends PhysicsObject
 
         fixture.setFriction(2);
         body.setSleepingAllowed(true);
+
+        setCenter(x + width/2, y + height/2, z);
     }
 
     public void destroy()

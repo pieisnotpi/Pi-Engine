@@ -37,10 +37,12 @@ public class Button extends UiObject
         if(text == null) text = new Text(textValue, scale, x + scale*SPACING_CONST, y + scale*SPACING_CONST, z + 0.001f, new Color(0, 0, 0), new Color(1, 1, 1, 0), matrixID, scene);
         else text.setText(textValue);
 
-        width = text.width + scale*SPACING_CONST*2;
-        height = text.height + scale*SPACING_CONST*2;
+        width = text.getWidth() + scale*SPACING_CONST*2;
+        height = text.getHeight() + scale*SPACING_CONST*2;
 
         base = new ColorQuad(x, y, z, width, height, 0, b0, b0, t0, t0, matrixID, scene);
+
+        setCenter(text.getCx(), text.getCy(), z);
 
         addToZRot(45);
     }
@@ -49,7 +51,7 @@ public class Button extends UiObject
     {
         if(value == x) return;
 
-        x = value;
+        super.setX(value);
 
         base.setX(value);
         text.setX(scale* SPACING_CONST + value);
@@ -59,14 +61,16 @@ public class Button extends UiObject
     {
         if(value == y) return;
 
-        y = value;
+        super.setY(value);
 
         base.setY(value);
-        text.setY(scale* SPACING_CONST + value);
+        text.setY(scale*SPACING_CONST + value);
     }
 
     public void setZ(float value)
     {
+        super.setZ(value);
+
         base.setZ(value);
         text.setZ(value);
     }
@@ -154,35 +158,20 @@ public class Button extends UiObject
 
     public void addToXRot(float rot)
     {
-        addToXRot(rot, base.getCenterY(), base.getCenterZ());
-    }
-
-    public void addToXRot(float rot, float cy, float cz)
-    {
         base.addToXRot(rot, cy, cz);
-        text.addToXRot(rot, cy, cz);
+        text.addToXRot(rot);
     }
 
     public void addToYRot(float rot)
     {
-        addToYRot(rot, base.getCenterX(), base.getCenterZ());
-    }
-
-    public void addToYRot(float rot, float cx, float cz)
-    {
         base.addToYRot(rot, cx, cz);
-        text.addToYRot(rot, cx, cz);
+        text.addToYRot(rot);
     }
 
     public void addToZRot(float rot)
     {
-        addToZRot(rot, base.getCenterX(), base.getCenterY());
-    }
-
-    public void addToZRot(float rot, float cx, float cy)
-    {
         base.addToZRot(rot, cx, cy);
-        text.addToZRot(rot, cx, cy);
+        text.addToZRot(rot);
     }
 
     public void destroy()

@@ -21,9 +21,11 @@ public class Truck extends PhysicsObject
         this.x = x;
         this.y = y;
         this.z = z;
-
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
+
+        super.width = width;
+        super.height = height;
 
         PolygonShape t = new PolygonShape();
         t.setAsBox(toPhysicsCoord(width)/2, toPhysicsCoord(height)/2);
@@ -36,6 +38,8 @@ public class Truck extends PhysicsObject
         quad = new TexQuad(x, y, z, width, height, 0, sprite, matrixID, scene);
 
         scene.gameObjects.add(this);
+
+        setCenter(x + width/2, y + height/2, z);
     }
 
     public void physicsUpdate()

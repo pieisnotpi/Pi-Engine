@@ -19,7 +19,6 @@ import org.jbox2d.dynamics.BodyType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A player test class, only used in the physics test scene. Summoned with left shift.
@@ -51,9 +50,12 @@ public class Player extends PhysicsObject
         this.y = y;
         this.z = z;
         this.joystick = joystick;
-
         this.matrixID = PiEngine.CAMERA_2D_ID;
         this.scene = scene;
+
+        width = scale;
+        height = scale;
+
         s = (PhysicsTestScene) scene;
 
         PolygonShape t = new PolygonShape();
@@ -68,8 +70,6 @@ public class Player extends PhysicsObject
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
         quad.transparent = false;
 
-        Random r = new Random();
-
         Color numColor = new Color(0, 0, 0);
 
         if(joystick == 0) numColor.set(1, 0, 0);
@@ -81,6 +81,8 @@ public class Player extends PhysicsObject
         scene.gameObjects.add(this);
 
         body.setSleepingAllowed(false);
+
+        setCenter(x + width/2, y + height/2, z);
     }
 
     public void updateBindings(Joystick joy)
@@ -130,10 +132,10 @@ public class Player extends PhysicsObject
 
         if(angle < -0.1f || angle > 0.1f)
         {
-            quad.setZRot(0, quad.getCenterX(), quad.getCenterY());
+            quad.setZRot(0, cx, cy);
             quad.setX(x);
             quad.setY(y);
-            quad.setZRot(angle, quad.getCenterX(), quad.getCenterY());
+            quad.setZRot(angle, cx, cy);
         }
         else
         {

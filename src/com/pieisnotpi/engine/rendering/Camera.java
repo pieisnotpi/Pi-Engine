@@ -42,6 +42,8 @@ public class Camera extends GameObject
         matrices[2] = new Matrix4f().ortho2D(-1, 1, -1, 1);
 
         scene.gameObjects.add(this);
+
+        setCenter(x, y, z);
     }
 
     public void onWindowResize(Vector2i res)
@@ -154,25 +156,25 @@ public class Camera extends GameObject
         return r;
     }
 
-    public void addToXRot(float amount, float cy, float cz)
+    public void addToXRot(float amount)
     {
         if(amount == 0) return;
         rotationUpdated = true;
-        super.addToXRot(amount, cy, cz);
+        super.addToXRot(amount);
     }
 
-    public void addToYRot(float amount, float cx, float cz)
+    public void addToYRot(float amount)
     {
         if(amount == 0) return;
         rotationUpdated = true;
-        super.addToYRot(amount, cx, cz);
+        super.addToYRot(amount);
     }
 
-    public void addToZRot(float amount, float cx, float cy)
+    public void addToZRot(float amount)
     {
         if(amount == 0) return;
         rotationUpdated = true;
         MathUtility.rotateAxisZ(amount, cx, cy, up);
-        super.addToZRot(amount, cx, cy);
+        super.addToZRot(amount);
     }
 }
