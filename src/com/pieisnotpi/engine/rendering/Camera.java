@@ -174,7 +174,7 @@ public class Camera extends GameObject
     {
         if(amount == 0) return;
         rotationUpdated = true;
-        MathUtility.rotateAxisZ(amount, cx, cy, up);
+        MathUtility.rotateAxisZ(amount, getCx(), getCy(), up);
         super.addToZRot(amount);
     }
 }

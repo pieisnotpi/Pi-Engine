@@ -10,11 +10,12 @@ public abstract class GameObject
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
-    protected float x = 0, y = 0, z = 0, width = 0, height = 0, depth = 0, cx = 0, cy = 0, cz = 0, xRot = 0, yRot = 0, zRot = 0;
+    protected float x = 0, y = 0, z = 0, width = 0, height = 0, depth = 0, xRot = 0, yRot = 0, zRot = 0;
+    private float cx = 0, cy = 0, cz = 0;
 
     public void defaultCenter()
     {
-        setCenter(x + width/2, y + height/2, z + depth/2);
+        setCenter(width/2, height/2, depth/2);
     }
 
     public void setCenter(float x, float y, float z)
@@ -57,12 +58,12 @@ public abstract class GameObject
     public void enable() { enabled = true; }
     public void disable() { enabled = false; }
 
-    public void setX(float x) { this.x = x; setCenter(x + width/2, cy, cz); }
-    public void setY(float y) { this.y = y; setCenter(x, y + height/2, cz); }
-    public void setZ(float z) { this.z = z; setCenter(x, cy, z + depth/2); }
-    public void setWidth(float width) { this.width = width; setCenter(x + width/2, cy, cz); }
-    public void setHeight(float height) { this.height = height; setCenter(x, y + height/2, cz); }
-    public void setDepth(float depth) { this.depth = depth; setCenter(x, cy, z + depth/2); }
+    public void setX(float x) { this.x = x; }
+    public void setY(float y) { this.y = y; }
+    public void setZ(float z) { this.z = z; }
+    public void setWidth(float width) { if(cx == this.width/2) setCenter(width/2, cy, cz); this.width = width; }
+    public void setHeight(float height) { if(cy == this.height/2) setCenter(cx, height/2, cz); this.height = height; }
+    public void setDepth(float depth) { if(cz == this.depth/2) setCenter(cx, cy, depth/2); this.depth = depth; }
     public void addToXRot(float rot) { xRot += rot; }
     public void addToYRot(float rot) { yRot += rot; }
     public void addToZRot(float rot) { zRot += rot; }
@@ -98,9 +99,9 @@ public abstract class GameObject
     public float getWidth() { return width; }
     public float getHeight() { return height; }
     public float getDepth() { return depth; }
-    public float getCx() { return cx; }
-    public float getCy() { return cy; }
-    public float getCz() { return cz; }
+    public float getCx() { return x + cx; }
+    public float getCy() { return y + cy; }
+    public float getCz() { return z + cz; }
     public float getXRot() { return xRot; }
     public float getYRot() { return yRot; }
     public float getZRot() { return zRot; }

@@ -158,19 +158,19 @@ public class Button extends UiObject
 
     public void addToXRot(float rot)
     {
-        base.addToXRot(rot, cy, cz);
+        base.addToXRot(rot, getCy(), getCz());
         text.addToXRot(rot);
     }
 
     public void addToYRot(float rot)
     {
-        base.addToYRot(rot, cx, cz);
+        base.addToYRot(rot, getCx(), getCz());
         text.addToYRot(rot);
     }
 
     public void addToZRot(float rot)
     {
-        base.addToZRot(rot, cx, cy);
+        base.addToZRot(rot, getCx(), getCy());
         text.addToZRot(rot);
     }
 

@@ -132,10 +132,10 @@ public class Player extends PhysicsObject
 
         if(angle < -0.1f || angle > 0.1f)
         {
-            quad.setZRot(0, cx, cy);
+            quad.setZRot(0, getCx(), getCy());
             quad.setX(x);
             quad.setY(y);
-            quad.setZRot(angle, cx, cy);
+            quad.setZRot(angle, getCx(), getCy());
         }
         else
         {

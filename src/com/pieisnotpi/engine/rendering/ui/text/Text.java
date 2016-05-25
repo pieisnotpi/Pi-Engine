@@ -114,21 +114,21 @@ public class Text extends UiObject
 
     public void addToXRot(float amount)
     {
-        for(TextQuad c : chars) c.rotateX(amount, cy, cz);
+        for(TextQuad c : chars) c.rotateX(amount, getCy(), getCz());
 
         zRot += amount;
     }
 
     public void addToYRot(float amount)
     {
-        for(TextQuad c : chars) c.rotateY(amount, cx, cz);
+        for(TextQuad c : chars) c.rotateY(amount, getCx(), getCz());
 
         zRot += amount;
     }
 
     public void addToZRot(float amount)
     {
-        for(TextQuad c : chars) c.rotateZ(amount, cx, cy);
+        for(TextQuad c : chars) c.rotateZ(amount, getCx(), getCy());
 
         zRot += amount;
     }
