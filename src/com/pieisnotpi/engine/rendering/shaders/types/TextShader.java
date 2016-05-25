@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TextShader extends ShaderProgram
 {
-    //private static Shader vertShader = new Shader("/assets/shaders/text.vert", GL_VERTEX_SHADER), fragShader = new Shader("/assets/shaders/text.frag", GL_FRAGMENT_SHADER);
     private Attribute vertex, coords, textColor, outlineColor;
 
     public TextShader()
@@ -38,22 +37,14 @@ public class TextShader extends ShaderProgram
         FloatBuffer vertBuffer, coordsBuffer, textColorBuffer, outlineColorBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/3;
+        int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity >= bufferSize)
+        if(capacity == bufferSize)
         {
-            vertBuffer = vertex.value;
-            coordsBuffer = coords.value;
-            textColorBuffer = textColor.value;
-            outlineColorBuffer = outlineColor.value;
-
-            if(capacity > bufferSize)
-            {
-                vertBuffer.limit(bufferSize*3);
-                coordsBuffer.limit(bufferSize*2);
-                textColorBuffer.limit(bufferSize*4);
-                outlineColorBuffer.limit(bufferSize*4);
-            }
+            vertBuffer = vertex.buffer;
+            coordsBuffer = coords.buffer;
+            textColorBuffer = textColor.buffer;
+            outlineColorBuffer = outlineColor.buffer;
 
             vertBuffer.position(0);
             coordsBuffer.position(0);

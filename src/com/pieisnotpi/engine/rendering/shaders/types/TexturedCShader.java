@@ -15,7 +15,6 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TexturedCShader extends ShaderProgram
 {
-    //private static Shader vertShader = new Shader("/assets/shaders/textured_c.vert", GL_VERTEX_SHADER), fragShader = new Shader("/assets/shaders/textured_c.frag", GL_FRAGMENT_SHADER);
     private Attribute vertex, color, coords;
 
     public TexturedCShader()
@@ -36,20 +35,13 @@ public class TexturedCShader extends ShaderProgram
         FloatBuffer vertBuffer, colorBuffer, coordsBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/3;
+        int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity >= bufferSize)
+        if(capacity == bufferSize)
         {
-            vertBuffer = vertex.value;
-            colorBuffer = color.value;
-            coordsBuffer = coords.value;
-
-            if(capacity > bufferSize)
-            {
-                vertBuffer.limit(bufferSize*3);
-                colorBuffer.limit(bufferSize*4);
-                coordsBuffer.limit(bufferSize*2);
-            }
+            vertBuffer = vertex.buffer;
+            colorBuffer = color.buffer;
+            coordsBuffer = coords.buffer;
 
             vertBuffer.position(0);
             colorBuffer.position(0);

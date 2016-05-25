@@ -34,18 +34,12 @@ public class ColorShader extends ShaderProgram
         FloatBuffer vertBuffer, colorBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/3;
+        int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity >= bufferSize)
+        if(capacity == bufferSize)
         {
-            vertBuffer = vertex.value;
-            colorBuffer = colors.value;
-
-            if(capacity > bufferSize)
-            {
-                vertBuffer.limit(bufferSize*3);
-                colorBuffer.limit(bufferSize*4);
-            }
+            vertBuffer = vertex.buffer;
+            colorBuffer = colors.buffer;
 
             vertBuffer.position(0);
             colorBuffer.position(0);

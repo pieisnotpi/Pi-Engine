@@ -15,18 +15,16 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TextureShader extends ShaderProgram
 {
-    //private static ShaderFile vertShader = new ShaderFile("/assets/shaders/textured.vert", GL_VERTEX_SHADER), fragShader = new ShaderFile("/assets/shaders/textured.frag", GL_FRAGMENT_SHADER);
     private Attribute vertex, coords;
 
     public TextureShader()
     {
         super(new ShaderFile("/assets/shaders/textured.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/textured.frag", GL_FRAGMENT_SHADER));
-        //super(vertShader, fragShader);
 
         shaderID = PiEngine.TEXTURE_ID;
 
-        vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
-        coords = new Attribute("VertexTexCoords", BufferUtility.vec2ToFloatBuffer(), 1, 2);
+        vertex = new Attribute("VertexPosition", 0, 3);
+        coords = new Attribute("VertexTexCoords", 1, 2);
         array = new VertexArray(vertex, coords);
         perspName = "camera";
     }
@@ -36,18 +34,12 @@ public class TextureShader extends ShaderProgram
         FloatBuffer vertBuffer, coordsBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/3;
+        int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity >= bufferSize)
+        if(capacity == bufferSize)
         {
-            vertBuffer = vertex.value;
-            coordsBuffer = coords.value;
-
-            if(capacity > bufferSize)
-            {
-                vertBuffer.limit(bufferSize*3);
-                coordsBuffer.limit(bufferSize*2);
-            }
+            vertBuffer = vertex.buffer;
+            coordsBuffer = coords.buffer;
 
             vertBuffer.position(0);
             coordsBuffer.position(0);

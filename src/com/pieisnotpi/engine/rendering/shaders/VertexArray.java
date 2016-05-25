@@ -55,7 +55,7 @@ public class VertexArray
         {
             if(attribute.name.equals(name))
             {
-                attribute.value = value;
+                attribute.buffer = value;
                 attribute.bindData();
 
                 break;
