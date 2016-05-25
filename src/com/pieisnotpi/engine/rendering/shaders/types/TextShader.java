@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.renderable_types.TextRenderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
@@ -39,16 +38,16 @@ public class TextShader extends ShaderProgram
         FloatBuffer vertBuffer, coordsBuffer, textColorBuffer, outlineColorBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/(bufferSize*3);
+        int capacity = vertex.value.capacity()/3;
 
-        if(capacity >= buffer.size())
+        if(capacity >= bufferSize)
         {
             vertBuffer = vertex.value;
             coordsBuffer = coords.value;
             textColorBuffer = textColor.value;
             outlineColorBuffer = outlineColor.value;
 
-            if(capacity > buffer.size())
+            if(capacity > bufferSize)
             {
                 vertBuffer.limit(bufferSize*3);
                 coordsBuffer.limit(bufferSize*2);
@@ -69,7 +68,7 @@ public class TextShader extends ShaderProgram
             outlineColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
         }
 
-        for(Renderable renderable : buffer)
+        buffer.forEach(renderable ->
         {
             TextRenderable temp = (TextRenderable) renderable;
 
@@ -77,7 +76,7 @@ public class TextShader extends ShaderProgram
             BufferUtility.putVec2s(coordsBuffer, temp.texCoords);
             BufferUtility.putColors(textColorBuffer, temp.textColors);
             BufferUtility.putColors(outlineColorBuffer, temp.outlineColors);
-        }
+        });
 
         vertBuffer.flip();
         coordsBuffer.flip();

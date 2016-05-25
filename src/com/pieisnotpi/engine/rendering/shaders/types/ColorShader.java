@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -35,14 +34,14 @@ public class ColorShader extends ShaderProgram
         FloatBuffer vertBuffer, colorBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/(bufferSize*3);
+        int capacity = vertex.value.capacity()/3;
 
-        if(capacity >= buffer.size())
+        if(capacity >= bufferSize)
         {
             vertBuffer = vertex.value;
             colorBuffer = colors.value;
 
-            if(capacity > buffer.size())
+            if(capacity > bufferSize)
             {
                 vertBuffer.limit(bufferSize*3);
                 colorBuffer.limit(bufferSize*4);
@@ -57,11 +56,11 @@ public class ColorShader extends ShaderProgram
             colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
         }
 
-        for(Renderable renderable : buffer)
+        buffer.forEach(renderable ->
         {
             BufferUtility.putVec3s(vertBuffer, renderable.points);
             BufferUtility.putColors(colorBuffer, renderable.colors);
-        }
+        });
 
         vertBuffer.flip();
         colorBuffer.flip();

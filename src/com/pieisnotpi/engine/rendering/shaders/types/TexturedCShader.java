@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -37,15 +36,15 @@ public class TexturedCShader extends ShaderProgram
         FloatBuffer vertBuffer, colorBuffer, coordsBuffer;
 
         if(bufferSize == 0) return;
-        int capacity = vertex.value.capacity()/(bufferSize*3);
+        int capacity = vertex.value.capacity()/3;
 
-        if(capacity >= buffer.size())
+        if(capacity >= bufferSize)
         {
             vertBuffer = vertex.value;
             colorBuffer = color.value;
             coordsBuffer = coords.value;
 
-            if(capacity > buffer.size())
+            if(capacity > bufferSize)
             {
                 vertBuffer.limit(bufferSize*3);
                 colorBuffer.limit(bufferSize*4);
@@ -63,12 +62,12 @@ public class TexturedCShader extends ShaderProgram
             coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
         }
 
-        for(Renderable renderable : buffer)
+        buffer.forEach(renderable ->
         {
             BufferUtility.putVec3s(vertBuffer, renderable.points);
             BufferUtility.putColors(colorBuffer, renderable.colors);
             BufferUtility.putVec2s(coordsBuffer, renderable.texCoords);
-        }
+        });
 
         vertBuffer.flip();
         colorBuffer.flip();
