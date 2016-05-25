@@ -34,9 +34,9 @@ public class Window
     public boolean focused = true;
     public static int lastShaderID = -1, lastTextureID = -1;
 
-    private int vsync, refreshRate;
+    private int vsync, refreshRate = -1;
     private long share, time = 0;
-    private boolean alive = true, fullscreen, staticRefreshRate, initialized = false;
+    private boolean alive = true, fullscreen, initialized = false;
 
     private GameUpdate drawUpdate, inputUpdate;
 
@@ -83,9 +83,7 @@ public class Window
     {
         this.fullscreen = fullscreen;
         this.vsync = vsync;
-        this.staticRefreshRate = false;
         this.name = name;
-
         this.share = share;
 
         res.set(width, height);
@@ -124,7 +122,6 @@ public class Window
         this.fullscreen = fullscreen;
         this.vsync = vsync;
         this.refreshRate = refreshRate;
-        this.staticRefreshRate = true;
         this.name = name;
         this.share = share;
 
@@ -156,7 +153,7 @@ public class Window
 
         curMonitor = monitors.get(PiEngine.monitor);
 
-        if(!staticRefreshRate) refreshRate = curMonitor.getRefreshRate();
+        if(refreshRate == -1) refreshRate = curMonitor.getRefreshRate();
 
         glfwSetMonitorCallback(monitorCallback = GLFWMonitorCallback.create((monitorID, event) ->
         {
@@ -231,7 +228,6 @@ public class Window
         drawUpdate = new GameUpdate(1, () ->
         {
             draw();
-            glfwPollEvents();
         }, () ->
         {
             String time = "" + (float) this.time/drawUpdate.updates;
@@ -240,6 +236,7 @@ public class Window
 
             this.time = 0;
         });
+
         inputUpdate = new GameUpdate(1, () -> inputManager.pollInputs());
 
         inputManager.keybinds.add(new Keybind(GLFW_KEY_F11, false, (value) -> setFullscreen(!fullscreen), null));
@@ -364,7 +361,6 @@ public class Window
 
     public void setRefreshRate(int refreshRate)
     {
-        staticRefreshRate = true;
         this.refreshRate = refreshRate;
 
         drawUpdate.setFrequency(refreshRate);
@@ -375,7 +371,7 @@ public class Window
     {
         this.vsync = vsync;
 
-        if(!staticRefreshRate && vsync > 0) refreshRate = curMonitor.getRefreshRate()/vsync;
+        if(vsync > 0) refreshRate = curMonitor.getRefreshRate()/vsync;
 
         glfwSwapInterval(vsync);
     }

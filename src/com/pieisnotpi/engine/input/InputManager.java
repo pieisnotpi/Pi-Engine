@@ -42,9 +42,6 @@ public class InputManager
     {
         this.window = window;
 
-        ROT_AMOUNT = 120f/window.getRefreshRate();
-        MOVE_AMOUNT = 2.4f/window.getRefreshRate();
-
         for(int i = 0; i < 16; i++) if(glfwJoystickPresent(i))
         {
             joysticks[i] = new Joystick(i);
@@ -107,6 +104,11 @@ public class InputManager
     public void pollInputs()
     {
         if(!window.focused) return;
+
+        glfwPollEvents();
+
+        ROT_AMOUNT = 80f/window.getRefreshRate();
+        MOVE_AMOUNT = 3f/window.getRefreshRate();
 
         for(int i = 0; i < keybinds.size(); i++)
         {
