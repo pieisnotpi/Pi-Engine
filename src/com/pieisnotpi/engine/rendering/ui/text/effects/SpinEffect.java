@@ -17,10 +17,8 @@ public class SpinEffect implements TextEffect
 
     public void process(Text text)
     {
-        float cx = text.getWidth()/2 + text.getX(), cy = (text.getHeight()/2) + text.getY(), cz = text.getZ();
-
-        if(axis == 0) for(TextQuad c : text.getChars()) c.rotateX(speed += acceleration, cy, cz);
-        else if(axis == 1) for(TextQuad c : text.getChars()) c.rotateY(speed += acceleration, cx, cz);
-        else if(axis == 2) for(TextQuad c : text.getChars()) c.rotateZ(speed += acceleration, cx, cy);
+        if(axis == 0) for(TextQuad c : text.getChars()) c.rotateX(speed += acceleration, text.getCy(), text.getCz());
+        else if(axis == 1) for(TextQuad c : text.getChars()) c.rotateY(speed += acceleration, text.getCx(), text.getCz());
+        else if(axis == 2) for(TextQuad c : text.getChars()) c.rotateZ(speed += acceleration, text.getCx(), text.getCy());
     }
 }

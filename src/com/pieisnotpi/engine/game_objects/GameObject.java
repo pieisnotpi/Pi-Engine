@@ -108,6 +108,72 @@ public abstract class GameObject
     public int getMatrixID() { return matrixID; }
     public Scene getScene() { return scene; }
 
+    public void setCx(float cx)
+    {
+        if(this.cx == cx) return;
+
+        if(yRot != 0)
+        {
+            float t = yRot;
+            setYRot(0);
+            this.cx = cx;
+            setYRot(t);
+        }
+        if(zRot != 0)
+        {
+            float t = zRot;
+            setZRot(0);
+            this.cx = cx;
+            setZRot(t);
+        }
+
+        this.cx = cx;
+    }
+
+    public void setCy(float cy)
+    {
+        if(this.cy == cy) return;
+
+        if(xRot != 0)
+        {
+            float t = xRot;
+            setXRot(0);
+            this.cy = cy;
+            setXRot(t);
+        }
+        if(zRot != 0)
+        {
+            float t = zRot;
+            setZRot(0);
+            this.cy = cy;
+            setZRot(t);
+        }
+
+        this.cy = cy;
+    }
+
+    public void setCz(float cz)
+    {
+        if(this.cz == cz) return;
+
+        if(xRot != 0)
+        {
+            float t = xRot;
+            setXRot(0);
+            this.cz = cz;
+            setXRot(t);
+        }
+        if(yRot != 0)
+        {
+            float t = yRot;
+            setYRot(0);
+            this.cz = cz;
+            setYRot(t);
+        }
+
+        this.cz = cz;
+    }
+
     public void finalize() throws Throwable
     {
         super.finalize();
