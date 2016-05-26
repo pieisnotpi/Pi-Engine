@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.ui.text.effects;
 
-import com.pieisnotpi.engine.rendering.shapes.types.text.TextQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 
 public class SpinEffect implements TextEffect
@@ -17,8 +16,8 @@ public class SpinEffect implements TextEffect
 
     public void process(Text text)
     {
-        if(axis == 0) for(TextQuad c : text.getChars()) c.rotateX(speed += acceleration, text.getCy(), text.getCz());
-        else if(axis == 1) for(TextQuad c : text.getChars()) c.rotateY(speed += acceleration, text.getCx(), text.getCz());
-        else if(axis == 2) for(TextQuad c : text.getChars()) c.rotateZ(speed += acceleration, text.getCx(), text.getCy());
+        if(axis == 0) text.addToXRot(speed += acceleration);
+        else if(axis == 1) text.addToYRot(speed += acceleration);
+        else if(axis == 2) text.addToZRot(speed += acceleration);
     }
 }

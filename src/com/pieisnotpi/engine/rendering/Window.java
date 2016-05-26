@@ -281,15 +281,15 @@ public class Window
 
         for(Camera camera : scene.cameras)
         {
-            double rot = Math.toRadians(camera.getXRot());
+            double cos = Math.cos(Math.toRadians(camera.getXRot()));
 
             scene.renderables.sort((o1, o2) ->
             {
                 if(o1.transparent && o2.transparent)
                 {
                     float z1 = o1.points[0].z, z2 = o2.points[0].z;
-                    if(o1.getMatrixID() == PiEngine.CAMERA_3D_ID) z1 *= Math.cos(rot);
-                    if(o2.getMatrixID() == PiEngine.CAMERA_3D_ID) z2 *= Math.cos(rot);
+                    if(o1.getMatrixID() == PiEngine.CAMERA_3D_ID) z1 *= cos;
+                    if(o2.getMatrixID() == PiEngine.CAMERA_3D_ID) z2 *= cos;
 
                     return Float.compare(z1, z2);
                 }

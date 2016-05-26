@@ -116,21 +116,21 @@ public class Text extends UiObject
     {
         for(TextQuad c : chars) c.rotateX(amount, getCy(), getCz());
 
-        zRot += amount;
+        super.addToXRot(amount);
     }
 
     public void addToYRot(float amount)
     {
         for(TextQuad c : chars) c.rotateY(amount, getCx(), getCz());
 
-        zRot += amount;
+        super.addToYRot(amount);
     }
 
     public void addToZRot(float amount)
     {
         for(TextQuad c : chars) c.rotateZ(amount, getCx(), getCy());
 
-        zRot += amount;
+        super.addToZRot(amount);
     }
 
     public void setText(String value)
@@ -138,6 +138,10 @@ public class Text extends UiObject
         if(value.equals(text) || !enabled) return;
 
         unregister();
+
+        xRot = 0;
+        yRot = 0;
+        zRot = 0;
 
         text = value;
         chars.clear();
@@ -171,10 +175,16 @@ public class Text extends UiObject
         newlineSpace = height + 2*actual;
         width = offsetX - x;
 
-        align();
-        register();
+        float xr = xRot, yr = yRot, zr = zRot;
 
         defaultCenter();
+
+        if(xr != 0) addToYRot(xr);
+        if(yr != 0) addToYRot(yr);
+        if(zr != 0) addToZRot(zr);
+
+        align();
+        register();
     }
 
     public void onWindowResize(Vector2i res)

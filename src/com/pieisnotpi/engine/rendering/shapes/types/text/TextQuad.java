@@ -113,10 +113,7 @@ public class TextQuad extends TextRenderable
     {
         xRot += amount;
 
-        rotateAxisX(amount, pointY, pointZ, points[0]);
-        rotateAxisX(amount, pointY, pointZ, points[1]);
-        rotateAxisX(amount, pointY, pointZ, points[2]);
-        rotateAxisX(amount, pointY, pointZ, points[3]);
+        rotateAxisX(amount, pointY, pointZ, points);
     }
 
     public void rotateY(float amount)
@@ -128,10 +125,7 @@ public class TextQuad extends TextRenderable
     {
         yRot += amount;
 
-        rotateAxisY(amount, pointX, pointZ, points[0]);
-        rotateAxisY(amount, pointX, pointZ, points[1]);
-        rotateAxisY(amount, pointX, pointZ, points[2]);
-        rotateAxisY(amount, pointX, pointZ, points[3]);
+        rotateAxisY(amount, pointX, pointZ, points);
     }
 
     public void rotateZ(float amount)
@@ -143,9 +137,6 @@ public class TextQuad extends TextRenderable
     {
         zRot += amount;
 
-        rotateAxisZ(amount, pointX, pointY, points[0]);
-        rotateAxisZ(amount, pointX, pointY, points[1]);
-        rotateAxisZ(amount, pointX, pointY, points[2]);
-        rotateAxisZ(amount, pointX, pointY, points[3]);
+        rotateAxisZ(amount, pointX, pointY, points);
     }
 }
