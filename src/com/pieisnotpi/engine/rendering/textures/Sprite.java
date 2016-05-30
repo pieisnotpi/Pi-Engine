@@ -9,6 +9,9 @@ public class Sprite
     public float uvx0, uvy0, uvx1, uvy1;
 
     public Texture texture;
+    public boolean isAnimated = false;
+
+    protected Sprite() {}
 
     public Sprite(Texture texture, int x0, int y0, int x1, int y1)
     {
@@ -84,11 +87,31 @@ public class Sprite
         this.texture = texture;
     }
 
+    /**
+     * A method used for animated sprites
+     * @return Should return true if the animation successfully updated
+     */
+
+    public boolean updateAnimation() { return false; }
+
+    public void set(Sprite sprite)
+    {
+        x0 = sprite.x0;
+        x1 = sprite.x1;
+        y0 = sprite.y0;
+        y1 = sprite.y1;
+        uvx0 = sprite.uvx0;
+        uvx1 = sprite.uvx1;
+        uvy0 = sprite.uvy0;
+        uvy1 = sprite.uvy1;
+        texture = sprite.texture;
+    }
+
     public boolean equals(Object obj)
     {
-        if (super.equals(obj)) return true;
+        if(super.equals(obj)) return true;
 
-        if (obj == null || !obj.getClass().equals(getClass())) return false;
+        if(obj == null || !obj.getClass().equals(getClass())) return false;
 
         Sprite temp = (Sprite) obj;
         return !(texture == null || !texture.equals(temp.texture)) && temp.uvx0 == uvx0 && temp.uvy0 == uvy0 && temp.uvx1 == uvx1 && temp.uvy1 == uvy1;

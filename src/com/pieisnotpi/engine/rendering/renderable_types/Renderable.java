@@ -131,4 +131,10 @@ public abstract class Renderable
         Arrays.fill(colors, new Color(0, 0, 0));
         Arrays.fill(texCoords, new Vector2f(0, 0));
     }
+
+    /**
+     * A method run by the renderer directly before drawing.
+     */
+
+    public void preDraw() {}
 }

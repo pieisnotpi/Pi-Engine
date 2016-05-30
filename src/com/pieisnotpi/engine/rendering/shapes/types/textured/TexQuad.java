@@ -13,7 +13,7 @@ public class TexQuad extends Quad
 
     public TexQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite, int matrixID, Scene scene)
     {
-        this(x, y, z, width, height ,depth, sprite, PiEngine.TEXTURE_ID, matrixID, scene);
+        this(x, y, z, width, height, depth, sprite, PiEngine.TEXTURE_ID, matrixID, scene);
     }
 
     public TexQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite, int shaderID, int matrixID, Scene scene)
@@ -53,5 +53,10 @@ public class TexQuad extends Quad
         this.sprite = sprite;
 
         setQuadTexCoords(sprite.uvx0, sprite.uvy0, sprite.uvx1, sprite.uvy1);
+    }
+
+    public void preDraw()
+    {
+        if(sprite.isAnimated && sprite.updateAnimation()) setQuadSprite(sprite);
     }
 }

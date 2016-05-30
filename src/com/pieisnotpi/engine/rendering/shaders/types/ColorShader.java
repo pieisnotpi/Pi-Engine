@@ -52,6 +52,7 @@ public class ColorShader extends ShaderProgram
 
         buffer.forEach(renderable ->
         {
+            renderable.preDraw();
             BufferUtility.putVec3s(vertBuffer, renderable.points);
             BufferUtility.putColors(colorBuffer, renderable.colors);
         });

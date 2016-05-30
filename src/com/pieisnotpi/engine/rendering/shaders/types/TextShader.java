@@ -63,6 +63,7 @@ public class TextShader extends ShaderProgram
         {
             TextRenderable temp = (TextRenderable) renderable;
 
+            renderable.preDraw();
             BufferUtility.putVec3s(vertBuffer, temp.points);
             BufferUtility.putVec2s(coordsBuffer, temp.texCoords);
             BufferUtility.putColors(textColorBuffer, temp.textColors);

@@ -52,6 +52,7 @@ public class TextureShader extends ShaderProgram
 
         buffer.forEach(renderable ->
         {
+            renderable.preDraw();
             BufferUtility.putVec3s(vertBuffer, renderable.points);
             BufferUtility.putVec2s(coordsBuffer, renderable.texCoords);
         });
