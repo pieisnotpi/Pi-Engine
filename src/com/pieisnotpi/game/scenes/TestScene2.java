@@ -2,8 +2,8 @@ package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.textured.TexCircle;
-import com.pieisnotpi.engine.rendering.textures.Sprite;
+import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
+import com.pieisnotpi.engine.rendering.textures.AnimatedSprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.HoverEffect;
@@ -14,7 +14,6 @@ import com.pieisnotpi.game.cameras.ControlCamera;
 
 public class TestScene2 extends PauseScene
 {
-    protected TexCircle circle;
     protected Text text3D, text3D2;
     protected Block[][] blocks = new Block[30][30];
 
@@ -44,10 +43,10 @@ public class TestScene2 extends PauseScene
             xOffset += Block.SIZE;
         }
 
-        circle = new TexCircle(0, 1, 1, Block.SIZE/2f, 50, new Sprite(Texture.getTexture("stone"), 16, 0, 32, 16), PiEngine.CAMERA_3D_ID, this);
-
         String t3dt = "This text is waving.", t3d2t = "This text is hovering.";
         float t3dw = Text.approxWidth(t3dt, 24, Text.pixelFont), t3d2w = Text.approxWidth(t3d2t, 24, Text.pixelFont);
+
+        TexQuad q = new TexQuad(0, 0.5f, 0.2f, 0.5f, 0.5f, 0, new AnimatedSprite(true, 500, Texture.getTexture("tiles"), 0, 0, 48, 48, 16, 16), PiEngine.CAMERA_3D_ID, this);
 
         text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new WaveEffect());
         text3D2 = new Text(t3d2t, 24, -t3d2w/2, 1, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new HoverEffect(2, 0.1f));

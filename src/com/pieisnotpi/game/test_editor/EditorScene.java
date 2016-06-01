@@ -34,36 +34,36 @@ public class EditorScene extends Scene
         Texture tex = Texture.getTexture("tiles");
 
         Sprite[] grass = new Sprite[8];
-        grass[0] = new Sprite(tex, 0, 16, 16, 0, false, true);
-        grass[1] = new Sprite(tex, 16, 16, 32, 0, false, true);
-        grass[2] = new Sprite(tex, 32, 16, 48, 0, false, true);
-        grass[3] = new Sprite(tex, 32, 32, 48, 16, false, true);
-        grass[4] = new Sprite(tex, 32, 48, 48, 32, false, true);
-        grass[5] = new Sprite(tex, 16, 48, 32, 32, false, true);
-        grass[6] = new Sprite(tex, 0, 48, 16, 32, false, true);
-        grass[7] = new Sprite(tex, 0, 32, 16, 16, false, true);
+        grass[0] = new Sprite(tex, 0, 16, 16, 0);
+        grass[1] = new Sprite(tex, 16, 16, 32, 0);
+        grass[2] = new Sprite(tex, 32, 16, 48, 0);
+        grass[3] = new Sprite(tex, 32, 32, 48, 16);
+        grass[4] = new Sprite(tex, 32, 48, 48, 32);
+        grass[5] = new Sprite(tex, 16, 48, 32, 32);
+        grass[6] = new Sprite(tex, 0, 48, 16, 32);
+        grass[7] = new Sprite(tex, 0, 32, 16, 16);
 
         Sprite[] grassStair = new Sprite[4];
-        grassStair[0] = new Sprite(tex, 128, 16, 144, 0, false, true);
-        grassStair[1] = new Sprite(tex, 144, 16, 160, 0, false, true);
-        grassStair[2] = new Sprite(tex, 144, 32, 160, 16, false, true);
-        grassStair[3] = new Sprite(tex, 128, 32, 144, 16, false, true);
+        grassStair[0] = new Sprite(tex, 128, 16, 144, 0);
+        grassStair[1] = new Sprite(tex, 144, 16, 160, 0);
+        grassStair[2] = new Sprite(tex, 144, 32, 160, 16);
+        grassStair[3] = new Sprite(tex, 128, 32, 144, 16);
 
         Sprite[] stone = new Sprite[8];
-        stone[0] = new Sprite(tex, 48, 16, 64, 0, false, true);
-        stone[1] = new Sprite(tex, 64, 16, 80, 0, false, true);
-        stone[2] = new Sprite(tex, 80, 16, 96, 0, false, true);
-        stone[3] = new Sprite(tex, 80, 32, 96, 16, false, true);
-        stone[4] = new Sprite(tex, 80, 48, 96, 32, false, true);
-        stone[5] = new Sprite(tex, 64, 48, 80, 32, false, true);
-        stone[6] = new Sprite(tex, 48, 48, 64, 32, false, true);
-        stone[7] = new Sprite(tex, 48, 32, 64, 16, false, true);
+        stone[0] = new Sprite(tex, 48, 16, 64, 0);
+        stone[1] = new Sprite(tex, 64, 16, 80, 0);
+        stone[2] = new Sprite(tex, 80, 16, 96, 0);
+        stone[3] = new Sprite(tex, 80, 32, 96, 16);
+        stone[4] = new Sprite(tex, 80, 48, 96, 32);
+        stone[5] = new Sprite(tex, 64, 48, 80, 32);
+        stone[6] = new Sprite(tex, 48, 48, 64, 32);
+        stone[7] = new Sprite(tex, 48, 32, 64, 16);
 
         Sprite[] stoneStair = new Sprite[4];
-        stoneStair[0] = new Sprite(tex, 96, 16, 112, 0, false, true);
-        stoneStair[1] = new Sprite(tex, 112, 16, 128, 0, false, true);
-        stoneStair[2] = new Sprite(tex, 112, 32, 128, 16, false, true);
-        stoneStair[3] = new Sprite(tex, 96, 32, 112, 16, false, true);
+        stoneStair[0] = new Sprite(tex, 96, 16, 112, 0);
+        stoneStair[1] = new Sprite(tex, 112, 16, 128, 0);
+        stoneStair[2] = new Sprite(tex, 112, 32, 128, 16);
+        stoneStair[3] = new Sprite(tex, 96, 32, 112, 16);
 
         Sprite[] dirt = new Sprite[1];
         dirt[0] = new Sprite(tex, 16, 32, 32, 16);

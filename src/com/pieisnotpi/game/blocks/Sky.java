@@ -13,7 +13,7 @@ public class Sky
     public Sky(Scene scene)
     {
         Texture texture = Texture.getTexture("sky");
-        Sprite sprite = new Sprite(texture, 0, 0, 128, 72, false, false);
+        Sprite sprite = new Sprite(texture, 0, 0, 128, 72);
 
         rect = new TexQuad(-0.8f, -0.45f, -1.0f, 1.6f, 0.9f, 0, sprite, PiEngine.ORTHO_ID, scene);
     }

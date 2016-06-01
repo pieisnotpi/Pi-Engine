@@ -14,7 +14,7 @@ public class Wheel extends PhysicsObject
     protected TexQuad quad;
 
     public final static float radius = 0.05f;
-    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 62, 12, 50, false, true);
+    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 62, 12, 50);
 
     public Wheel(float x, float y, float z, Scene scene)
     {

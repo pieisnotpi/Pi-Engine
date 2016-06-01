@@ -18,6 +18,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 public class Texture
 {
     public static List<Texture> textures = new ArrayList<>();
+    public static String defaultPath = "/assets/textures/";
 
     private int texID = -1, samplerID = 0;
     private String path;
@@ -94,7 +95,7 @@ public class Texture
 
         ByteBuffer bytes = ByteBuffer.allocateDirect(4 * width * height);
 
-        for(int y = height - 1; y >= 0; y--)
+        for(int y = 0; y < height; y++)
         {
             for(int x = 0; x < width; x++)
             {
@@ -147,7 +148,7 @@ public class Texture
         {
             String path = name;
 
-            if(!path.contains("\\") && !path.contains("/")) path = "/assets/textures/" + path;
+            if(!path.contains("\\") && !path.contains("/")) path = defaultPath + path;
             if(!path.contains(".")) path += ".png";
 
             Texture temp = new Texture(path);

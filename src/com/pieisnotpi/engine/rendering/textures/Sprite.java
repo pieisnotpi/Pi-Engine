@@ -28,61 +28,15 @@ public class Sprite
         uvy0 = y0*yMult;
         uvy1 = y1*yMult;
 
-        if(uvy0 > uvy1)
+        if(uvy0 < uvy1)
         {
-            uvy0 -= 0.0001f;
-            uvy1 += 0.0001f;
-        }
-        else
-        {
-            uvy0 += 0.0001f;
-            uvy1 -= 0.0001f;
+            float t = uvy0;
+            uvy0 = uvy1;
+            uvy1 = t;
         }
 
-        this.texture = texture;
-    }
-
-    public Sprite(Texture texture, int x0, int y0, int x1, int y1, boolean invertX, boolean invertY)
-    {
-        float xMult = (float) 1/texture.width, yMult = (float) 1/texture.height;
-
-        this.x0 = x0;
-        this.x1 = x1;
-        this.y0 = y0;
-        this.y1 = y1;
-
-        if(invertX)
-        {
-            uvx0 = (texture.width - x0)*xMult;
-            uvx1 = (texture.width - x1)*xMult;
-        }
-        else
-        {
-            uvx0 = x0*xMult;
-            uvx1 = x1*xMult;
-        }
-
-        if(invertY)
-        {
-            uvy0 = (texture.height - y0)*yMult;
-            uvy1 = (texture.height - y1)*yMult;
-        }
-        else
-        {
-            uvy0 = y0*yMult;
-            uvy1 = y1*yMult;
-        }
-
-        if(uvy0 > uvy1 || invertY)
-        {
-            uvy0 -= 0.0001f;
-            uvy1 += 0.0001f;
-        }
-        else
-        {
-            uvy0 += 0.0001f;
-            uvy1 -= 0.0001f;
-        }
+        uvy0 -= 0.0001f;
+        uvy1 += 0.0001f;
 
         this.texture = texture;
     }

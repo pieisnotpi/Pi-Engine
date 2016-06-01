@@ -14,7 +14,7 @@ public class Truck extends PhysicsObject
     protected TexQuad quad;
 
     public final static float width = 5/10f, height = 3/10f;
-    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 48, 80, 0, false, true);
+    static Sprite sprite = new Sprite(Texture.getTexture("truck"), 0, 48, 80, 0);
 
     public Truck(float x, float y, float z, Scene scene)
     {
