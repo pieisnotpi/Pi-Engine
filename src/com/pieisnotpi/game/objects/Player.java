@@ -27,9 +27,10 @@ import java.util.List;
 
 public class Player extends PhysicsObject
 {
-    public List<Joybind> joybinds = new ArrayList<>();
+    private List<Joybind> joybinds = new ArrayList<>();
     private String lastJoyName = "";
     private PhysicsTestScene s;
+
     public int joystick;
     private int jumpTimer = 0;
     private float moveSpeedX = 0, moveSpeedY = 0, jumpSpeedX = 0, jumpSpeedY = 0;

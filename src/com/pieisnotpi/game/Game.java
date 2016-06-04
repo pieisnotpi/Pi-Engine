@@ -10,6 +10,7 @@ public class Game
     {
         if(args.length > 0 && args[0].toLowerCase().equals("debug"))
         {
+            System.setProperty("org.lwjgl.util.Debug", "true");
             PiEngine.debug = true;
             Logger.SYSTEM.log("Debug mode active");
         }
