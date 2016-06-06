@@ -10,7 +10,9 @@ import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.scenes.PauseScene;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class ControlCamera extends Camera
     private Vector2f lastCursorPos = new Vector2f(0, 0);
 
     private int joystick;
-    private float joyRotAmount, mouseRotAmount, moveAmount, mouseSensitivity = 1500, joySensitivity = 180;
+    private float joyRotAmount, mouseRotAmount, moveAmount, mouseSensitivity = 2, joySensitivity = 180;
     private boolean hideCursor = false, ignoreNextMovement = false;
 
     public ControlCamera(float localX, float localY, float localWidth, float localHeight, float fov, int joystick, Scene scene)
@@ -158,14 +160,17 @@ public class ControlCamera extends Camera
         }
     }
 
-    public void onMouseMovement(Vector2f cursorPos)
+    public void onMouseMovementUnscaled(Vector2d cursorPos)
     {
+        Vector2i res = scene.window.res;
+        float cx = (float) (cursorPos.x*2 - res.x), cy = (float) (cursorPos.y*2 - res.y), r = res.x/res.y;
+
         if(hideCursor && !ignoreNextMovement)
         {
-            if(cursorPos.x > -0.001 && cursorPos.x < 0.001) cursorPos.x = 0;
-            if(cursorPos.y > -0.001 && cursorPos.y < 0.001) cursorPos.y = 0;
+            if(cx > -0.001 && cx < 0.001) cx = 0;
+            if(cy > -0.001 && cy < 0.001) cy = 0;
 
-            float xMovement = cursorPos.x*mouseRotAmount, yMovement = cursorPos.y*mouseRotAmount;
+            float xMovement = cx*mouseRotAmount/r, yMovement = cy*mouseRotAmount*r;
 
             addToXRot(xMovement);
             addToYRot(yMovement);

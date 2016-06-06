@@ -54,6 +54,7 @@ public class InputManager
             cursorPos.y = window.res.y - yPos;
 
             localCursorPos.set((float) (((2*window.ratio)/window.res.x)*cursorPos.x) - window.ratio, (float) (((float) 2/window.res.y)*cursorPos.y) - 1);
+            window.scene.onMouseMovementUnscaled(cursorPos);
             window.scene.onMouseMovement(localCursorPos);
         }));
 

@@ -13,6 +13,7 @@ import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
@@ -52,10 +53,11 @@ public abstract class Scene
     public void onRightRelease() { gameObjects.forEach(GameObject::onRightRelease); }
     public void onMiddleClick() { gameObjects.forEach(GameObject::onMiddleClick); }
     public void onMiddleRelease() { gameObjects.forEach(GameObject::onMiddleRelease); }
-    public void onKeyPressed(int key, int mods) { gameObjects.forEach(gameObject -> gameObject.onKeyPressed(key, mods)); }
-    public void onKeyReleased(int key, int mods) { gameObjects.forEach(gameObject -> gameObject.onKeyReleased(key, mods)); }
-    public void onScroll(float xAmount, float yAmount) { gameObjects.forEach(gameObject -> gameObject.onScroll(xAmount, yAmount)); }
-    public void onMouseMovement(Vector2f cursorPos) { gameObjects.forEach(gameObject -> gameObject.onMouseMovement(cursorPos)); lastCursorPos.set(cursorPos); }
+    public void onKeyPressed(int key, int mods) { gameObjects.forEach(g -> g.onKeyPressed(key, mods)); }
+    public void onKeyReleased(int key, int mods) { gameObjects.forEach(g -> g.onKeyReleased(key, mods)); }
+    public void onScroll(float xAmount, float yAmount) { gameObjects.forEach(g -> g.onScroll(xAmount, yAmount)); }
+    public void onMouseMovement(Vector2f cursorPos) { gameObjects.forEach(g -> g.onMouseMovement(cursorPos)); lastCursorPos.set(cursorPos); }
+    public void onMouseMovementUnscaled(Vector2d cursorPos) { gameObjects.forEach(g -> g.onMouseMovementUnscaled(cursorPos)); }
 
     public void onWindowResize(Vector2i res)
     {
