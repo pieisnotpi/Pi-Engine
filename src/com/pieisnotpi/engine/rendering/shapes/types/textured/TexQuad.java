@@ -55,7 +55,7 @@ public class TexQuad extends Quad
         setQuadTexCoords(sprite.uvx0, sprite.uvy0, sprite.uvx1, sprite.uvy1);
     }
 
-    public void preDraw()
+    public void preCompile()
     {
         if(sprite.isAnimated && sprite.updateAnimation()) setQuadSprite(sprite);
     }

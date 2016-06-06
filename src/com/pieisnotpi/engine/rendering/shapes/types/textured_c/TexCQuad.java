@@ -27,7 +27,7 @@ public class TexCQuad extends TexQuad
         setQuadColors(color, color, color, color);
     }
 
-    public void preDraw()
+    public void preCompile()
     {
         if(sprite.isAnimated) sprite.updateAnimation();
     }

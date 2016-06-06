@@ -65,6 +65,8 @@ public abstract class ShaderProgram
 
         if(current == 0) vertCount = -renderable.getVertCount();
 
+        renderable.preDraw();
+
         if(matrixID != lastMatrix)
         {
             setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[lastMatrix = matrixID]));

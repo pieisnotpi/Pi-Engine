@@ -140,7 +140,7 @@ public class TextQuad extends TextRenderable
         rotateAxisZ(amount, pointX, pointY, points);
     }
 
-    public void preDraw()
+    public void preCompile()
     {
         if(sprite.isAnimated) sprite.updateAnimation();
     }

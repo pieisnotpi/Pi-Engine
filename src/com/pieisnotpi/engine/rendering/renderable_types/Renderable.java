@@ -133,6 +133,12 @@ public abstract class Renderable
     }
 
     /**
+     * A method run by the shader compiler directly before compiling
+     */
+
+    public void preCompile() {}
+
+    /**
      * A method run by the renderer directly before drawing.
      */
 
