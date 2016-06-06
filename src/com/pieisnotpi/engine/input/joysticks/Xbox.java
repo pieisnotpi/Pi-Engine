@@ -5,7 +5,7 @@ package com.pieisnotpi.engine.input.joysticks;
  * Unfortunately, the Xbox button's inputs cannot be retrieved, meaning it cannot be used within this engine.
  */
 
-public class Xbox
+public final class Xbox
 {
     public static final int
 

@@ -5,7 +5,7 @@ package com.pieisnotpi.engine.input.joysticks;
  * Unfortunately, touchpad input cannot be retrieved, aside from the button functionality of the touchpad.
  */
 
-public class DS4
+public final class DS4
 {
     public static final int
 
