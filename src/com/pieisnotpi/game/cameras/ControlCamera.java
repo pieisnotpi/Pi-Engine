@@ -170,7 +170,7 @@ public class ControlCamera extends Camera
             if(cx > -0.001 && cx < 0.001) cx = 0;
             if(cy > -0.001 && cy < 0.001) cy = 0;
 
-            float xMovement = cx*mouseRotAmount/r, yMovement = cy*mouseRotAmount*r;
+            float xMovement = cx*mouseRotAmount/r, yMovement = cy*mouseRotAmount;
 
             addToXRot(xMovement);
             addToYRot(yMovement);
