@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.rendering.shapes.types.textured;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.scene.Scene;
@@ -55,7 +56,7 @@ public class TexQuad extends Quad
         setQuadTexCoords(sprite.uvx0, sprite.uvy0, sprite.uvx1, sprite.uvy1);
     }
 
-    public void preCompile()
+    public void preCompile(ShaderProgram shader)
     {
         if(sprite.isAnimated && sprite.updateAnimation()) setQuadSprite(sprite);
     }

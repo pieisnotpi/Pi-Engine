@@ -3,6 +3,7 @@ package com.pieisnotpi.engine.rendering.shapes.types.text;
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.renderable_types.TextRenderable;
+import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.scene.Scene;
@@ -140,7 +141,7 @@ public class TextQuad extends TextRenderable
         rotateAxisZ(amount, pointX, pointY, points);
     }
 
-    public void preCompile()
+    public void preCompile(ShaderProgram shader)
     {
         if(sprite.isAnimated) sprite.updateAnimation();
     }

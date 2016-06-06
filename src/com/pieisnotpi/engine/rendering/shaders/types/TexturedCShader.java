@@ -56,7 +56,7 @@ public class TexturedCShader extends ShaderProgram
 
         buffer.forEach(renderable ->
         {
-            renderable.preCompile();
+            renderable.preCompile(this);
             BufferUtility.putVec3s(vertBuffer, renderable.points);
             BufferUtility.putColors(colorBuffer, renderable.colors);
             BufferUtility.putVec2s(coordsBuffer, renderable.texCoords);

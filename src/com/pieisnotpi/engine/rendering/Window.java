@@ -296,7 +296,8 @@ public class Window
 
                 int s = Integer.compare(o1.getShaderID(), o2.getShaderID());
                 if(s != 0) return s;
-                else return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
+                else if(o1.getTexture() != null && o2.getTexture() != null) return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
+                else return 0;
             });
 
             float viewX = camera.localX*res.x, viewY = camera.localY*res.y, viewWidth = camera.localWidth*res.x, viewHeight = camera.localHeight*res.y, viewRatio;

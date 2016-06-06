@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.rendering.renderable_types;
 
 import com.pieisnotpi.engine.rendering.Color;
+import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
@@ -134,13 +135,15 @@ public abstract class Renderable
 
     /**
      * A method run by the shader compiler directly before compiling
+     * @param shader The shader program currently compiling
      */
 
-    public void preCompile() {}
+    public void preCompile(ShaderProgram shader) {}
 
     /**
      * A method run by the renderer directly before drawing.
+     * @param shader The shader program currently drawing
      */
 
-    public void preDraw() {}
+    public void preDraw(ShaderProgram shader) {}
 }

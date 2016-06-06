@@ -65,7 +65,7 @@ public abstract class ShaderProgram
 
         if(current == 0) vertCount = -renderable.getVertCount();
 
-        renderable.preDraw();
+        renderable.preDraw(this);
 
         if(matrixID != lastMatrix)
         {
@@ -134,6 +134,15 @@ public abstract class ShaderProgram
         int location = glGetUniformLocation(program, name);
 
         if(location > -1) glUniform1i(location, value);
+        else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
+    }
+
+    public void setUniformFloat(String name, float value)
+    {
+        use();
+        int location = glGetUniformLocation(program, name);
+
+        if(location > -1) glUniform1f(location, value);
         else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
     }
 
