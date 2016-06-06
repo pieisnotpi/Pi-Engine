@@ -15,15 +15,17 @@ import static com.pieisnotpi.engine.utility.MathUtility.*;
 
 public class TextQuad extends TextRenderable
 {
+    public int line = 0;
     public float xRot = 0, yRot = 0, zRot = 0;
     protected Sprite sprite;
     public CharSprite cSprite;
 
-    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int matrixID, Scene scene)
+    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line, int matrixID, Scene scene)
     {
         setDefaults(4);
         drawMode = GL11.GL_TRIANGLE_STRIP;
 
+        this.line = line;
         this.scene = scene;
         this.shaderID = PiEngine.TEXT_ID;
         this.matrixID = matrixID;

@@ -152,7 +152,8 @@ public class Text extends UiObject
 
         float actual = scale*font.pixelScale, xOffset = x, yOffset = y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
 
-        newlineSpace = 10*actual;
+        newlineSpace = font.newLineSpace*actual;
+        int line = 0;
 
         for(int i = 0; i < text.length(); i++)
         {
@@ -168,6 +169,7 @@ public class Text extends UiObject
             {
                 xOffset = x;
                 yOffset = y -= newlineSpace;
+                line++;
             }
 
             CharSprite sprite = font.getCharSprite(c);
@@ -181,10 +183,9 @@ public class Text extends UiObject
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);
 
-            chars.add(new TextQuad(x0, y0, z + 0.0001f*i, x1, y1, sprite, textColor, outlineColor, matrixID, scene));
+            chars.add(new TextQuad(x0, y0, z + 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line, matrixID, scene));
         }
 
-        newlineSpace = height + 2*actual;
         width = maxX - x;
         height = maxY - y;
 

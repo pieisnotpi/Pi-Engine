@@ -11,15 +11,16 @@ public class Font
     protected List<CharSprite> sprites = new ArrayList<>();
     protected Texture texture;
 
-    public float pixelScale, letterSpace, spaceCharSpace;
+    public float pixelScale, letterSpace, spaceCharSpace, newLineSpace;
     public CharSprite nullChar;
 
-    protected Font(Texture texture, float pixelScale, float letterSpace, float spaceCharSpace)
+    protected Font(Texture texture, float pixelScale, float letterSpace, float spaceCharSpace, float newLineSpace)
     {
         this.texture = texture;
         this.pixelScale = pixelScale;
         this.letterSpace = letterSpace;
         this.spaceCharSpace = spaceCharSpace;
+        this.newLineSpace = newLineSpace;
 
         nullChar = new CharSprite(new Sprite(texture, 0, 0, 0, 0), ' ', 0, 0, 0, 0);
 

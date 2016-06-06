@@ -7,7 +7,7 @@ import java.util.List;
 
 public class WaveEffect implements TextEffect
 {
-    double x;
+    int x;
     float speed, heightDif, scale;
 
     public WaveEffect()
@@ -28,13 +28,20 @@ public class WaveEffect implements TextEffect
     {
         List<TextQuad> chars = text.getChars();
 
+        int prevLine = 0, t = 0;
+
         for(int i = 0; i < chars.size(); i++)
         {
             TextQuad c = chars.get(i);
 
-            float offset = text.getFont().pixelScale*text.scale*c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*i)*speed)));
+            if(c.line != prevLine) t = 0;
+
+            float offset = -text.newlineSpace*c.line + text.getFont().pixelScale*text.scale*c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*t)*speed)));
 
             c.setY(offset + text.getY() + sine);
+
+            prevLine = c.line;
+            t++;
         }
 
         x++;
