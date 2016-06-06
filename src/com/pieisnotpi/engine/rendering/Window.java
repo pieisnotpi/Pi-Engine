@@ -192,7 +192,6 @@ public class Window
         glfwSetWindowFocusCallback(windowID, focusCallback = GLFWWindowFocusCallback.create((window, focused) ->
         {
             this.focused = focused;
-            if(!focused) inputManager.hideCursor = false;
         }));
 
         inputManager = new InputManager(this);
@@ -319,16 +318,16 @@ public class Window
     {
         glfwShowWindow(windowID);
 
-        PiEngine.instance.updates.add(drawUpdate);
         PiEngine.instance.updates.add(inputUpdate);
+        PiEngine.instance.updates.add(drawUpdate);
     }
 
     public void hide()
     {
         glfwHideWindow(windowID);
 
-        PiEngine.instance.updates.remove(drawUpdate);
         PiEngine.instance.updates.remove(inputUpdate);
+        PiEngine.instance.updates.remove(drawUpdate);
     }
 
     public int getRefreshRate() { return refreshRate; }

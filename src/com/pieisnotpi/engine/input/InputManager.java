@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.input;
 
-import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.joysticks.Joystick;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Window;
@@ -34,7 +33,6 @@ public class InputManager
     protected GLFWScrollCallback scrollCallback;
     protected GLFWCursorPosCallback cursorPosCallback;
 
-    public boolean hideCursor = false, cursorStatus = true;
     public Joystick[] joysticks = new Joystick[16];
     private float ROT_AMOUNT, MOVE_AMOUNT;
 
@@ -56,8 +54,7 @@ public class InputManager
             cursorPos.y = window.res.y - yPos;
 
             localCursorPos.set((float) (((2*window.ratio)/window.res.x)*cursorPos.x) - window.ratio, (float) (((float) 2/window.res.y)*cursorPos.y) - 1);
-
-            if(!hideCursor) window.scene.onMouseMovement(localCursorPos);
+            window.scene.onMouseMovement(localCursorPos);
         }));
 
         glfwSetScrollCallback(window.windowID, scrollCallback = GLFWScrollCallback.create((windowID, xOffset, yOffset) ->
@@ -91,13 +88,6 @@ public class InputManager
         mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_2, false, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightRelease()));
         mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_3, false, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleRelease()));
 
-        keybinds.add(new Keybind(GLFW_KEY_W, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveZ(-MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_S, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveZ(MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_D, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveX(MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_A, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveX(-MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_SPACE, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveY(MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_LEFT_SHIFT, true, (value) -> { if(hideCursor) window.scene.cameras.get(0).moveY(-MOVE_AMOUNT); }, null));
-        keybinds.add(new Keybind(GLFW_KEY_ESCAPE, false, (value) -> { hideCursor = !hideCursor; glfwSetCursorPos(window.windowID, window.res.x/2, window.res.y/2); }, null));
         keybinds.add(new Keybind(GLFW_KEY_F3, false, (value) -> window.scene.fps.toggle(), null));
     }
 
@@ -191,32 +181,6 @@ public class InputManager
                     joybind.press(value);
                 }
             }
-        }
-
-        if(hideCursor)
-        {
-            window.scene.gameObjects.forEach(GameObject::onMouseExited);
-
-            if(localCursorPos.x > -0.001 && localCursorPos.x < 0.001) localCursorPos.x = 0;
-            if(localCursorPos.y > -0.001 && localCursorPos.y < 0.001) localCursorPos.y = 0;
-
-            float xMovement = localCursorPos.x*ROT_AMOUNT*mouseSensitivity, yMovement = localCursorPos.y*ROT_AMOUNT*mouseSensitivity;
-
-            window.scene.cameras.get(0).addToXRot(xMovement);
-            window.scene.cameras.get(0).addToYRot(yMovement);
-
-            if(!cursorStatus)
-            {
-                glfwSetInputMode(window.windowID, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-                cursorStatus = true;
-            }
-
-            glfwSetCursorPos(window.windowID, (float) window.res.x/2, (float) window.res.y/2);
-        }
-        else if(cursorStatus)
-        {
-            glfwSetInputMode(window.windowID, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            cursorStatus = false;
         }
     }
 }

@@ -109,6 +109,8 @@ public abstract class Scene
 
     public void setWindow(Window window)
     {
+        gameObjects.forEach(g -> g.onWindowChanged(window));
+
         unregisterInputs();
         this.window = window;
         registerInputs();

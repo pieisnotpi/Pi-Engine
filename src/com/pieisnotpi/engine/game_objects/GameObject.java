@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.game_objects;
 
+import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -87,6 +88,7 @@ public abstract class GameObject
     public void onMouseEntered() {}
     public void onMouseExited() {}
     public void onMouseMovement(Vector2f cursorPos) {}
+    public void onWindowChanged(Window window) {}
     public void toggle() { if(enabled) disable(); else enable(); }
 
     public boolean isEnabled() { return enabled; }
