@@ -256,7 +256,6 @@ public class Window
         if(this.scene != null)
         this.scene.setWindow(null);
         this.scene = scene;
-        setName(scene.name);
 
         scene.setWindow(this);
         scene.onWindowResize(res);
