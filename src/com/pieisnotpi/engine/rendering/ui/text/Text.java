@@ -139,6 +139,8 @@ public class Text extends UiObject
 
         unregister();
 
+        float xr = xRot, yr = yRot, zr = zRot;
+
         xRot = 0;
         yRot = 0;
         zRot = 0;
@@ -148,34 +150,43 @@ public class Text extends UiObject
 
         width = height = 0;
 
-        float actual = scale*font.pixelScale;
+        float actual = scale*font.pixelScale, xOffset = x, yOffset = y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
 
-        float offsetX = x, offsetY = y;
+        newlineSpace = 10*actual;
 
         for(int i = 0; i < text.length(); i++)
         {
-            if(text.charAt(i) == ' ')
+            char c = text.charAt(i);
+
+            if(c == ' ' && i != text.length() - 1)
             {
-                offsetX += font.spaceCharSpace*actual;
+                xOffset += font.spaceCharSpace*actual;
                 continue;
             }
 
-            CharSprite c = font.getCharSprite(text.charAt(i));
+            if(c == '\n' && i != text.length() - 1)
+            {
+                xOffset = x;
+                yOffset = y -= newlineSpace;
+            }
 
-            if(c.equals(font.nullChar)) continue;
+            CharSprite sprite = font.getCharSprite(c);
 
-            float x0 = offsetX + c.offsetX*actual, y0 = offsetY + c.offsetY*actual, x1 = c.sizeX*actual, y1 = c.sizeY*actual;
+            if(sprite.equals(font.nullChar)) continue;
 
-            offsetX += (c.sizeX + font.letterSpace)*actual;
-            height = Float.max(height, y1);
+            float x0 = xOffset + sprite.offsetX*actual, y0 = yOffset + sprite.offsetY*actual, x1 = sprite.sizeX*actual, y1 = sprite.sizeY*actual;
 
-            chars.add(new TextQuad(x0, y0, z + 0.0001f*i, x1, y1, c, textColor, outlineColor, matrixID, scene));
+            xOffset += (sprite.sizeX + font.letterSpace)*actual;
+
+            maxX = Float.max(maxX, x0 + x1);
+            maxY = Float.max(maxY, y0 + y1);
+
+            chars.add(new TextQuad(x0, y0, z + 0.0001f*i, x1, y1, sprite, textColor, outlineColor, matrixID, scene));
         }
 
         newlineSpace = height + 2*actual;
-        width = offsetX - x;
-
-        float xr = xRot, yr = yRot, zr = zRot;
+        width = maxX - x;
+        height = maxY - y;
 
         defaultCenter();
 
@@ -235,22 +246,32 @@ public class Text extends UiObject
     {
         float actual = scale*font.pixelScale;
 
-        float width = 0;
+        float x = 0, maxX = Float.MIN_VALUE;
 
         for(int i = 0; i < text.length(); i++)
         {
-            if(text.charAt(i) == ' ')
+            char c = text.charAt(i);
+
+            if(c == ' ' && i != text.length() - 1)
             {
-                width += 4*actual;
+                x += 4*actual;
+                continue;
+            }
+            if(c == '\n' && i != text.length() - 1)
+            {
+                x = 0;
                 continue;
             }
 
-            CharSprite c = font.getCharSprite(text.charAt(i));
+            CharSprite sprite = font.getCharSprite(c);
 
-            width += (c.sizeX - 1)*actual;
+            if(sprite == font.nullChar) continue;
+
+            x += (sprite.sizeX - 1)*actual;
+            maxX = Float.max(maxX, x);
         }
 
-        return width;
+        return maxX;
     }
 
     public void destroy()
