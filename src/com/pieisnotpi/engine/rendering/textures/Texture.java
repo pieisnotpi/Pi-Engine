@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.Window;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -38,6 +39,18 @@ public class Texture
     }
 
     public Texture(Image image, int samplerID)
+    {
+        this.samplerID = samplerID;
+        texID = glGenTextures();
+        compileTexture(image);
+    }
+
+    public Texture(BufferedImage image)
+    {
+        this(image, 0);
+    }
+
+    public Texture(BufferedImage image, int samplerID)
     {
         this.samplerID = samplerID;
         texID = glGenTextures();
@@ -86,6 +99,38 @@ public class Texture
         glBindTexture(GL_TEXTURE_2D, texID);
 
         Window.lastTextureID = texID;
+    }
+
+    public void compileTexture(BufferedImage image)
+    {
+        width = image.getWidth();
+        height = image.getHeight();
+
+        int[] pixels = new int[width*height];
+        image.getRGB(0, 0, width, height, pixels, 0, width);
+
+        ByteBuffer bytes = ByteBuffer.allocateDirect(width*height*4);
+
+        for(int y = 0; y < height; y++)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                int pixel = pixels[y*width + x];
+
+                bytes.put((byte) ((pixel >> 16) & 0xFF));
+                bytes.put((byte) ((pixel >> 8) & 0xFF));
+                bytes.put((byte) (pixel & 0xFF));
+                bytes.put((byte) ((pixel >> 24) & 0xFF));
+            }
+        }
+
+        bytes.flip();
+
+        bind();
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
 
     public void compileTexture(Image image)

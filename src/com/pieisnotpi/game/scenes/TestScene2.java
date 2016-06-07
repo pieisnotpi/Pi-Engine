@@ -7,6 +7,7 @@ import com.pieisnotpi.engine.rendering.textures.AnimatedSprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
+import com.pieisnotpi.engine.rendering.ui.text.font.SystemFont;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Stone;
 import com.pieisnotpi.game.cameras.ControlCamera;
@@ -48,6 +49,7 @@ public class TestScene2 extends PauseScene
         TexQuad q = new TexQuad(0, 0.5f, 0.2f, 0.5f, 0.5f, 0, new AnimatedSprite(true, 500, Texture.getTexture("tiles"), 0, 0, 48, 48, 16, 16), PiEngine.CAMERA_3D_ID, this);
 
         text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new WaveEffect());
+        text3D.setFont(new SystemFont("Arial", 48, java.awt.Font.PLAIN, true));
         text3D2 = new Text(t3d2t, 24, -t3d2w/2, 2, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new WaveEffect(4, 8, 0.5f));
     }
 }

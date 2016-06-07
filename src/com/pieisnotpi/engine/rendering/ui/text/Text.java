@@ -150,7 +150,7 @@ public class Text extends UiObject
 
         width = height = 0;
 
-        float actual = scale*font.pixelScale, xOffset = x, yOffset = y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
+        float actual = scale*font.pixelScale, xOffset = x, yOffset = y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE, t = y;
 
         newlineSpace = font.newLineSpace*actual;
         int line = 0;
@@ -189,6 +189,8 @@ public class Text extends UiObject
         width = maxX - x;
         height = maxY - y;
 
+        setY(t);
+
         defaultCenter();
 
         if(xr != 0) addToYRot(xr);
@@ -197,6 +199,14 @@ public class Text extends UiObject
 
         align();
         register();
+    }
+
+    public void setFont(Font font)
+    {
+        this.font = font;
+        String t = text;
+        text = "";
+        setText(t);
     }
 
     public void onWindowResize(Vector2i res)

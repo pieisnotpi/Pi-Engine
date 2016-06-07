@@ -14,6 +14,8 @@ public class Font
     public float pixelScale, letterSpace, spaceCharSpace, newLineSpace;
     public CharSprite nullChar;
 
+    protected Font() {}
+
     protected Font(Texture texture, float pixelScale, float letterSpace, float spaceCharSpace, float newLineSpace)
     {
         this.texture = texture;
