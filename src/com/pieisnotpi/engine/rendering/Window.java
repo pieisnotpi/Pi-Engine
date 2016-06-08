@@ -287,7 +287,9 @@ public class Window
                 {
                     float z1 = o1.points[0].z, z2 = o2.points[0].z;
                     if(o1.getMatrixID() == PiEngine.CAMERA_3D_ID) z1 *= cos;
+                    else if(o1.getMatrixID() == PiEngine.ORTHO_ID) z1++;
                     if(o2.getMatrixID() == PiEngine.CAMERA_3D_ID) z2 *= cos;
+                    else if(o2.getMatrixID() == PiEngine.ORTHO_ID) z2++;
 
                     return Float.compare(z1, z2);
                 }
