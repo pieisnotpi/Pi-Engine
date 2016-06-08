@@ -6,7 +6,7 @@ import com.pieisnotpi.engine.rendering.textures.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Font
+public abstract class Font
 {
     protected List<CharSprite> sprites = new ArrayList<>();
     protected Texture texture;
