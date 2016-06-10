@@ -26,6 +26,7 @@ public class Texture
 
     public boolean hasTransparency = false;
     public int width, height;
+    public ByteBuffer bytes;
     public String name;
 
     public Texture(Image image)
@@ -109,7 +110,7 @@ public class Texture
         int[] pixels = new int[width*height];
         image.getRGB(0, 0, width, height, pixels, 0, width);
 
-        ByteBuffer bytes = ByteBuffer.allocateDirect(width*height*4);
+        bytes = ByteBuffer.allocateDirect(width*height*4);
 
         for(int y = 0; y < height; y++)
         {
@@ -138,7 +139,7 @@ public class Texture
         width = (int) image.getWidth();
         height = (int) image.getHeight();
 
-        ByteBuffer bytes = ByteBuffer.allocateDirect(4 * width * height);
+        bytes = ByteBuffer.allocateDirect(4 * width * height);
 
         for(int y = 0; y < height; y++)
         {
