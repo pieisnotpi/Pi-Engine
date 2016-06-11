@@ -2,10 +2,10 @@ package com.pieisnotpi.game.cameras;
 
 import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.Joybind;
+import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
-import com.pieisnotpi.engine.input.joysticks.DS4;
-import com.pieisnotpi.engine.input.joysticks.Joystick;
-import com.pieisnotpi.engine.input.joysticks.Xbox;
+import com.pieisnotpi.engine.input.devices.DS4;
+import com.pieisnotpi.engine.input.devices.Xbox;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;

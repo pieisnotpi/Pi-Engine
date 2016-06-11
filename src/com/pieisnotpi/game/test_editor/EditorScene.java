@@ -1,5 +1,6 @@
 package com.pieisnotpi.game.test_editor;
 
+import com.pieisnotpi.engine.input.devices.Keyboard;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
@@ -93,8 +94,8 @@ public class EditorScene extends Scene
 
     public void onKeyPressed(int key, int mods)
     {
-        if(key == 0x5B) curType--;
-        else if(key == 0x5D) curType++;
+        if(key == Keyboard.KEY_LEFT_BRACKET) curType--;
+        else if(key == Keyboard.KEY_RIGHT_BRACKET) curType++;
 
         if(curType >= types.size()) curType = 0;
         else if(curType < 0) curType = types.size() - 1;

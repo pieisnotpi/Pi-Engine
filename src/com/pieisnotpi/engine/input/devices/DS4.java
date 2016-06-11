@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.input.joysticks;
+package com.pieisnotpi.engine.input.devices;
 
 /**
  * Controller axis/button maps for the Dualshock 4 controller.
@@ -9,14 +9,20 @@ public final class DS4
 {
     public static final int
 
+        /**
+         * DS4 controller axis mappings
+         */
+
             AXIS_LSTICK_X = 0,
             AXIS_LSTICK_Y = 1,
             AXIS_RSTICK_X = 2,
             AXIS_L2 = 3,
             AXIS_R2 = 4,
-            AXIS_RSTICK_Y = 5;
+            AXIS_RSTICK_Y = 5,
 
-    public static final int
+        /**
+         * DS4 controller button mappings
+         */
 
             BUTTON_SQUARE = 0,
             BUTTON_X = 1,

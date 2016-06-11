@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.input.joysticks;
+package com.pieisnotpi.engine.input;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

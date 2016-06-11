@@ -2,6 +2,7 @@ package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.game_objects.PhysicsObject;
+import com.pieisnotpi.engine.input.devices.Keyboard;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.utility.Timer;
@@ -171,16 +172,14 @@ public class PhysicsTestScene extends PauseScene
 
     public void onKeyPressed(int key, int mods)
     {
-        // Enter
-        if(key == 257)
+        if(key == Keyboard.KEY_ENTER)
         {
             Vector2f pos = window.inputManager.localCursorPos;
 
             //crates.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), 0.2f, this));
             wheels.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, this));
         }
-        // Left Shift
-        else if(key == 340)
+        else if(key == Keyboard.KEY_LEFT_SHIFT)
         {
             Vector2f pos = window.inputManager.localCursorPos;
 
@@ -196,8 +195,7 @@ public class PhysicsTestScene extends PauseScene
 
             players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, player, this));
         }
-        // Space
-        else if(key == 32)
+        else if(key == Keyboard.KEY_SPACE)
         {
             for(Crate crate : crates)
             {

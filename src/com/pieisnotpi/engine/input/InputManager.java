@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.input;
 
-import com.pieisnotpi.engine.input.joysticks.Joystick;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Window;
 import org.joml.Vector2d;
@@ -25,8 +24,6 @@ public class InputManager
     public Vector2d cursorPos = new Vector2d();
     public Vector2f localCursorPos = new Vector2f();
 
-    public float mouseSensitivity = 18;
-
     private Window window;
     protected GLFWKeyCallback keyCallback;
     protected GLFWJoystickCallback joyCallback;
@@ -34,7 +31,6 @@ public class InputManager
     protected GLFWCursorPosCallback cursorPosCallback;
 
     public Joystick[] joysticks = new Joystick[16];
-    private float ROT_AMOUNT, MOVE_AMOUNT;
 
     public InputManager(Window window)
     {
@@ -97,9 +93,6 @@ public class InputManager
         if(!window.focused) return;
 
         glfwPollEvents();
-
-        ROT_AMOUNT = 80f/window.getRefreshRate();
-        MOVE_AMOUNT = 3f/window.getRefreshRate();
 
         for(int i = 0; i < keybinds.size(); i++)
         {
