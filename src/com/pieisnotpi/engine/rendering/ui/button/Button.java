@@ -42,7 +42,7 @@ public class Button extends UiObject
 
         base = new ColorQuad(x, y, z, width, height, 0, b0, b0, t0, t0, matrixID, scene);
 
-        setCenter(text.getCx(), text.getCy(), z);
+        defaultCenter();
 
         addToZRot(45);
     }
@@ -116,8 +116,9 @@ public class Button extends UiObject
         {
             base.setColors(b1, b1, t1, t1);
             leftRelease.action();
-            leftStatus = false;
         }
+
+        leftStatus = false;
     }
 
     public void onRightClick()
@@ -134,8 +135,9 @@ public class Button extends UiObject
         if(mouseHoverStatus && rightStatus && rightRelease != null)
         {
             rightRelease.action();
-            rightStatus = false;
         }
+
+        rightStatus = false;
     }
 
     public void onMouseEntered()
