@@ -92,32 +92,32 @@ public abstract class Renderable
     public void setPoints(Vector3f... points)
     {
         if(points.length == 0) return;
-        int b = 0;
 
-        for(int i = 0; i < points.length && i < this.points.length; i++)
+        for(int a = 0, b = 0; a < this.points.length; a++, b++)
         {
             if(b >= points.length) b = 0;
-            if(points[b] != null) this.points[i] = points[b];
-            b++;
+            if(points[b] != null) this.points[a] = points[b];
         }
     }
 
     public void setColors(Color... colors)
     {
         if(colors.length == 0) return;
-        int b = 0;
 
-        for(int i = 0; i < colors.length && i < this.colors.length; i++)
+        for(int a = 0, b = 0; a < this.colors.length; a++, b++)
         {
             if(b >= colors.length) b = 0;
-            if(colors[b] != null) this.colors[i] = colors[b];
-            b++;
+            if(colors[b] != null) this.colors[a] = colors[b];
         }
     }
 
     public void setTexCoords(Vector2f... texCoords)
     {
-        for(int i = 0; i < texCoords.length && i < this.texCoords.length; i++) if(texCoords[i] != null) this.texCoords[i] = texCoords[i];
+        for(int a = 0, b = 0; a < this.texCoords.length; a++, b++)
+        {
+            if(b >= colors.length) b = 0;
+            if(texCoords[b] != null) this.texCoords[a] = texCoords[b];
+        }
     }
 
     protected void setDefaults(int vertCount)
