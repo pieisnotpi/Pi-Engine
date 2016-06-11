@@ -8,11 +8,12 @@ public class Game
 {
     public static void main(String[] args)
     {
-        if(args.length > 0 && args[0].toLowerCase().equals("debug"))
+        for(String arg : args)
         {
-            System.setProperty("org.lwjgl.util.Debug", "true");
-            PiEngine.debug = true;
-            Logger.SYSTEM.log("Debug mode active");
+            String l = arg.toLowerCase();
+
+            if(l.equals("debug")) { PiEngine.debug = true; Logger.SYSTEM.log("Debug mode active"); }
+            else if(l.equals("l_debug")) { System.setProperty("org.lwjgl.util.Debug", "true"); Logger.SYSTEM.log("LWJGL debug mode active"); }
         }
 
         System.setProperty("org.lwjgl.librarypath", "natives");
