@@ -9,14 +9,14 @@ import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
-    public Vector3f up = new Vector3f(0, 1, 0);
+    private Vector3f up = new Vector3f(0, 1, 0);
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float localX, localY, localWidth, localHeight, fov, ratio = -1;
     protected float orthoZoom = 0;
 
     private Vector3f lookAt, position = new Vector3f();
-    protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, orthoUpdated = false;
+    private boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, orthoUpdated = false;
 
     public Camera(float localX, float localY, float localWidth, float localHeight, float fov, Scene scene)
     {
@@ -38,8 +38,8 @@ public class Camera extends GameObject
         lookAt = new Vector3f(x, y, z - 10);
 
         matrices[0] = new Matrix4f().ortho2D(-1, 1, -1, 1);
-        matrices[1] = new Matrix4f().perspective((float) Math.toRadians(fov), 1, 0.01f, 50);
-        matrices[2] = new Matrix4f().ortho2D(-1, 1, -1, 1);
+        matrices[1] = new Matrix4f().perspective((float) Math.toRadians(fov), 1, -1, 100);
+        matrices[2] = new Matrix4f().ortho(-1, 1, -1, 1, -1, 100, false);
 
         scene.gameObjects.add(this);
 
