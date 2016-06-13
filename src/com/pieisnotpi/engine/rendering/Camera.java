@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
-    private Vector3f up = new Vector3f(0, 1, 0);
+    public Vector3f up = new Vector3f(0, 1, 0);
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float localX, localY, localWidth, localHeight, fov, ratio = -1;
