@@ -29,8 +29,8 @@ public class EditorTile extends UiObject
         this.scene = scene;
         this.actualScene = (EditorScene) scene;
 
-        foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor, PiEngine.ORTHO_ID, scene);
-        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor, PiEngine.ORTHO_ID, scene);
+        foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor, PiEngine.C_ORTHO2D_ID, scene);
+        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor, PiEngine.C_ORTHO2D_ID, scene);
 
         scene.gameObjects.add(this);
     }

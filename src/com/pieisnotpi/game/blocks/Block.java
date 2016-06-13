@@ -27,7 +27,7 @@ public class Block extends GameObject
         this.scene = scene;
 
         cubes = new ArrayList<>();
-        cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE, PiEngine.CAMERA_3D_ID, scene)).collect(Collectors.toList()));
+        cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE, PiEngine.C_PERSPECTIVE, scene)).collect(Collectors.toList()));
     }
 
     public void setXRot(float rot)

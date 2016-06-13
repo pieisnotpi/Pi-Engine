@@ -49,7 +49,7 @@ public class PhysicsTestScene extends PauseScene
 
         reset();
 
-        winner = new Text("", 12, 0, 0.1f, 0.7f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.ORTHO_ID, this);
+        winner = new Text("", 12, 0, 0.1f, 0.7f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_ORTHO2D_ID, this);
         winner.alignmentID = Text.CENTERED;
     }
 

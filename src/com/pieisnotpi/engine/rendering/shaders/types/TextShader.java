@@ -22,7 +22,7 @@ public class TextShader extends ShaderProgram
     {
         super(new ShaderFile("/assets/shaders/text.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/text.frag", GL_FRAGMENT_SHADER));
 
-        shaderID = PiEngine.TEXT_ID;
+        shaderID = PiEngine.S_TEXT_ID;
 
         vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
         coords = new Attribute("VertexTexCoords", BufferUtility.vec2ToFloatBuffer(), 1, 2);

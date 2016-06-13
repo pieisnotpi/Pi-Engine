@@ -14,7 +14,7 @@ public class TexQuad extends Quad
 
     public TexQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite, int matrixID, Scene scene)
     {
-        this(x, y, z, width, height, depth, sprite, PiEngine.TEXTURE_ID, matrixID, scene);
+        this(x, y, z, width, height, depth, sprite, PiEngine.S_TEXTURE_ID, matrixID, scene);
     }
 
     public TexQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite, int shaderID, int matrixID, Scene scene)
@@ -30,7 +30,7 @@ public class TexQuad extends Quad
 
     public TexQuad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Sprite sprite, int matrixID, Scene scene)
     {
-        this(c0, c1, c2, c3, sprite, PiEngine.TEXTURE_ID, matrixID, scene);
+        this(c0, c1, c2, c3, sprite, PiEngine.S_TEXTURE_ID, matrixID, scene);
     }
 
     public TexQuad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Sprite sprite, int shaderID, int matrixID, Scene scene)

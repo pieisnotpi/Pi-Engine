@@ -45,8 +45,8 @@ public class TestScene extends PauseScene
         String t3dt = "This text is waving.", t3d2t = "This text is hovering.";
         float t3dw = Text.approxWidth(t3dt, 24, Text.pixelFont), t3d2w = Text.approxWidth(t3d2t, 24, Text.pixelFont);
 
-        text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new WaveEffect());
-        text3D2 = new Text(t3d2t, 24, -t3d2w/2, 1, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.CAMERA_3D_ID, this, new WaveEffect(4, 0, 0.1f));
+        text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect());
+        text3D2 = new Text(t3d2t, 24, -t3d2w/2, 1, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect(4, 0, 0.1f));
 
         c.transitionX(-4.5f);
         c.transitionY(6);

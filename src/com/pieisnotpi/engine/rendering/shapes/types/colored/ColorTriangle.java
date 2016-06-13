@@ -10,7 +10,7 @@ public class ColorTriangle extends Triangle
 {
     public ColorTriangle(Vector3f c0, Vector3f c1, Vector3f c2, Color c0c, Color c1c, Color c2c, int matrixID, Scene scene)
     {
-        super(c0, c1, c2, c0c, c1c, c2c, PiEngine.COLOR_ID, matrixID, scene);
+        super(c0, c1, c2, c0c, c1c, c2c, PiEngine.S_COLOR_ID, matrixID, scene);
 
         register();
     }

@@ -21,7 +21,7 @@ public class TextureShader extends ShaderProgram
     {
         super(new ShaderFile("/assets/shaders/textured.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/textured.frag", GL_FRAGMENT_SHADER));
 
-        shaderID = PiEngine.TEXTURE_ID;
+        shaderID = PiEngine.S_TEXTURE_ID;
 
         vertex = new Attribute("VertexPosition", 0, 3);
         coords = new Attribute("VertexTexCoords", 1, 2);

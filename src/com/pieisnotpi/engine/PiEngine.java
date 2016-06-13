@@ -13,9 +13,9 @@ public class PiEngine
     // Current game instance
     public static GameInstance instance;
     // Matrix IDs
-    public static final int ORTHO_ID = 0, CAMERA_3D_ID = 1, CAMERA_2D_ID = 2;
+    public static final int C_ORTHO2D_ID = 0, C_PERSPECTIVE = 1, C_ORTHO = 2;
     // Shader IDs (initialized in Window)
-    public static int TEXTURE_ID, COLOR_ID, TEXT_ID, TEXTURE_C;
+    public static int S_TEXTURE_ID, S_COLOR_ID, S_TEXT_ID, S_TEXTURE_C;
     // Rendering to physics coordinate conversion
     public static final float PIXELS_PER_METER = (0.1f/2);
     // Current monitor

@@ -27,7 +27,7 @@ public class TextQuad extends TextRenderable
 
         this.line = line;
         this.scene = scene;
-        this.shaderID = PiEngine.TEXT_ID;
+        this.shaderID = PiEngine.S_TEXT_ID;
         this.matrixID = matrixID;
         this.transparent = true;
         this.cSprite = cSprite;

@@ -14,7 +14,7 @@ public class ColorQuad extends Quad
 
     public ColorQuad(float x, float y, float z, float width, float height, float depth, Color c0c, Color c1c, Color c2c, Color c3c, int matrixID, Scene scene)
     {
-        super(x, y, z, width, height, depth, PiEngine.COLOR_ID, matrixID, scene);
+        super(x, y, z, width, height, depth, PiEngine.S_COLOR_ID, matrixID, scene);
 
         setColors(c0c, c1c, c2c, c3c);
     }

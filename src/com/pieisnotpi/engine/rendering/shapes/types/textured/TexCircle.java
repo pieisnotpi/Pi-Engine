@@ -14,7 +14,7 @@ public class TexCircle extends Circle
 
     public TexCircle(float x, float y, float z, float radius, int sides, Sprite sprite, int matrixID, Scene scene)
     {
-        super(x, y, z, radius, sides, PiEngine.TEXTURE_ID, matrixID, scene);
+        super(x, y, z, radius, sides, PiEngine.S_TEXTURE_ID, matrixID, scene);
         this.sprite = sprite;
 
         assemble();

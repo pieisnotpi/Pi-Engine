@@ -49,7 +49,7 @@ public class Text extends UiObject
         this.textColor = textColor;
         this.outlineColor = outlineColor;
 
-        shaderID = PiEngine.TEXT_ID;
+        shaderID = PiEngine.S_TEXT_ID;
 
         chars = new ArrayList<>();
         if(effects != null) this.effects = new ArrayList<>(Arrays.asList(effects));

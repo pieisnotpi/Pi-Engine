@@ -21,7 +21,7 @@ public class TexturedCShader extends ShaderProgram
     {
         super(new ShaderFile("/assets/shaders/textured_c.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/textured_c.frag", GL_FRAGMENT_SHADER));
 
-        shaderID = PiEngine.TEXTURE_ID;
+        shaderID = PiEngine.S_TEXTURE_ID;
 
         vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
         color = new Attribute("VertexColor", BufferUtility.colorToFloatBuffer(), 1, 4);

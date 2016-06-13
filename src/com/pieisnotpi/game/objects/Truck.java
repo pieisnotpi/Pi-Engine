@@ -21,7 +21,7 @@ public class Truck extends PhysicsObject
         this.x = x;
         this.y = y;
         this.z = z;
-        this.matrixID = PiEngine.CAMERA_2D_ID;
+        this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;
 
         super.width = width;

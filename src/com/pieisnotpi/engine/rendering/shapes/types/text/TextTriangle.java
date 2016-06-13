@@ -23,7 +23,7 @@ public class TextTriangle extends TextRenderable
 
         this.texture = texture;
         this.matrixID = matrixID;
-        this.shaderID = PiEngine.TEXT_ID;
+        this.shaderID = PiEngine.S_TEXT_ID;
         this.scene = scene;
 
         this.texture = texture;

@@ -21,7 +21,7 @@ public class ColorShader extends ShaderProgram
     {
         super(new ShaderFile("/assets/shaders/color.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/color.frag", GL_FRAGMENT_SHADER));
 
-        shaderID = PiEngine.COLOR_ID;
+        shaderID = PiEngine.S_COLOR_ID;
 
         vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
         colors = new Attribute("VertexColor", BufferUtility.colorToFloatBuffer(), 1, 4);

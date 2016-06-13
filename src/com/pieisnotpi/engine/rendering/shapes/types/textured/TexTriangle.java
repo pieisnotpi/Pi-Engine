@@ -11,7 +11,7 @@ public class TexTriangle extends Triangle
 {
     public TexTriangle(Vector3f c0, Vector3f c1, Vector3f c2, Vector2f c0tx, Vector2f c1tx, Vector2f c2tx, Texture texture, int matrixID, Scene scene)
     {
-        this(c0, c1, c2, c0tx, c1tx, c2tx, texture, PiEngine.TEXTURE_ID, matrixID, scene);
+        this(c0, c1, c2, c0tx, c1tx, c2tx, texture, PiEngine.S_TEXTURE_ID, matrixID, scene);
     }
 
     public TexTriangle(Vector3f c0, Vector3f c1, Vector3f c2, Vector2f c0tx, Vector2f c1tx, Vector2f c2tx, Texture texture, int shaderID, int matrixID, Scene scene)

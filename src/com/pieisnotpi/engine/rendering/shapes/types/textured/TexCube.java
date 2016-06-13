@@ -11,7 +11,7 @@ public class TexCube extends Cube
     {
         super();
 
-        this.shaderID = PiEngine.TEXTURE_ID;
+        this.shaderID = PiEngine.S_TEXTURE_ID;
         this.matrixID = matrixID;
         this.scene = scene;
 

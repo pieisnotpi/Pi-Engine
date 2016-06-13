@@ -204,22 +204,22 @@ public class Window
         glDepthMask(true);
         glClearDepth(1.0f);
 
-        PiEngine.TEXTURE_ID = shaders.size();
+        PiEngine.S_TEXTURE_ID = shaders.size();
         TextureShader textureShader = new TextureShader();
         textureShader.init();
         shaders.add(textureShader);
 
-        PiEngine.TEXTURE_C = shaders.size();
+        PiEngine.S_TEXTURE_C = shaders.size();
         TexturedCShader texturedCShader = new TexturedCShader();
         texturedCShader.init();
         shaders.add(texturedCShader);
 
-        PiEngine.COLOR_ID = shaders.size();
+        PiEngine.S_COLOR_ID = shaders.size();
         ColorShader colorShader = new ColorShader();
         colorShader.init();
         shaders.add(colorShader);
 
-        PiEngine.TEXT_ID = shaders.size();
+        PiEngine.S_TEXT_ID = shaders.size();
         TextShader textShader = new TextShader();
         textShader.init();
         shaders.add(textShader);
@@ -286,10 +286,10 @@ public class Window
                 if(o1.transparent && o2.transparent)
                 {
                     float z1 = o1.points[0].z, z2 = o2.points[0].z;
-                    if(o1.getMatrixID() == PiEngine.CAMERA_3D_ID) z1 *= cos;
-                    else if(o1.getMatrixID() == PiEngine.ORTHO_ID) z1++;
-                    if(o2.getMatrixID() == PiEngine.CAMERA_3D_ID) z2 *= cos;
-                    else if(o2.getMatrixID() == PiEngine.ORTHO_ID) z2++;
+                    if(o1.getMatrixID() == PiEngine.C_PERSPECTIVE) z1 *= cos;
+                    else if(o1.getMatrixID() == PiEngine.C_ORTHO2D_ID) z1++;
+                    if(o2.getMatrixID() == PiEngine.C_PERSPECTIVE) z2 *= cos;
+                    else if(o2.getMatrixID() == PiEngine.C_ORTHO2D_ID) z2++;
 
                     return Float.compare(z1, z2);
                 }

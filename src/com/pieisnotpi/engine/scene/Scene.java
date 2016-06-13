@@ -66,8 +66,8 @@ public abstract class Scene
 
     public void init()
     {
-        fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.ORTHO_ID, this);
-        pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.ORTHO_ID, this);
+        fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
+        pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
         world = new World(new Vec2(0, -9.81f));
 
         fps.alignmentID = Text.LEFT;

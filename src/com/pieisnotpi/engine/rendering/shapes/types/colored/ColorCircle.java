@@ -13,7 +13,7 @@ public class ColorCircle extends Circle
 
     public ColorCircle(float x, float y, float z, float radius, int sides, Color color, int matrixID, Scene scene)
     {
-        super(x, y, z, radius, sides, PiEngine.COLOR_ID, matrixID, scene);
+        super(x, y, z, radius, sides, PiEngine.S_COLOR_ID, matrixID, scene);
         this.color = color;
 
         assemble();

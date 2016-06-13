@@ -24,7 +24,7 @@ public class Crate extends PhysicsObject
         width = scale;
         height = scale;
 
-        this.matrixID = PiEngine.CAMERA_2D_ID;
+        this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;
 
         PolygonShape t = new PolygonShape();
