@@ -1,14 +1,19 @@
 package com.pieisnotpi.engine;
 
 import com.pieisnotpi.engine.output.Logger;
+import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWMonitorCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_CONNECTED;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 import static org.lwjgl.opengl.GL11.GL_VERSION;
 import static org.lwjgl.opengl.GL11.glGetString;
 
@@ -17,19 +22,12 @@ public abstract class GameInstance
     private boolean isRunning = true;
     private long startTime;
 
-    public List<Window> windows;
-    public List<GameUpdate> updates;
-
-    public GameInstance()
-    {
-        windows = new ArrayList<>();
-        updates = new ArrayList<>();
-    }
+    public List<Window> windows = new ArrayList<>();
+    public List<GameUpdate> updates = new ArrayList<>();
 
     public void init()
     {
-        Logger.SYSTEM.log("LWJGL Version  '" + Version.getVersion() + '\'');
-        Logger.SYSTEM.log("OpenGL Version '" + glGetString(GL_VERSION) + '\'');
+        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
     }
 
     public void start()
@@ -98,6 +96,17 @@ public abstract class GameInstance
                 }
             }
         }
+    }
+
+    public void onMonitorConnect(Monitor monitor)
+    {
+        Logger.SYSTEM.debug("Monitor connected with ID " + monitor.monitorID);
+    }
+
+    public void onMonitorDisconnect(Monitor monitor)
+    {
+        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
+        Logger.SYSTEM.debug("Monitor disconnected with ID " + monitor.monitorID);
     }
 
     public long getTime()

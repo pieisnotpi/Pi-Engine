@@ -1,7 +1,9 @@
 package com.pieisnotpi.game;
 
 import com.pieisnotpi.engine.GameInstance;
+import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.Keybind;
+import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.scenes.PhysicsTestScene;
@@ -18,7 +20,9 @@ class MainInstance extends GameInstance
 
     public void init()
     {
-        window = new Window("Pi Engine", 600, 600, false, 0);
+        super.init();
+
+        window = new Window("Pi Engine", 600, 600, false, 0, PiEngine.monitorPointers.get(Window.prefMonitor), 0);
         window.init();
 
         windows.add(window);
@@ -42,8 +46,6 @@ class MainInstance extends GameInstance
             w.inputManager.keybinds.add(new Keybind(GLFW_KEY_3, false, (value) -> w.setScene(editor), null));
             w.inputManager.keybinds.add(new Keybind(GLFW_KEY_4, false, (value) -> w.setScene(physics), null));
         }
-
-        super.init();
     }
 
     public void start()
@@ -51,5 +53,16 @@ class MainInstance extends GameInstance
         window.show();
 
         super.start();
+    }
+
+    public void onMonitorDisconnect(Monitor monitor)
+    {
+        super.onMonitorDisconnect(monitor);
+
+        windows.stream().filter(window -> monitor.isPointInMonitor(window.middle)).forEach(window ->
+        {
+            window.monitor = Window.getPrefMonitor();
+            window.center();
+        });
     }
 }

@@ -1,8 +1,18 @@
 package com.pieisnotpi.engine;
 
+import com.pieisnotpi.engine.output.Logger;
+import com.pieisnotpi.engine.rendering.Monitor;
+import com.pieisnotpi.engine.rendering.Window;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWMonitorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -10,6 +20,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class PiEngine
 {
+    // GLFW monitor pointers
+    public static PointerBuffer monitorPointers;
+    // System monitors
+    public static Map<Long, Monitor> monitorMap = new HashMap<>();
     // Current game instance
     public static GameInstance instance;
     // Matrix IDs
@@ -18,16 +32,14 @@ public class PiEngine
     public static int S_TEXTURE_ID, S_COLOR_ID, S_TEXT_ID, S_TEXTURE_C;
     // Rendering to physics coordinate conversion
     public static final float PIXELS_PER_METER = (0.1f/2);
-    // Current monitor
-    public static int monitor = 0;
     // Debug mode
     public static boolean debug = false;
     // GL Version
     public static int glMajor = -1, glMinor = -1;
     // GL Capabilities
     public static GLCapabilities capabilities;
-    // Current GLFW context
-    public static long currentContext = -1;
+    // Current GLFW window
+    public static long currentWindow = -1;
 
     /**
      * Initializes the Pi Engine
@@ -65,6 +77,35 @@ public class PiEngine
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
+
+        monitorPointers = glfwGetMonitors();
+
+        for(int i = 0; i < monitorPointers.limit(); i++)
+        {
+            long l = monitorPointers.get(i);
+            monitorMap.put(l, new Monitor(l));
+        }
+
+        glfwSetMonitorCallback(GLFWMonitorCallback.create((monitorID, event) ->
+        {
+            monitorPointers = glfwGetMonitors();
+
+            if(event == GLFW_CONNECTED)
+            {
+                Monitor m = new Monitor(monitorID);
+                monitorMap.put(monitorID, m);
+                instance.onMonitorConnect(m);
+            }
+            else
+            {
+                Monitor m = monitorMap.get(monitorID);
+                monitorMap.remove(monitorID);
+                instance.onMonitorDisconnect(m);
+            }
+        }));
+
+        Logger.SYSTEM.log(String.format("LWJGL Version  '%s'", Version.getVersion()));
+        Logger.SYSTEM.log(String.format("OpenGL Version '%s'", glVersion));
 
         glfwDestroyWindow(window);
 

@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -18,7 +20,8 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class Texture
 {
-    public static List<Texture> textures = new ArrayList<>();
+    public static Map<String, Texture> textures = new HashMap<>();
+    //public static List<Texture> textures = new ArrayList<>();
     public static String defaultPath = "/assets/textures/";
 
     private int texID = -1, samplerID = 0;
@@ -188,7 +191,8 @@ public class Texture
 
     public static Texture getTexture(String name)
     {
-        for(Texture texture : textures) if(texture.name.equals(name)) return texture;
+        Texture t = textures.get(name);
+        if(t != null) return t;
 
         try
         {
@@ -199,7 +203,7 @@ public class Texture
 
             Texture temp = new Texture(path);
             Logger.TEXTURES.debug("Found texture '" + path + "'");
-            textures.add(temp);
+            textures.put(name, temp);
             return temp;
         }
         catch(Exception e)

@@ -12,12 +12,9 @@ import com.pieisnotpi.engine.rendering.shaders.types.TexturedCShader;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.joml.Vector2i;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFWMonitorCallback;
 import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.opengl.GLCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,7 @@ public class Window
     public float ratio;
     public long windowID;
     public boolean focused = true;
-    public static int lastShaderID = -1, lastTextureID = -1;
+    public static int lastShaderID = -1, lastTextureID = -1, prefMonitor = 0;
 
     private int vsync, refreshRate = -1;
     private long share, time = 0;
@@ -41,33 +38,16 @@ public class Window
     private GameUpdate drawUpdate, inputUpdate;
 
     protected Logger logger;
-    protected Monitor curMonitor;
-    protected GLFWMonitorCallback monitorCallback;
     protected GLFWWindowFocusCallback focusCallback;
     protected GLFWWindowPosCallback windowPosCallback;
     protected GLFWWindowSizeCallback windowSizeCallback;
 
     public Scene scene;
     public String name;
-    public List<Monitor> monitors = new ArrayList<>();
+    public Monitor monitor;
     public InputManager inputManager;
-    public GLCapabilities capabilities;
     public List<ShaderProgram> shaders = new ArrayList<>();
-    public Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(res), pos = new Vector2i(-1, -1), originalPos = new Vector2i(pos);
-
-    /**
-     * Used to initialize a standard window
-     * @param name Name of the window
-     * @param width Width of the window
-     * @param height Height of the window
-     * @param fullscreen Enables/disables fullscreen for the window
-     * @param vsync Sets window swap interval. Value of 0 disables vsync
-     */
-
-    public Window(String name, int width, int height, boolean fullscreen, int vsync)
-    {
-        this(name, width, height, fullscreen, vsync, NULL);
-    }
+    public Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(res), pos = new Vector2i(-1, -1), originalPos = new Vector2i(pos), middle = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -76,34 +56,30 @@ public class Window
      * @param height Height of the window
      * @param fullscreen Enables/disables fullscreen for the window
      * @param vsync Sets window swap interval. Value of 0 disables vsync
-     * @param share Window to share context with. Should be first (alive) window
+     * @param share Window to share context with. Should be first (alive) window. Set to 0 to disable
      */
 
     public Window(String name, int width, int height, boolean fullscreen, int vsync, long share)
     {
-        this.fullscreen = fullscreen;
-        this.vsync = vsync;
-        this.name = name;
-        this.share = share;
-
-        res.set(width, height);
-        originalRes.set(width, height);
-        logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
+        this(name, width, height, fullscreen, vsync, share, glfwGetPrimaryMonitor());
     }
 
+
     /**
-     * Used to initialize a standard window with a specific refresh rate
+     * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
      * @param name Name of the window
      * @param width Width of the window
      * @param height Height of the window
      * @param fullscreen Enables/disables fullscreen for the window
      * @param vsync Sets window swap interval. Value of 0 disables vsync
-     * @param refreshRate Sets the refresh rate of the window
+     * @param monitorID The ID of the monitor to use
+     * @param share Window to share context with. Should be first (alive) window. Set to 0 to disable
      */
 
-    public Window(String name, int width, int height, boolean fullscreen, int vsync, int refreshRate)
+    public Window(String name, int width, int height, boolean fullscreen, int vsync, long monitorID, long share)
     {
-        this(name, width, height, fullscreen, vsync, refreshRate, NULL);
+        this(name, width, height, fullscreen, vsync, -1, monitorID, share);
+        refreshRate = monitor.getRefreshRate();
     }
 
     /**
@@ -114,10 +90,27 @@ public class Window
      * @param fullscreen Enables/disables fullscreen for the window
      * @param vsync Sets window swap interval. Value of 0 disables vsync
      * @param refreshRate Sets the refresh rate of the window
-     * @param share Window to share context with. Should be first (alive) window
+     * @param share Window to share context with. Should be first (alive) window. Set to 0 to disable
      */
 
     public Window(String name, int width, int height, boolean fullscreen, int vsync, int refreshRate, long share)
+    {
+        this(name, width, height, fullscreen, vsync, refreshRate, glfwGetPrimaryMonitor(), NULL);
+    }
+
+    /**
+     * Used to initialize a window with a shared GL context and specific refresh rate. Shared GL context is necessary for multiple windows.
+     * @param name Name of the window
+     * @param width Width of the window
+     * @param height Height of the window
+     * @param fullscreen Enables/disables fullscreen for the window
+     * @param vsync Sets window swap interval. Value of 0 disables vsync
+     * @param refreshRate Sets the refresh rate of the window
+     * @param monitorID The ID of the monitor to use
+     * @param share Window to share context with. Should be first (alive) window. Set to 0 to disable
+     */
+
+    public Window(String name, int width, int height, boolean fullscreen, int vsync, int refreshRate, long monitorID, long share)
     {
         this.fullscreen = fullscreen;
         this.vsync = vsync;
@@ -128,48 +121,20 @@ public class Window
         res.set(width, height);
         originalRes.set(width, height);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
+        monitor = PiEngine.monitorMap.get(monitorID);
     }
 
     public void init()
     {
         if(initialized) return;
 
-        windowID = glfwCreateWindow((int) res.x, (int) res.y, name, NULL, share);
+        windowID = glfwCreateWindow(res.x, res.y, name, NULL, share);
         if(windowID == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
         glfwMakeContextCurrent(windowID);
         glfwFocusWindow(windowID);
 
-        PointerBuffer monitorBuffer = glfwGetMonitors();
-
-        for(int i = 0; i < monitorBuffer.limit(); i++) monitors.add(new Monitor(monitorBuffer.get(i)));
-
-        if(PiEngine.monitor >= monitorBuffer.limit() || PiEngine.monitor < 0)
-        {
-            long m = glfwGetPrimaryMonitor();
-
-            for (int i = 0; i < monitors.size(); i++) if(monitors.get(i).monitorID == m) PiEngine.monitor = i;
-        }
-
-        curMonitor = monitors.get(PiEngine.monitor);
-
-        if(refreshRate == -1) refreshRate = curMonitor.getRefreshRate();
-
-        glfwSetMonitorCallback(monitorCallback = GLFWMonitorCallback.create((monitorID, event) ->
-        {
-            if(event == GLFW_CONNECTED) monitors.add(new Monitor(monitorID));
-            else for(int i = 0; i < monitors.size(); i++) if(monitors.get(i).monitorID == monitorID)
-            {
-                if(monitors.get(i).isPointInMonitor(pos))
-                {
-                    if(i == 0 && monitors.size() > 1) glfwSetWindowPos(windowID, (int) monitors.get(1).getPosition().x, (int) monitors.get(1).getPosition().y);
-                    else if(i != 0) glfwSetWindowPos(windowID, (int) monitors.get(0).getPosition().x, (int) monitors.get(0).getPosition().y);
-                }
-
-                monitors.remove(i);
-                return;
-            }
-        }));
+        if(refreshRate == -1) refreshRate = monitor.getRefreshRate();
 
         glfwSetWindowSizeCallback(windowID, windowSizeCallback = GLFWWindowSizeCallback.create((windowID, width, height) ->
         {
@@ -224,10 +189,7 @@ public class Window
         textShader.init();
         shaders.add(textShader);
 
-        drawUpdate = new GameUpdate(1, () ->
-        {
-            draw();
-        }, () ->
+        drawUpdate = new GameUpdate(1, this::draw, () ->
         {
             String time = "" + (float) this.time/drawUpdate.updates;
             if(time.length() >= 5) time = time.substring(0, 5);
@@ -240,7 +202,7 @@ public class Window
 
         inputManager.keybinds.add(new Keybind(GLFW_KEY_F11, false, (value) -> setFullscreen(!fullscreen), null));
 
-        setWindowPos(curMonitor.position.x + (curMonitor.size.x - originalRes.x)/2, curMonitor.position.y + (curMonitor.size.y - originalRes.y)/2);
+        center();
         setRefreshRate(refreshRate);
         setVsync(vsync);
         setFullscreen(fullscreen);
@@ -270,7 +232,11 @@ public class Window
 
         ratio = (float) res.x/res.y;
 
-        if(windowID != PiEngine.currentContext) glfwMakeContextCurrent(windowID);
+        if(windowID != prefMonitor)
+        {
+            PiEngine.currentWindow = windowID;
+            glfwMakeContextCurrent(windowID);
+        }
 
         glClearColor(scene.clearColor.red, scene.clearColor.green, scene.clearColor.blue, scene.clearColor.alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -333,6 +299,11 @@ public class Window
         PiEngine.instance.updates.remove(drawUpdate);
     }
 
+    public void center()
+    {
+        setWindowPos(monitor.position.x + (monitor.size.x - originalRes.x)/2, monitor.position.y + (monitor.size.y - originalRes.y)/2);
+    }
+
     public int getRefreshRate() { return refreshRate; }
     public int getVsync() { return vsync; }
     public boolean isAlive() { return alive; }
@@ -358,6 +329,16 @@ public class Window
         setCurrentMonitor();
 
         if(temp) setFullscreen(true);
+
+        middle.set(pos.x + res.x/2, pos.y + res.y/2);
+    }
+
+    public void setWindowRes(int width, int height)
+    {
+        res.set(width, height);
+        middle.set(pos.x + res.x/2, pos.y + res.y/2);
+
+        glfwSetWindowSize(windowID, width, height);
     }
 
     public void setRefreshRate(int refreshRate)
@@ -372,7 +353,7 @@ public class Window
     {
         this.vsync = vsync;
 
-        if(vsync > 0) refreshRate = curMonitor.getRefreshRate()/vsync;
+        if(vsync > 0) refreshRate = monitor.getRefreshRate()/vsync;
 
         glfwSwapInterval(vsync);
     }
@@ -381,7 +362,7 @@ public class Window
     {
         this.fullscreen = fullscreen;
 
-        if(fullscreen) glfwSetWindowMonitor(windowID, curMonitor.monitorID, 0, 0, 1920, 1080, refreshRate);
+        if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, 1920, 1080, refreshRate);
         else glfwSetWindowMonitor(windowID, NULL, (int) originalPos.x, (int) originalPos.y, (int) originalRes.x, (int) originalRes.y, refreshRate);
     }
 
@@ -406,17 +387,20 @@ public class Window
 
     private void setCurrentMonitor()
     {
-        for(int i = 0; i < monitors.size(); i++)
+        Vector2i middle = new Vector2i();
+
+        for(int i = 0; i < PiEngine.monitorPointers.limit(); i++)
         {
-            Monitor monitor = monitors.get(i);
+            long pointer = PiEngine.monitorPointers.get(i);
+            if(pointer == monitor.monitorID) continue;
 
-            if(monitor.equals(curMonitor)) continue;
-
-            if(monitor.isPointInMonitor(pos))
-            {
-                PiEngine.monitor = i;
-                curMonitor = monitors.get(i);
-            }
+            Monitor monitor = PiEngine.monitorMap.get(pointer);
+            if(monitor.isPointInMonitor(middle.set(pos.x + res.x/2, pos.y + res.y/2))) this.monitor = monitor;
         }
+    }
+
+    public static Monitor getPrefMonitor()
+    {
+        return PiEngine.monitorMap.get(PiEngine.monitorPointers.get(prefMonitor));
     }
 }
