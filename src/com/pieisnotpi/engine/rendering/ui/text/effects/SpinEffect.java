@@ -16,8 +16,8 @@ public class SpinEffect implements TextEffect
 
     public void process(Text text)
     {
-        if(axis == 0) text.addToXRot(speed += acceleration);
-        else if(axis == 1) text.addToYRot(speed += acceleration);
-        else if(axis == 2) text.addToZRot(speed += acceleration);
+        if(axis == 0) text.addToRot(speed += acceleration, 0, 0);
+        else if(axis == 1) text.addToRot(0, speed += acceleration, 0);
+        else if(axis == 2) text.addToRot(0, 0, speed += acceleration);
     }
 }

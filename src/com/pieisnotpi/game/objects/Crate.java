@@ -18,11 +18,8 @@ public class Crate extends PhysicsObject
 
     public Crate(float x, float y, float z, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        width = scale;
-        height = scale;
+        pos.set(x, y, z);
+        size.set(scale, scale, 0);
 
         this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;
@@ -45,22 +42,22 @@ public class Crate extends PhysicsObject
 
     public void physicsUpdate()
     {
-        x = toRenderCoord(body.getPosition().x);
-        y = toRenderCoord(body.getPosition().y);
+        pos.x = toRenderCoord(body.getPosition().x);
+        pos.y = toRenderCoord(body.getPosition().y);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
         if(angle < -0.1f || angle > 0.1f)
         {
             quad.setZRot(0, quad.getCenterX(), quad.getCenterY());
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
             quad.setZRot(angle, quad.getCenterX(), quad.getCenterY());
         }
         else
         {
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
         }
     }
 

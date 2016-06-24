@@ -12,6 +12,7 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -25,10 +26,9 @@ public class InputManager
     public Vector2f localCursorPos = new Vector2f();
 
     private Window window;
-    protected GLFWKeyCallback keyCallback;
-    protected GLFWJoystickCallback joyCallback;
+    /*protected GLFWJoystickCallback joyCallback;
     protected GLFWScrollCallback scrollCallback;
-    protected GLFWCursorPosCallback cursorPosCallback;
+    protected GLFWCursorPosCallback cursorPosCallback;*/
 
     public Joystick[] joysticks = new Joystick[16];
 
@@ -42,7 +42,7 @@ public class InputManager
             Logger.SYSTEM.log("Joystick '" + joysticks[i].name + "' is connected");
         }
 
-        glfwSetCursorPosCallback(window.windowID, cursorPosCallback = GLFWCursorPosCallback.create((windowID, xPos, yPos) ->
+        glfwSetCursorPosCallback(window.windowID, GLFWCursorPosCallback.create((windowID, xPos, yPos) ->
         {
             if(!window.focused) return;
 
@@ -54,12 +54,12 @@ public class InputManager
             window.scene.onMouseMovement(localCursorPos);
         }));
 
-        glfwSetScrollCallback(window.windowID, scrollCallback = GLFWScrollCallback.create((windowID, xOffset, yOffset) ->
+        glfwSetScrollCallback(window.windowID, GLFWScrollCallback.create((windowID, xOffset, yOffset) ->
         {
             if(window.focused) window.scene.onScroll((float) xOffset, (float) yOffset);
         }));
 
-        glfwSetKeyCallback(window.windowID, keyCallback = GLFWKeyCallback.create((windowID, key, scanCode, action, mods) ->
+        glfwSetKeyCallback(window.windowID, GLFWKeyCallback.create((windowID, key, scanCode, action, mods) ->
         {
             if(!window.focused) return;
 
@@ -67,15 +67,16 @@ public class InputManager
             else window.scene.onKeyPressed(key, mods);
         }));
 
-        glfwSetJoystickCallback(joyCallback = GLFWJoystickCallback.create((joy, event) ->
+        glfwSetJoystickCallback(GLFWJoystickCallback.create((joy, event) ->
         {
             if(event == GLFW_CONNECTED)
             {
-                joysticks[joy] = new Joystick(joy);
+                window.scene.onJoystickConnect(joysticks[joy] = new Joystick(joy));
                 Logger.SYSTEM.log("Joystick '" + joysticks[joy].name + "' has been connected");
             }
             else
             {
+                window.scene.onJoystickDisconnect(joysticks[joy]);
                 Logger.SYSTEM.log("Joystick '" + joysticks[joy].name + "' has been disconnected");
                 joysticks[joy] = null;
             }
@@ -94,87 +95,95 @@ public class InputManager
 
         glfwPollEvents();
 
-        for(int i = 0; i < keybinds.size(); i++)
+        try
         {
-            Keybind keybind = keybinds.get(i);
-
-            if(keybind.active)
+            keybinds.forEach(keybind ->
             {
-                int temp = glfwGetKey(window.windowID, keybind.key);
+                if(keybind.active)
+                {
+                    int temp = glfwGetKey(window.windowID, keybind.key);
 
-                if(temp == GLFW_RELEASE)
-                {
-                    keybind.prevStatus = false;
-                    keybind.release();
+                    if(temp == GLFW_RELEASE)
+                    {
+                        keybind.prevStatus = false;
+                        keybind.release();
+                    }
+                    else if(temp == GLFW_PRESS && (!keybind.prevStatus || keybind.allowHolding))
+                    {
+                        keybind.prevStatus = true;
+                        keybind.press();
+                    }
                 }
-                else if(temp == GLFW_PRESS && (!keybind.prevStatus || keybind.allowHolding))
-                {
-                    keybind.prevStatus = true;
-                    keybind.press();
-                }
-            }
+            });
         }
+        catch(ConcurrentModificationException e) {/**/}
 
-        for(int i = 0; i < mousebinds.size(); i++)
+        try
         {
-            Mousebind mousebind = mousebinds.get(i);
-
-            if(mousebind.active)
+            mousebinds.forEach(mousebind ->
             {
-                int temp = glfwGetMouseButton(window.windowID, mousebind.button);
+                if(mousebind.active)
+                {
+                    int temp = glfwGetMouseButton(window.windowID, mousebind.button);
 
-                if(temp == GLFW_RELEASE)
-                {
-                    mousebind.prevStatus = false;
-                    mousebind.release();
+                    if(temp == GLFW_RELEASE)
+                    {
+                        mousebind.prevStatus = false;
+                        mousebind.release();
+                    }
+                    else if(temp == GLFW_PRESS && (!mousebind.prevStatus || mousebind.allowHolding))
+                    {
+                        mousebind.prevStatus = true;
+                        mousebind.press();
+                    }
                 }
-                else if(temp == GLFW_PRESS && (!mousebind.prevStatus || mousebind.allowHolding))
-                {
-                    mousebind.prevStatus = true;
-                    mousebind.press();
-                }
-            }
+            });
         }
+        catch(ConcurrentModificationException e) {/**/}
 
         for(Joystick joystick : joysticks) if(joystick != null) joystick.retrieveValues();
 
-        for(int i = 0; i < joybinds.size(); i++)
+        try
         {
-            Joybind joybind = joybinds.get(i);
-            Joystick joystick = joysticks[joybind.joystick];
-
-            if(joybind.enabled && joystick != null)
+            joybinds.forEach(joybind ->
             {
-                float value;
+                Joystick joystick = joysticks[joybind.joystick];
 
-                if(!joybind.isButton)
+                if (joybind.enabled && joystick != null)
                 {
-                    FloatBuffer axis = joystick.getAxis();
+                    float value;
 
-                    if(axis != null && axis.limit() > joybind.axis) value = axis.get(joybind.axis);
-                    else value = 0;
+                    if (!joybind.isButton)
+                    {
+                        FloatBuffer axis = joystick.getAxis();
 
-                    if(value > -0.1f && value < 0.1f) value = 0;
-                }
-                else
-                {
-                    ByteBuffer buttons = joystick.getButtons();
+                        if (axis != null && axis.limit() > joybind.axis) value = axis.get(joybind.axis);
+                        else value = 0;
 
-                    if(buttons != null && buttons.limit() > joybind.axis && buttons.get(joybind.axis) == GLFW_TRUE) value = 1;
-                    else value = 0;
-                }
+                        if (value > -0.1f && value < 0.1f) value = 0;
+                    }
+                    else
+                    {
+                        ByteBuffer buttons = joystick.getButtons();
 
-                if(value == 0 && joybind.lastValue != 0)
-                {
-                    joybind.lastValue = 0;
-                    joybind.release();
+                        if (buttons != null && buttons.limit() > joybind.axis && buttons.get(joybind.axis) == GLFW_TRUE)
+                            value = 1;
+                        else value = 0;
+                    }
+
+                    if (value == 0 && joybind.lastValue != 0)
+                    {
+                        joybind.lastValue = 0;
+                        joybind.release();
+                    }
+                    else if (value != 0 && (joybind.lastValue != value || joybind.allowHolding))
+                    {
+                        joybind.lastValue = value;
+                        joybind.press(value);
+                    }
                 }
-                else if(value != 0 && (joybind.lastValue != value || joybind.allowHolding))
-                {
-                    joybind.lastValue = value;
-                    joybind.press(value);
-                }
-            }
+            });
         }
+        catch(ConcurrentModificationException e) {/**/}
     }
 }

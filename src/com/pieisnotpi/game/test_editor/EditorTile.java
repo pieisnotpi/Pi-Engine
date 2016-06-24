@@ -18,11 +18,8 @@ public class EditorTile extends UiObject
 
     public EditorTile(float x, float y, float z, float scale, Sprite sprite, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.width = scale;
-        this.height = scale;
+        pos.set(x, y, z);
+        size.set(scale, scale, 0);
         this.scale = scale;
         this.foreSprite = sprite;
         this.backSprite = sprite;

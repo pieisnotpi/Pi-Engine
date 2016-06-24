@@ -7,6 +7,8 @@ import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Grass;
 import com.pieisnotpi.game.cameras.TransitionCamera;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class TestScene extends PauseScene
 {
@@ -22,7 +24,7 @@ public class TestScene extends PauseScene
         name = "Test Scene 1";
 
         //cameras.add(new ControlCamera(0, 0, 1, 1, 90, 0, this));
-        cameras.add(c = new TransitionCamera(0, 0, 1, 1, 90, 0.01f, 0.1f, 0, this));
+        cameras.add(c = new TransitionCamera(new Vector3f(0, 10, 0), new Vector3f(0, 2, -10), new Vector2f(0, 0), new Vector2f(1, 1), 90, 0.01f, 100f, 0.1f, this));
         clearColor.set(0.125f, 0.729f, 0.918f);
 
         float xOffset = -(blocks.length/2f)*Block.SIZE, zOffset = -(blocks[0].length/2f)*Block.SIZE;
@@ -48,10 +50,11 @@ public class TestScene extends PauseScene
         text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect());
         text3D2 = new Text(t3d2t, 24, -t3d2w/2, 1, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect(4, 0, 0.1f));
 
-        c.transitionX(-4.5f);
-        c.transitionY(6);
-        c.transitionZ(4.5f);
-        c.transitionXRot(90);
-        c.transitionYRot(-90);
+        /*c.transitionX(-2);
+        c.transitionY(4);
+        c.transitionZ(-2);*/
+        c.transitionFov(10);
+        c.transitionXRot(-90);
+        //c.transitionYRot(45);
     }
 }

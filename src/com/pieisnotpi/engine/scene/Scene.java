@@ -3,6 +3,7 @@ package com.pieisnotpi.engine.scene;
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.Joybind;
+import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.Mousebind;
 import com.pieisnotpi.engine.rendering.Camera;
@@ -47,6 +48,8 @@ public abstract class Scene
 
     public boolean shouldUpdate = true, shouldUpdatePhysics = true;
 
+    public void onJoystickConnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickConnect(joystick)); }
+    public void onJoystickDisconnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickDisconnect(joystick)); }
     public void onLeftClick() { gameObjects.forEach(GameObject::onLeftClick); }
     public void onRightClick() { gameObjects.forEach(GameObject::onRightClick); }
     public void onLeftRelease() { gameObjects.forEach(GameObject::onLeftRelease); }
@@ -111,7 +114,7 @@ public abstract class Scene
 
     public void setWindow(Window window)
     {
-        gameObjects.forEach(g -> g.onWindowChanged(window));
+        gameObjects.forEach(g -> g.onWindowChanged(this.window, window));
 
         unregisterInputs();
         this.window = window;

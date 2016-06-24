@@ -10,11 +10,13 @@ import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
 import com.pieisnotpi.engine.rendering.ui.text.font.SystemFont;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Stone;
-import com.pieisnotpi.game.cameras.ControlCamera;
+import com.pieisnotpi.game.cameras.FirstPersonCamera;
+import com.pieisnotpi.game.cameras.OrbitCamera;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class TestScene2 extends PauseScene
 {
-    protected Text text3D, text3D2;
     protected Block[][] blocks = new Block[30][30];
 
     public void init()
@@ -23,7 +25,11 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        cameras.add(new ControlCamera(0, 0, 1, 1, 90, 0, this));
+        cameras.add(new FirstPersonCamera(new Vector3f(0, 2, 0), new Vector2f(0, 0), new Vector2f(1, 1), 90, 0, this));
+        /*cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));*/
         clearColor.set(0.918f, 0.729f, 0.125f);
 
         float xOffset = -(blocks.length/2f)*Block.SIZE, zOffset = -(blocks[0].length/2f)*Block.SIZE;
@@ -46,10 +52,8 @@ public class TestScene2 extends PauseScene
         String t3dt = "This text is waving.", t3d2t = "I.\nLike.\nTests.";
         float t3dw = Text.approxWidth(t3dt, 24, Text.pixelFont), t3d2w = Text.approxWidth(t3d2t, 24, Text.pixelFont);
 
-        TexQuad q = new TexQuad(0, 0.5f, 0.2f, 0.5f, 0.5f, 0, new AnimatedSprite(true, 500, Texture.getTexture("tiles"), 0, 0, 48, 48, 16, 16), PiEngine.C_PERSPECTIVE, this);
-
-        text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect());
+        Text text3D = new Text(t3dt, 24, -t3dw/2, 1.5f, 0.5f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect());
         text3D.setFont(new SystemFont("Arial", 48, SystemFont.PLAIN, true));
-        text3D2 = new Text(t3d2t, 24, -t3d2w/2, 2, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect(4, 8, 0.5f));
+        Text text3D2 = new Text(t3d2t, 24, -t3d2w/2, 2, 0.45f, new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.C_PERSPECTIVE, this, new WaveEffect(4, 8, 0.5f));
     }
 }

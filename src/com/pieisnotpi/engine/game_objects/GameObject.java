@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.game_objects;
 
+import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2d;
@@ -9,50 +10,11 @@ import org.joml.Vector3f;
 
 public abstract class GameObject
 {
+    protected Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
-    protected float x = 0, y = 0, z = 0, width = 0, height = 0, depth = 0, xRot = 0, yRot = 0, zRot = 0;
-    private float cx = 0, cy = 0, cz = 0;
-
-    public void defaultCenter()
-    {
-        setCenter(width/2, height/2, depth/2);
-    }
-
-    public void setCenter(float x, float y, float z)
-    {
-        if(xRot != 0 && (y != cy || z != cz))
-        {
-            float t = xRot;
-            setXRot(0);
-            cy = y;
-            cz = z;
-            setXRot(t);
-        }
-
-        if(yRot != 0 && (x != cx || z != cz))
-        {
-            float t = yRot;
-            setYRot(0);
-            cx = x;
-            cz = z;
-            setYRot(t);
-        }
-
-        if(zRot != 0 && (x != cx || y != cy))
-        {
-            float t = zRot;
-            setZRot(0);
-            cx = x;
-            cy = y;
-            setZRot(t);
-        }
-
-        cx = x;
-        cy = y;
-        cz = z;
-    }
+    private Vector3f c = new Vector3f();
 
     public void update() {}
     public void drawUpdate() {}
@@ -60,22 +22,20 @@ public abstract class GameObject
     public void enable() { enabled = true; }
     public void disable() { enabled = false; }
 
-    public void setX(float x) { this.x = x; }
-    public void setY(float y) { this.y = y; }
-    public void setZ(float z) { this.z = z; }
-    public void setWidth(float width) { if(cx == this.width/2) setCenter(width/2, cy, cz); this.width = width; }
-    public void setHeight(float height) { if(cy == this.height/2) setCenter(cx, height/2, cz); this.height = height; }
-    public void setDepth(float depth) { if(cz == this.depth/2) setCenter(cx, cy, depth/2); this.depth = depth; }
-    public void addToXRot(float rot) { xRot += rot; }
-    public void addToYRot(float rot) { yRot += rot; }
-    public void addToZRot(float rot) { zRot += rot; }
-    public void setXRot(float rot) { addToXRot(rot - xRot); }
-    public void setYRot(float rot) { addToYRot(rot - yRot); }
-    public void setZRot(float rot) { addToZRot(rot - zRot); }
+    public void setX(float x) { pos.x = x; }
+    public void setY(float y) { pos.y = y; }
+    public void setZ(float z) { pos.z = z; }
+    public void setWidth(float width) { setCx(c.x/size.x*width); size.x = width; }
+    public void setHeight(float height) { setCy(c.y/size.y*height); size.y = height; }
+    public void setDepth(float depth) { setCz(c.z/size.z*depth); size.z = depth; }
+    public void addToRot(float xr, float yr, float zr) { rot.x += xr; rot.y += yr; rot.z += zr; }
+    public void setRot(float xr, float yr, float zr) { addToRot(xr - rot.x, yr - rot.y, zr - rot.z); }
     public void setScene(Scene scene) { this.scene = scene; }
     public void setMatrixID(int matrixID) { this.matrixID = matrixID; }
     public void destroy() { scene.gameObjects.remove(this); }
 
+    public void onJoystickConnect(Joystick joystick) {}
+    public void onJoystickDisconnect(Joystick joystick) {}
     public void onLeftClick() {}
     public void onLeftRelease() {}
     public void onRightClick() {}
@@ -90,92 +50,127 @@ public abstract class GameObject
     public void onMouseExited() {}
     public void onMouseMovementUnscaled(Vector2d cursorPos) {}
     public void onMouseMovement(Vector2f cursorPos) {}
-    public void onWindowChanged(Window window) {}
+    public void onWindowChanged(Window oldWindow, Window newWindow) {}
     public void toggle() { if(enabled) disable(); else enable(); }
 
     public boolean isEnabled() { return enabled; }
     public boolean isPointInsideObject(Vector2f point) { return false; }
-    public boolean isPointInsideObject(Vector3f point) { return false; }
 
-    public float getX() { return x; }
-    public float getY() { return y; }
-    public float getZ() { return z; }
-    public float getWidth() { return width; }
-    public float getHeight() { return height; }
-    public float getDepth() { return depth; }
-    public float getCx() { return x + cx; }
-    public float getCy() { return y + cy; }
-    public float getCz() { return z + cz; }
-    public float getXRot() { return xRot; }
-    public float getYRot() { return yRot; }
-    public float getZRot() { return zRot; }
+    public float getX() { return pos.x; }
+    public float getY() { return pos.y; }
+    public float getZ() { return pos.z; }
+    public float getWidth() { return size.x; }
+    public float getHeight() { return size.y; }
+    public float getDepth() { return size.z; }
+    public float getCx() { return pos.x + c.x; }
+    public float getCy() { return pos.y + c.y; }
+    public float getCz() { return pos.z + c.z; }
+    public float getXRot() { return rot.x; }
+    public float getYRot() { return rot.y; }
+    public float getZRot() { return rot.z; }
     public int getMatrixID() { return matrixID; }
     public Scene getScene() { return scene; }
 
     public void setCx(float cx)
     {
-        if(this.cx == cx) return;
+        if(c.x == cx) return;
 
-        if(yRot != 0)
+        if(rot.y != 0)
         {
-            float t = yRot;
-            setYRot(0);
-            this.cx = cx;
-            setYRot(t);
+            float t = rot.y;
+            addToRot(0, -t, 0);
+            c.x = cx;
+            addToRot(0, t, 0);
         }
-        if(zRot != 0)
+        if(rot.z != 0)
         {
-            float t = zRot;
-            setZRot(0);
-            this.cx = cx;
-            setZRot(t);
+            float t = rot.z;
+            addToRot(0, 0, -t);
+            c.x = cx;
+            addToRot(0, 0, t);
         }
 
-        this.cx = cx;
+        c.x = cx;
     }
 
     public void setCy(float cy)
     {
-        if(this.cy == cy) return;
+        if(c.y == cy) return;
 
-        if(xRot != 0)
+        if(rot.x != 0)
         {
-            float t = xRot;
-            setXRot(0);
-            this.cy = cy;
-            setXRot(t);
+            float t = rot.x;
+            addToRot(-t, 0, 0);
+            c.y = cy;
+            addToRot(t, 0, 0);
         }
-        if(zRot != 0)
+        if(rot.z != 0)
         {
-            float t = zRot;
-            setZRot(0);
-            this.cy = cy;
-            setZRot(t);
+            float t = rot.z;
+            addToRot(0, 0, -t);
+            c.y = cy;
+            addToRot(0, 0, t);
         }
 
-        this.cy = cy;
+        c.y = cy;
     }
 
     public void setCz(float cz)
     {
-        if(this.cz == cz) return;
+        if(c.z == cz) return;
 
-        if(xRot != 0)
+        if(rot.x != 0)
         {
-            float t = xRot;
-            setXRot(0);
-            this.cz = cz;
-            setXRot(t);
+            float t = rot.x;
+            addToRot(-t, 0, 0);
+            c.z = cz;
+            addToRot(t, 0, 0);
         }
-        if(yRot != 0)
+        if(rot.y != 0)
         {
-            float t = yRot;
-            setYRot(0);
-            this.cz = cz;
-            setYRot(t);
+            float t = rot.y;
+            addToRot(0, -t, 0);
+            c.z = cz;
+            addToRot(0, t, 0);
         }
 
-        this.cz = cz;
+        c.z = cz;
+    }
+
+    public void setCenter(float cx, float cy, float cz)
+    {
+        if(rot.x != 0)
+        {
+            float t = rot.x;
+            addToRot(-t, 0, 0);
+            c.y = cy;
+            addToRot(t, 0, 0);
+        }
+
+        if(rot.y != 0)
+        {
+            float t = rot.y;
+            addToRot(0, -t, 0);
+            c.x = cx;
+            addToRot(0, t, 0);
+        }
+
+        if(rot.z != 0)
+        {
+            float t = rot.z;
+            addToRot(0, 0, -t);
+            c.x = cx;
+            addToRot(0, 0, t);
+        }
+
+        c.x = cx;
+        c.y = cy;
+        c.z = cz;
+    }
+
+    public void defaultCenter()
+    {
+        setCenter(size.x/2, size.y/2, size.z/2);
     }
 
     public void finalize() throws Throwable

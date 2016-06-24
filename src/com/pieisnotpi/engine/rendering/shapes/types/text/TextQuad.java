@@ -107,36 +107,21 @@ public class TextQuad extends TextRenderable
         points[3].z += dif;
     }
 
-    public void rotateX(float amount)
-    {
-        rotateX(amount, points[0].y, points[0].z);
-    }
-
-    public void rotateX(float amount, float pointY, float pointZ)
+    public void addToXRot(float amount, float pointY, float pointZ)
     {
         xRot += amount;
 
         rotateAxisX(amount, pointY, pointZ, points);
     }
 
-    public void rotateY(float amount)
-    {
-        rotateY(amount, points[0].x, points[0].z);
-    }
-
-    public void rotateY(float amount, float pointX, float pointZ)
+    public void addToYRot(float amount, float pointX, float pointZ)
     {
         yRot += amount;
 
         rotateAxisY(amount, pointX, pointZ, points);
     }
 
-    public void rotateZ(float amount)
-    {
-        rotateZ(amount, points[0].x, points[0].y);
-    }
-
-    public void rotateZ(float amount, float pointX, float pointY)
+    public void addToZRot(float amount, float pointX, float pointY)
     {
         zRot += amount;
 

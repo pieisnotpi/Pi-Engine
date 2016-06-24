@@ -18,11 +18,8 @@ public class FloorTile extends PhysicsObject
 
     public FloorTile(float x, float y, float z, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        width = scale;
-        height = scale;
+        pos.set(x, y, z);
+        size.set(scale, scale, 0);
 
         this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;

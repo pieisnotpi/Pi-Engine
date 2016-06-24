@@ -24,9 +24,7 @@ public class StaticText extends UiObject
 
     public StaticText(String text, Font font, boolean antiAlias, float scale, float x, float y, float z, Color textColor, int matrixID, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
         this.scale = scale;
         this.matrixID = matrixID;
         this.scene = scene;
@@ -70,7 +68,7 @@ public class StaticText extends UiObject
         texture.hasTransparency = true;
 
         if(quad != null) quad.unregister();
-        quad = new TexQuad(x, y, z, 5*scale/texture.height, 5*scale/texture.width, 0, new Sprite(texture, 0, 0, texture.width, texture.height), matrixID, scene);
+        quad = new TexQuad(pos.x, pos.y, pos.z, 5*scale/texture.height, 5*scale/texture.width, 0, new Sprite(texture, 0, 0, texture.width, texture.height), matrixID, scene);
     }
 
     public void setX(float x)
@@ -91,21 +89,13 @@ public class StaticText extends UiObject
         super.setZ(z);
     }
 
-    public void addToXRot(float rot)
+    @Override
+    public void addToRot(float xr, float yr, float zr)
     {
-        quad.addToXRot(rot, getCy(), getCz());
-        super.addToXRot(rot);
-    }
+        if(xr != 0) quad.addToXRot(xr);
+        if(yr != 0) quad.addToYRot(yr);
+        if(zr != 0) quad.addToZRot(zr);
 
-    public void addToYRot(float rot)
-    {
-        quad.addToYRot(rot, getCx(), getCz());
-        super.addToYRot(rot);
-    }
-
-    public void addToZRot(float rot)
-    {
-        quad.addToZRot(rot, getCx(), getCy());
-        super.addToZRot(rot);
+        super.addToRot(xr, yr, zr);
     }
 }

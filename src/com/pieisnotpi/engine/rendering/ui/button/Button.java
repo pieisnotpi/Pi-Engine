@@ -20,9 +20,7 @@ public class Button extends UiObject
 
     public Button(String textValue, float scale, float x, float y, float z, int matrixID, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
         this.scale = scale;
         this.matrixID = matrixID;
         this.scene = scene;
@@ -34,22 +32,19 @@ public class Button extends UiObject
 
     public void setText(String textValue)
     {
-        if(text == null) text = new Text(textValue, scale, x + scale*SPACING_CONST, y + scale*SPACING_CONST, z + 0.001f, new Color(0, 0, 0), new Color(1, 1, 1, 0), matrixID, scene);
+        if(text == null) text = new Text(textValue, scale, pos.x + scale*SPACING_CONST, pos.y + scale*SPACING_CONST, pos.z + 0.001f, new Color(0, 0, 0), new Color(1, 1, 1, 0), matrixID, scene);
         else text.setText(textValue);
 
-        width = text.getWidth() + scale*SPACING_CONST*2;
-        height = text.getHeight() + scale*SPACING_CONST*2;
+        size.set(text.getWidth() + scale*SPACING_CONST*2, text.getHeight() + scale*SPACING_CONST*2, 0);
 
-        base = new ColorQuad(x, y, z, width, height, 0, b0, b0, t0, t0, matrixID, scene);
+        base = new ColorQuad(pos.x, pos.y, pos.z, size.x, size.y, 0, b0, b0, t0, t0, matrixID, scene);
 
         defaultCenter();
-
-        addToZRot(45);
     }
 
     public void setX(float value)
     {
-        if(value == x) return;
+        if(value == pos.x) return;
 
         super.setX(value);
 
@@ -59,7 +54,7 @@ public class Button extends UiObject
 
     public void setY(float value)
     {
-        if(value == y) return;
+        if(value == pos.y) return;
 
         super.setY(value);
 
@@ -97,7 +92,7 @@ public class Button extends UiObject
 
     public void onScroll(float xAmount, float yAmount)
     {
-        setY(y + yAmount/(scale*2));
+        setY(pos.y + yAmount/(scale*2));
     }
 
     public void onLeftClick()
@@ -158,22 +153,15 @@ public class Button extends UiObject
         return MathUtility.isPointInside(point, base.points[0], base.points[2], base.points[3], base.points[1]);
     }
 
-    public void addToXRot(float rot)
+    public void addToRot(float xr, float yr, float zr)
     {
-        base.addToXRot(rot, getCy(), getCz());
-        text.addToXRot(rot);
-    }
+        if(xr != 0) base.addToXRot(xr, getCy(), getCz());
+        if(yr != 0) base.addToYRot(yr, getCx(), getCz());
+        if(zr != 0) base.addToZRot(zr, getCx(), getCy());
 
-    public void addToYRot(float rot)
-    {
-        base.addToYRot(rot, getCx(), getCz());
-        text.addToYRot(rot);
-    }
+        text.addToRot(xr, yr, zr);
 
-    public void addToZRot(float rot)
-    {
-        base.addToZRot(rot, getCx(), getCy());
-        text.addToZRot(rot);
+        super.addToRot(xr, yr, zr);
     }
 
     public void destroy()

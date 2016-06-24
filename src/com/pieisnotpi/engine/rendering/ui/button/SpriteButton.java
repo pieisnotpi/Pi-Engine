@@ -18,9 +18,7 @@ public class SpriteButton extends UiObject
 
     public SpriteButton(float x, float y, float z, float scale, Sprite sprite, int matrixID, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
         this.scale = scale/100;
         this.matrixID = matrixID;
         this.scene = scene;
@@ -34,11 +32,10 @@ public class SpriteButton extends UiObject
     {
         float r = (float) (sprite.x1 - sprite.x0)/(sprite.y1 - sprite.y0);
 
-        width = scale;
-        height = scale/r;
+        size.set(scale, scale/r, 0);
 
         if(base != null) base.unregister();
-        base = new TexCQuad(x, y, z, width, height, 0, sprite, blank, matrixID, scene);
+        base = new TexCQuad(pos.x, pos.y, pos.z, size.x, size.y, 0, sprite, blank, matrixID, scene);
 
         defaultCenter();
     }
@@ -65,7 +62,7 @@ public class SpriteButton extends UiObject
 
     public void onScroll(float xAmount, float yAmount)
     {
-        setY(y + yAmount/(scale*2));
+        setY(pos.y + yAmount/(scale*2));
     }
 
     public void onLeftClick()

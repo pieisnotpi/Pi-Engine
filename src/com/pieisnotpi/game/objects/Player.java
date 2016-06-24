@@ -47,15 +47,12 @@ public class Player extends PhysicsObject
 
     public Player(float x, float y, float z, int joystick, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
+        size.set(scale, scale, 0);
+
         this.joystick = joystick;
         this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;
-
-        width = scale;
-        height = scale;
 
         s = (PhysicsTestScene) scene;
 
@@ -123,25 +120,25 @@ public class Player extends PhysicsObject
 
     public void drawUpdate()
     {
-        x = toRenderCoord(body.getPosition().x, scale/2);
-        y = toRenderCoord(body.getPosition().y, scale/2);
+        pos.x = toRenderCoord(body.getPosition().x, scale/2);
+        pos.y = toRenderCoord(body.getPosition().y, scale/2);
 
-        number.setX(x + xOffset);
-        number.setY(y + yOffset);
+        number.setX(pos.x + xOffset);
+        number.setY(pos.y + yOffset);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
         if(angle < -0.1f || angle > 0.1f)
         {
             quad.setZRot(0, getCx(), getCy());
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
             quad.setZRot(angle, getCx(), getCy());
         }
         else
         {
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
         }
     }
 
@@ -219,7 +216,7 @@ public class Player extends PhysicsObject
         {
             if((timer.isStarted() && !timer.isFinished()) || player.equals(this)) continue;
 
-            float xDif = x - player.x, yDif = y - player.y, dist = (float) Math.sqrt(xDif*xDif + yDif*yDif);
+            float xDif = pos.x - player.pos.x, yDif = pos.y - player.pos.y, dist = (float) Math.sqrt(xDif*xDif + yDif*yDif);
 
             if(dist > 0.5f) continue;
 

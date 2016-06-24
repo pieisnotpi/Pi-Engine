@@ -31,9 +31,8 @@ public class PhysicsTestScene extends PauseScene
     public TransitionCamera camera;
 
     private Text winner;
-    private Truck truck;
     private Timer timer = new Timer(false, 2000), resetTimer = new Timer(true, 5000);
-    private int size = 40;
+    private int size = 4;
 
     public void init()
     {
@@ -41,11 +40,9 @@ public class PhysicsTestScene extends PauseScene
 
         name = "Physics Testing";
 
-        cameras.add(camera = new TransitionCamera(0, 0, 1, 1, 90, 0.075f, 0, 0.05f, this));
+        cameras.add(camera = new TransitionCamera(new Vector2f(0, 0), new Vector2f(1, 1), 90, 0.075f, 0, 0.05f, this));
 
         clearColor.set(0.4f, 0.4f, 1);
-
-        final float xOffset = -(size/2f)*FloorTile.scale - PhysicsObject.calcOffset(FloorTile.scale/2), yOffset = -(size/2f)*FloorTile.scale - PhysicsObject.calcOffset(FloorTile.scale/2);
 
         reset();
 
@@ -75,7 +72,7 @@ public class PhysicsTestScene extends PauseScene
                 {
                     if(x == 0 || x == size - 1 || y == 0 || y == size - 1)
                     {
-                        tiles.add(new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, 0.2f, this));
+                        tiles.add(new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, -0.2f, this));
                     }
                 }
             }
@@ -252,9 +249,9 @@ public class PhysicsTestScene extends PauseScene
 
         world = new World(new Vec2(0, -9.81f));
 
-        players.add(new Player(-0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 0, this));
+        players.add(new Player(-0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, -0.2f, 0, this));
         //players.add(new Player(0 - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 2, this));
-        players.add(new Player(0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 1, this));
+        players.add(new Player(0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, -0.2f, 1, this));
 
         timer.forceFinish();
         update();

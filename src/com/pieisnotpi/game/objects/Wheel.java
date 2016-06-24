@@ -18,14 +18,11 @@ public class Wheel extends PhysicsObject
 
     public Wheel(float x, float y, float z, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
+        size.set(radius*2, radius*2, 0);
+
         this.matrixID = PiEngine.C_ORTHO;
         this.scene = scene;
-
-        width = radius*2;
-        height = radius*2;
 
         CircleShape t = new CircleShape();
         t.setRadius(toPhysicsCoord(radius));
@@ -44,22 +41,22 @@ public class Wheel extends PhysicsObject
 
     public void drawUpdate()
     {
-        x = toRenderCoord(body.getPosition().x, radius);
-        y = toRenderCoord(body.getPosition().y, radius);
+        pos.x = toRenderCoord(body.getPosition().x, radius);
+        pos.y = toRenderCoord(body.getPosition().y, radius);
 
         float angle = (float) Math.toDegrees(body.getAngle());
 
         if(angle < -0.1f || angle > 0.1f)
         {
             quad.setZRot(0, quad.getCenterX(), quad.getCenterY());
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
             quad.setZRot(angle, quad.getCenterX(), quad.getCenterY());
         }
         else
         {
-            quad.setX(x);
-            quad.setY(y);
+            quad.setX(pos.x);
+            quad.setY(pos.y);
         }
     }
 

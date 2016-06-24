@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class EditorScene extends Scene
 
         name = "Editor";
 
-        cameras.add(new Camera(0, 0, 1, 1, 90, this));
+        cameras.add(new Camera(new Vector2f(0, 0), new Vector2f(1, 1), 90, this));
         clearColor.set(0.6f, 0.6f, 0.6f);
 
         fps.disable();

@@ -2,6 +2,8 @@ package com.pieisnotpi.game.cameras;
 
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.scene.Scene;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 /**
  * A camera that has built in transitioning (VERY WIP)
@@ -10,134 +12,145 @@ import com.pieisnotpi.engine.scene.Scene;
 public class TransitionCamera extends Camera
 {
     public float speed, angularSpeed, zoomSpeed;
-    private float moveX, moveY, moveZ, rotX, rotY, rotZ, zoom, speedMin, angularSpeedMin, zoomSpeedMin;
+    private float moveX, moveY, moveZ, rotX, rotY, rotZ, tzoom, tfov;
 
-    public TransitionCamera(float localX, float localY, float localWidth, float localHeight, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
+    public TransitionCamera(Vector2f viewPos, Vector2f viewSize, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
     {
-        this(0, 0, 0, localX, localY, localWidth, localHeight, fov, speed, angularSpeed, zoomSpeed, scene);
+        this(new Vector3f(), new Vector3f(0, 0, -10), viewPos, viewSize, fov, speed, angularSpeed, zoomSpeed, scene);
     }
 
-    public TransitionCamera(float x, float y, float z, float localX, float localY, float localWidth, float localHeight, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
+    public TransitionCamera(Vector3f position, Vector3f lookAt, Vector2f viewPos, Vector2f viewSize, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
     {
-        super(x, y, z, localX, localY, localWidth, localHeight, fov, scene);
+        super(position, lookAt, viewPos, viewSize, fov, scene);
 
         this.speed = speed;
         this.angularSpeed = angularSpeed;
         this.zoomSpeed = zoomSpeed;
 
-        speedMin = speed/10;
-        angularSpeedMin = angularSpeed/10;
-        zoomSpeedMin = zoomSpeed/10;
+        moveX = pos.x;
+        moveY = pos.y;
+        moveZ = pos.z;
+        tfov = fov;
     }
 
     public void transitionX(float nx)
     {
         moveX = nx;
 
-        float dif = nx - x;
+        float dif = nx - pos.x;
 
         if(dif > 0 && dif > speed) dif = speed;
         else if(dif < 0 && dif < -speed) dif = -speed;
 
-        moveX -= dif;
-        setX(x + dif);
+        setX(pos.x + dif);
     }
 
     public void transitionY(float ny)
     {
         moveY = ny;
 
-        float dif = ny - y;
+        float dif = ny - pos.y;
 
         if(dif > 0 && dif > speed) dif = speed;
         else if(dif < 0 && dif < -speed) dif = -speed;
 
-        moveY -= dif;
-        setY(y + dif);
+        setY(pos.y + dif);
     }
 
     public void transitionZ(float nz)
     {
         moveZ = nz;
 
-        float dif = nz - z;
+        float dif = nz - pos.z;
 
         if(dif > 0 && dif > speed) dif = speed;
         else if(dif < 0 && dif < -speed) dif = -speed;
 
-        moveZ -= dif;
-        setZ(z + dif);
+        setZ(pos.z + dif);
+    }
+
+    private float getRotXAmount()
+    {
+        float dif = rotX - rot.x;
+
+        if(dif > angularSpeed) return angularSpeed;
+        else if(dif < -angularSpeed) return -angularSpeed;
+        else return dif;
+    }
+
+    private float getRotYAmount()
+    {
+        float dif = rotY - rot.y;
+
+        if(dif > angularSpeed) return angularSpeed;
+        else if(dif < -angularSpeed) return -angularSpeed;
+        else return dif;
+    }
+
+    private float getRotZAmount()
+    {
+        float dif = rotZ - rot.z;
+
+        if(dif > angularSpeed) return angularSpeed;
+        else if(dif < -angularSpeed) return -angularSpeed;
+        else return dif;
     }
 
     public void transitionXRot(float nx)
     {
         rotX = nx;
-
-        float dif = nx - xRot;
-
-        if(dif > 0 && dif > angularSpeed) dif = angularSpeed;
-        else if(dif < 0 && dif < -angularSpeed) dif = -angularSpeed;
-
-        rotX -= dif;
-        addToXRot(dif);
+        float dif = getRotXAmount();
+        addToRot(dif, 0, 0);
     }
 
     public void transitionYRot(float ny)
     {
         rotY = ny;
-
-        float dif = ny - yRot;
-
-        if(dif > 0 && dif > angularSpeed) dif = angularSpeed;
-        else if(dif < 0 && dif < -angularSpeed) dif = -angularSpeed;
-
-        rotY -= dif;
-        addToYRot(dif);
+        float dif = getRotYAmount();
+        addToRot(0, dif, 0);
     }
 
     public void transitionZRot(float nz)
     {
         rotZ = nz;
-
-        float dif = nz - zRot;
-
-        if(dif > 0 && dif > angularSpeed) dif = angularSpeed;
-        else if(dif < 0 && dif < -angularSpeed) dif = -angularSpeed;
-
-        rotZ -= dif;
-        addToZRot(dif);
+        float dif = getRotZAmount();
+        addToRot(0, 0, dif);
     }
 
     public void transitionOrthoZoom(float nz)
     {
-        zoom = nz;
+        tzoom = nz;
 
         float dif = nz - orthoZoom;
 
         if(dif > 0 && dif > zoomSpeed) dif = zoomSpeed;
         else if(dif < 0 && dif < -zoomSpeed) dif = -zoomSpeed;
 
-        zoom -= dif;
         setOrthoZoom(orthoZoom + dif);
+    }
+
+    public void transitionFov(float nf)
+    {
+        tfov = nf;
+
+        float dif = nf - fov;
+
+        if(dif > zoomSpeed) dif = zoomSpeed;
+        else if(dif < -zoomSpeed) dif = -zoomSpeed;
+
+        setFov(fov + dif);
     }
 
     public void drawUpdate()
     {
-        /*if(moveX < -speedMin || moveX > speedMin) transitionX(moveX);
-        if(moveY < -speedMin || moveX > speedMin) transitionY(moveY);
-        if(moveZ < -speedMin || moveX > speedMin) transitionZ(moveZ);
-        if(rotX < -angularSpeedMin || rotX > angularSpeedMin) transitionXRot(rotX);
-        if(rotY < -angularSpeedMin || rotY > angularSpeedMin) transitionYRot(rotY);
-        if(rotZ < -angularSpeedMin || rotZ > angularSpeedMin) transitionZRot(rotZ);
-        if(zoom < -zoomSpeedMin || zoom > zoomSpeedMin) transitionOrthoZoom(zoom);*/
-
-        if(moveX != 0) transitionX(moveX);
-        if(moveY != 0) transitionY(moveY);
-        if(moveZ != 0) transitionZ(moveZ);
-        if(rotX != 0) transitionXRot(rotX);
-        if(rotY != 0) transitionYRot(rotY);
-        if(rotZ != 0) transitionZRot(rotZ);
-        if(zoom != 0) transitionOrthoZoom(zoom);
+        if(moveX != pos.x) transitionX(moveX);
+        if(moveY != pos.y) transitionY(moveY);
+        if(moveZ != pos.z) transitionZ(moveZ);
+        if(rotX != rot.x) transitionXRot(rotX);
+        if(rotY != rot.y) transitionYRot(rotY);
+        if(rotZ != rot.z) transitionZRot(rotZ);
+        if(tzoom != orthoZoom) transitionOrthoZoom(tzoom);
+        if(tfov != fov) transitionFov(tfov);
 
         super.drawUpdate();
     }

@@ -7,7 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Joystick
 {
-    public int joystick;
+    public int joyID;
     public boolean connected = false;
     public String name;
 
@@ -16,14 +16,14 @@ public class Joystick
 
     public Joystick(int joy)
     {
-        this.joystick = joy;
+        this.joyID = joy;
         name = glfwGetJoystickName(joy);
     }
 
     public void retrieveValues()
     {
-        axis = glfwGetJoystickAxes(joystick);
-        buttons = glfwGetJoystickButtons(joystick);
+        axis = glfwGetJoystickAxes(joyID);
+        buttons = glfwGetJoystickButtons(joyID);
     }
 
     public FloatBuffer getAxis()

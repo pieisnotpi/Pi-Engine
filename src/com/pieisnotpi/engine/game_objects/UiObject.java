@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.game_objects;
 
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public abstract class UiObject extends GameObject
 {
@@ -31,12 +30,6 @@ public abstract class UiObject extends GameObject
     @Override
     public boolean isPointInsideObject(Vector2f point)
     {
-        return (point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height);
-    }
-
-    @Override
-    public boolean isPointInsideObject(Vector3f point)
-    {
-        return (point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height && point.z >= z && point.z <= z + depth);
+        return (point.x >= pos.x && point.x <= pos.x + size.x && point.y >= pos.y && point.y <= pos.y + size.y);
     }
 }

@@ -20,8 +20,6 @@ public class Text extends UiObject
     public String text;
     public ArrayList<TextQuad> chars;
     public ArrayList<TextEffect> effects;
-    public Color textColor, outlineColor;
-    public Font font;
 
     public boolean effectsEnabled = false;
     public float newlineSpace;
@@ -30,7 +28,10 @@ public class Text extends UiObject
     public int shaderID, alignmentID = -1;
 
     public static final int CENTERED = 0, LEFT = 1, RIGHT = 2;
+
     private float ratio = 1;
+    private Color textColor, outlineColor;
+    private Font font;
 
     public Text(String text, float scale, float x, float y, float z, int matrixID, Scene scene, TextEffect... effects)
     {
@@ -39,10 +40,8 @@ public class Text extends UiObject
 
     public Text(String text, float scale, float x, float y, float z, Color textColor, Color outlineColor, int matrixID, Scene scene, TextEffect... effects)
     {
+        pos.set(x, y ,z);
         this.scale = scale;
-        this.x = x;
-        this.y = y;
-        this.z = z;
         this.matrixID = matrixID;
         this.font = pixelFont;
         this.scene = scene;
@@ -78,11 +77,9 @@ public class Text extends UiObject
 
     public void setX(float value)
     {
-        if(x == value) return;
+        if(pos.x == value) return;
 
-        float dif = value - x;
-
-        width += dif;
+        float dif = value - pos.x;
 
         for(TextQuad c : chars) c.setX(dif + c.getX());
 
@@ -91,11 +88,9 @@ public class Text extends UiObject
 
     public void setY(float value)
     {
-        if(y == value) return;
+        if(pos.y == value) return;
 
-        float dif = value - y;
-
-        height += dif;
+        float dif = value - pos.y;
 
         for(TextQuad c : chars) c.setY(dif + c.getY());
 
@@ -104,7 +99,7 @@ public class Text extends UiObject
 
     public void setZ(float value)
     {
-        if(z == value) return;
+        if(pos.z == value) return;
 
         float t = 0;
         for(TextQuad c : chars) c.setZ(value + (t+=0.001f));
@@ -112,25 +107,16 @@ public class Text extends UiObject
         super.setZ(value);
     }
 
-    public void addToXRot(float amount)
+    public void addToRot(float xr, float yr, float zr)
     {
-        for(TextQuad c : chars) c.rotateX(amount, getCy(), getCz());
+        for(TextQuad c : chars)
+        {
+            if(xr != 0) c.addToXRot(xr, getCy(), getCz());
+            if(yr != 0) c.addToYRot(yr, getCx(), getCz());
+            if(zr != 0) c.addToZRot(zr, getCx(), getCy());
+        }
 
-        super.addToXRot(amount);
-    }
-
-    public void addToYRot(float amount)
-    {
-        for(TextQuad c : chars) c.rotateY(amount, getCx(), getCz());
-
-        super.addToYRot(amount);
-    }
-
-    public void addToZRot(float amount)
-    {
-        for(TextQuad c : chars) c.rotateZ(amount, getCx(), getCy());
-
-        super.addToZRot(amount);
+        super.addToRot(xr, yr, zr);
     }
 
     public void setText(String value)
@@ -139,18 +125,15 @@ public class Text extends UiObject
 
         unregister();
 
-        float xr = xRot, yr = yRot, zr = zRot;
+        float xr = rot.x, yr = rot.y, zr = rot.z;
 
-        xRot = 0;
-        yRot = 0;
-        zRot = 0;
+        rot.set(0);
+        size.set(0);
 
         text = value;
         chars.clear();
 
-        width = height = 0;
-
-        float actual = scale*font.pixelScale, xOffset = x, yOffset = y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE, t = y;
+        float actual = scale*font.pixelScale, xOffset = pos.x, yOffset = pos.y, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE, t = pos.y;
 
         newlineSpace = font.newLineSpace*actual;
         int line = 0;
@@ -167,8 +150,8 @@ public class Text extends UiObject
 
             if(c == '\n' && i != text.length() - 1)
             {
-                xOffset = x;
-                yOffset = y -= newlineSpace;
+                xOffset = pos.x;
+                yOffset = pos.y -= newlineSpace;
                 line++;
             }
 
@@ -183,19 +166,16 @@ public class Text extends UiObject
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);
 
-            chars.add(new TextQuad(x0, y0, z + 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line, matrixID, scene));
+            chars.add(new TextQuad(x0, y0, pos.z + 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line, matrixID, scene));
         }
 
-        width = maxX - x;
-        height = maxY - y;
+        size.set(maxX - pos.x, maxY - pos.y, 0);
 
         setY(t);
 
         defaultCenter();
 
-        if(xr != 0) addToYRot(xr);
-        if(yr != 0) addToYRot(yr);
-        if(zr != 0) addToZRot(zr);
+        addToRot(xr, yr, zr);
 
         align();
         register();
@@ -217,9 +197,9 @@ public class Text extends UiObject
 
     private void align()
     {
-        if(alignmentID == 0) setX(-width/2);
+        if(alignmentID == 0) setX(-size.x/2);
         else if(alignmentID == 1) setX(-ratio + 0.05f);
-        else if(alignmentID == 2) setX(ratio - width - 0.05f);
+        else if(alignmentID == 2) setX(ratio - size.x - 0.05f);
     }
 
     public void enable()

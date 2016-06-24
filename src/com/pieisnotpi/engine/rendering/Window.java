@@ -23,7 +23,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-@SuppressWarnings("ALL")
+//@SuppressWarnings("ALL")
 public class Window
 {
     public float ratio;
@@ -154,10 +154,7 @@ public class Window
             setCurrentMonitor();
         }));
 
-        glfwSetWindowFocusCallback(windowID, focusCallback = GLFWWindowFocusCallback.create((window, focused) ->
-        {
-            this.focused = focused;
-        }));
+        glfwSetWindowFocusCallback(windowID, focusCallback = GLFWWindowFocusCallback.create((window, focused) -> this.focused = focused));
 
         inputManager = new InputManager(this);
 
@@ -192,8 +189,8 @@ public class Window
         drawUpdate = new GameUpdate(1, this::draw, () ->
         {
             String time = "" + (float) this.time/drawUpdate.updates;
-            if(time.length() >= 5) time = time.substring(0, 5);
-            scene.fps.setText(drawUpdate.updates + "fps/" + time + "mspf");
+            if(time.length() >= 4) time = time.substring(0, 4);
+            scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time));
 
             this.time = 0;
         });
@@ -268,7 +265,7 @@ public class Window
                 else return 0;
             });
 
-            float viewX = camera.localX*res.x, viewY = camera.localY*res.y, viewWidth = camera.localWidth*res.x, viewHeight = camera.localHeight*res.y, viewRatio;
+            float viewX = camera.viewPos.x*res.x, viewY = camera.viewPos.y*res.y, viewWidth = camera.viewSize.x*res.x, viewHeight = camera.viewSize.y*res.y;
 
             glViewport((int) viewX, (int) viewY, (int) viewWidth, (int) viewHeight);
 

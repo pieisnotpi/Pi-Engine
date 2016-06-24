@@ -21,36 +21,37 @@ public class Block extends GameObject
 
     public Block(float x, float y, float z, Model model, Scene scene)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        pos.set(x, y, z);
+        size.set(SIZE);
         this.scene = scene;
+
+        defaultCenter();
 
         cubes = new ArrayList<>();
         cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE, PiEngine.C_PERSPECTIVE, scene)).collect(Collectors.toList()));
     }
 
-    public void setXRot(float rot)
+    public void setXRot(float r)
     {
         cubes.forEach(texCube ->
         {
-            for(Quad quad : texCube.sides) quad.setXRot(rot, y, z);
+            for(Quad quad : texCube.sides) quad.setXRot(r, getCy(), getCz());
         });
     }
 
-    public void setYRot(float rot)
+    public void setYRot(float r)
     {
         cubes.forEach(texCube ->
         {
-            for(Quad quad : texCube.sides) quad.setYRot(rot, x, z);
+            for(Quad quad : texCube.sides) quad.setYRot(r, getCx(), getCz());
         });
     }
 
-    public void setZRot(float rot)
+    public void setZRot(float r)
     {
         cubes.forEach(texCube ->
         {
-            for(Quad quad : texCube.sides) quad.setZRot(rot, x, y);
+            for(Quad quad : texCube.sides) quad.setZRot(r, getCx(), getCy());
         });
     }
 

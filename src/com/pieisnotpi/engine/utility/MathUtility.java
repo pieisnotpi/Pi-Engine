@@ -84,16 +84,14 @@ public class MathUtility
 
     public static void rotateAxisX(float angle, float cy, float cz, Vector3f... points)
     {
-        double a = Math.toRadians(angle);
-        float cos = (float) Math.cos(a), sin = (float) Math.sin(a), y, z;
+        double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
 
         for(Vector3f point : points)
         {
-            y = point.y - cy;
-            z = point.z - cz;
+            float y = point.y - cy, z = point.z - cz;
 
-            point.y = cy + y*cos - z*sin;
-            point.z = cz + y*sin + z*cos;
+            point.y = (float) (cy + y*cos - z*sin);
+            point.z = (float) (cz + y*sin + z*cos);
         }
     }
 
@@ -106,16 +104,14 @@ public class MathUtility
 
     public static void rotateAxisY(float angle, float cx, float cz, Vector3f... points)
     {
-        double a = Math.toRadians(angle);
-        float cos = (float) Math.cos(a), sin = (float) Math.sin(a), x, z;
+        double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
 
         for(Vector3f point : points)
         {
-            x = point.x - cx;
-            z = point.z - cz;
+            float x = point.x - cx, z = point.z - cz;
 
-            point.x = cx + x*cos - z*sin;
-            point.z = cz + x*sin + z*cos;
+            point.x = (float) (cx + x*cos - z*sin);
+            point.z = (float) (cz + x*sin + z*cos);
         }
     }
 
@@ -128,16 +124,14 @@ public class MathUtility
 
     public static void rotateAxisZ(float angle, float cx, float cy, Vector3f... points)
     {
-        double a = Math.toRadians(angle);
-        float cos = (float) Math.cos(a), sin = (float) Math.sin(a), x, y;
+        double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
 
         for(Vector3f point : points)
         {
-            x = point.x - cx;
-            y = point.y - cy;
+            float x = point.x - cx, y = point.y - cy;
 
-            point.x = cx + x*cos - y*sin;
-            point.y = cy + x*sin + y*cos;
+            point.x = (float) (cx + x*cos - y*sin);
+            point.y = (float) (cy + x*sin + y*cos);
         }
     }
 

@@ -6,7 +6,7 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.colored.ColorQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
-import com.pieisnotpi.game.cameras.ControlCamera;
+import com.pieisnotpi.game.cameras.FirstPersonCamera;
 import org.joml.Vector2i;
 
 /**
@@ -51,9 +51,9 @@ public abstract class PauseScene extends Scene
 
         for(Camera camera : cameras)
         {
-            if(!camera.getClass().isInstance(ControlCamera.class)) continue;
+            if(!camera.getClass().isInstance(FirstPersonCamera.class)) continue;
 
-            ControlCamera c = (ControlCamera) camera;
+            FirstPersonCamera c = (FirstPersonCamera) camera;
 
             for(int i = 0; i < c.joybinds.size(); i++)
                 if(i != c.pauseSlot && i != c.fullscreenSlot)
