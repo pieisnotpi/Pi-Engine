@@ -2,15 +2,11 @@ package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
-import com.pieisnotpi.engine.rendering.textures.AnimatedSprite;
-import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
 import com.pieisnotpi.engine.rendering.ui.text.font.SystemFont;
 import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Stone;
-import com.pieisnotpi.game.cameras.FirstPersonCamera;
 import com.pieisnotpi.game.cameras.OrbitCamera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -25,11 +21,10 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        cameras.add(new FirstPersonCamera(new Vector3f(0, 2, 0), new Vector2f(0, 0), new Vector2f(1, 1), 90, 0, this));
-        /*cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
         cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), 90, this));
         cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));*/
+        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
         clearColor.set(0.918f, 0.729f, 0.125f);
 
         float xOffset = -(blocks.length/2f)*Block.SIZE, zOffset = -(blocks[0].length/2f)*Block.SIZE;

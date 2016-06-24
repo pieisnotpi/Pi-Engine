@@ -50,9 +50,6 @@ public class OrbitCamera extends Camera
         {
             float nx = (cy - my)*mouseRotAmount, ny = (cx - mx)*mouseRotAmount;
 
-            if(nx >= 90) nx = 89.9f;
-            else if(nx <= -90) nx = -89.9f;
-
             addToRot(nx, ny, 0);
         }
         else
@@ -75,6 +72,9 @@ public class OrbitCamera extends Camera
         if(xr == 0 && yr == 0 && zr == 0) return;
 
         center.add(0, 0, dist, pos);
+
+        if(rot.x + xr > 90) xr = 89.9f - rot.x;
+        if(rot.x + xr < -90) xr = -89.9f - rot.x;
 
         MathUtility.rotateAxisX(rot.x += xr, center.y, center.z, pos);
         MathUtility.rotateAxisY(rot.y += yr, center.x, center.z, pos);
