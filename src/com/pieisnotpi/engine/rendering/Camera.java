@@ -3,7 +3,10 @@ package com.pieisnotpi.engine.rendering;
 import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
@@ -23,7 +26,7 @@ public class Camera extends GameObject
 
     public Camera(Vector3f position, Vector3f lookAt, Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
     {
-        this.pos = position;
+        this.pos.set(position);
         this.lookAt = lookAt;
         this.viewPos = viewPos;
         this.viewSize = viewSize;
@@ -78,7 +81,7 @@ public class Camera extends GameObject
 
     public void setPosition(Vector3f position)
     {
-        this.pos = position;
+        this.pos.set(position);
         positionUpdated = true;
     }
 

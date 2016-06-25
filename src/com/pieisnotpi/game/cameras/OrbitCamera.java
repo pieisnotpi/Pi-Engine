@@ -33,6 +33,9 @@ public class OrbitCamera extends Camera
         }
 
         Vector2i res = scene.window.res;
+
+        if(!isCursorWithinViewport(cursorPos, res)) return;
+
         float cx = (float) (cursorPos.x*2f - res.x), cy = (float) (cursorPos.y*2f - res.y);
 
         if(cx > -0.001 && cx < 0.001) cx = 0;
@@ -86,7 +89,7 @@ public class OrbitCamera extends Camera
     @Override
     public void onLeftClick()
     {
-        leftStatus = true;
+        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) leftStatus = true;
         super.onLeftClick();
     }
 
@@ -100,7 +103,7 @@ public class OrbitCamera extends Camera
     @Override
     public void onRightClick()
     {
-        rightStatus = true;
+        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) rightStatus = true;
         super.onRightClick();
     }
 
@@ -109,5 +112,10 @@ public class OrbitCamera extends Camera
     {
         rightStatus = false;
         super.onRightRelease();
+    }
+
+    private boolean isCursorWithinViewport(Vector2d cursorPos, Vector2i res)
+    {
+        return !(cursorPos.x < res.x*viewPos.x || cursorPos.x > res.x*(viewPos.x + viewSize.x) || cursorPos.y < res.y*viewPos.y || cursorPos.y > res.y*(viewPos.y + viewSize.y));
     }
 }

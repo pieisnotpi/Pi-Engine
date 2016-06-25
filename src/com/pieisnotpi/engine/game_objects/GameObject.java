@@ -10,11 +10,11 @@ import org.joml.Vector3f;
 
 public abstract class GameObject
 {
-    protected Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
+    protected final Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
-    private Vector3f c = new Vector3f();
+    private final Vector3f c = new Vector3f();
 
     public void update() {}
     public void drawUpdate() {}
@@ -29,10 +29,17 @@ public abstract class GameObject
     public void setHeight(float height) { setCy(c.y/size.y*height); size.y = height; }
     public void setDepth(float depth) { setCz(c.z/size.z*depth); size.z = depth; }
     public void addToRot(float xr, float yr, float zr) { rot.x += xr; rot.y += yr; rot.z += zr; }
-    public void setRot(float xr, float yr, float zr) { addToRot(xr - rot.x, yr - rot.y, zr - rot.z); }
     public void setScene(Scene scene) { this.scene = scene; }
     public void setMatrixID(int matrixID) { this.matrixID = matrixID; }
     public void destroy() { scene.gameObjects.remove(this); }
+
+    public final void addToXRot(float xr) { addToRot(xr, 0, 0); }
+    public final void addToYRot(float yr) { addToRot(0, yr, 0); }
+    public final void addToZRot(float zr) { addToRot(0, 0, zr); }
+    public final void setXRot(float xr) { addToXRot(xr - rot.x); }
+    public final void setYRot(float yr) { addToYRot(yr - rot.y); }
+    public final void setZRot(float zr) { addToZRot(zr - rot.z); }
+    public final void setRot(float xr, float yr, float zr) { addToRot(xr - rot.x, yr - rot.y, zr - rot.z); }
 
     public void onJoystickConnect(Joystick joystick) {}
     public void onJoystickDisconnect(Joystick joystick) {}

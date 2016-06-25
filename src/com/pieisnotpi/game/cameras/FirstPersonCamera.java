@@ -88,8 +88,8 @@ public class FirstPersonCamera extends Camera
 
         if(joy.name.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, true, (value) -> addToRot(0, joySensitivity/scene.window.getRefreshRate()*value, 0), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, true, (value) -> addToRot(joySensitivity/scene.window.getRefreshRate()*value, 0, 0), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, true, (value) -> addToYRot(joySensitivity/scene.window.getRefreshRate()*value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, true, (value) -> addToXRot(joySensitivity/scene.window.getRefreshRate()*value), null));
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, true, (value) -> moveX(moveAmount/scene.window.getRefreshRate()*value), null));
             joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, true, (value) -> moveZ(moveAmount/scene.window.getRefreshRate()*-value), null));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, true, (value) -> moveY(moveAmount/scene.window.getRefreshRate()), null));
