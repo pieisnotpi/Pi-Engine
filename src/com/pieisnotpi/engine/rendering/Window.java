@@ -360,7 +360,7 @@ public class Window
         this.fullscreen = fullscreen;
 
         if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, 1920, 1080, refreshRate);
-        else glfwSetWindowMonitor(windowID, NULL, (int) originalPos.x, (int) originalPos.y, (int) originalRes.x, (int) originalRes.y, refreshRate);
+        else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, originalRes.x, originalRes.y, refreshRate);
     }
 
     public void setName(String name)
