@@ -5,8 +5,10 @@ import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.utility.BufferUtility;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public abstract class ShaderProgram
     public int program, shaderID;
     protected int bufferSize = 0;
     private int current = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
+    private static FloatBuffer vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat4b = BufferUtils.createFloatBuffer(16);
 
     public ShaderProgram(ShaderFile... shaders)
     {
@@ -69,7 +72,7 @@ public abstract class ShaderProgram
 
         if(matrixID != lastMatrix)
         {
-            setUniformMat4(perspName, BufferUtility.mat4ToFloatBuffer(camera.matrices[lastMatrix = matrixID]));
+            setUniformMat4(perspName, camera.matrices[lastMatrix = matrixID]);
         }
 
         if(tex != null)
@@ -101,30 +104,33 @@ public abstract class ShaderProgram
         else Logger.SHADER_PROGRAM.err("Attempted to bind a null array, shader program must be corrupt");
     }
 
-    public void setUniformMat4(String name, FloatBuffer value)
+    public void setUniformMat4(String name, Matrix4f mat4)
     {
         use();
         int location = glGetUniformLocation(program, name);
+        mat4.get(mat4b);
 
-        if(location > -1) glUniformMatrix4fv(location, false, value);
+        if(location > -1) glUniformMatrix4fv(location, false, mat4b);
         else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
     }
 
-    public void setUniformVec3(String name, FloatBuffer value)
+    public void setUniformVec3f(String name, Vector3f vec3)
     {
         use();
         int location = glGetUniformLocation(program, name);
+        vec3.get(vec3b);
 
-        if(location > -1) glUniform3fv(location, value);
+        if(location > -1) glUniform3fv(location, vec3b);
         else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
     }
 
-    public void setUniformVec4(String name, FloatBuffer value)
+    public void setUniformVec4f(String name, Vector4f vec4)
     {
         use();
         int location = glGetUniformLocation(program, name);
+        vec4.get(vec4b);
 
-        if(location > -1) glUniform4fv(location, value);
+        if(location > -1) glUniform4fv(location, vec4b);
         else Logger.SHADER_PROGRAM.err("Program " + program + " attempted to set non-existent uniform '" + name + '\'');
     }
 
