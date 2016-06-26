@@ -26,9 +26,6 @@ public class InputManager
     public Vector2f localCursorPos = new Vector2f();
 
     private Window window;
-    /*protected GLFWJoystickCallback joyCallback;
-    protected GLFWScrollCallback scrollCallback;
-    protected GLFWCursorPosCallback cursorPosCallback;*/
 
     public Joystick[] joysticks = new Joystick[16];
 
@@ -92,8 +89,6 @@ public class InputManager
     public void pollInputs()
     {
         if(!window.focused) return;
-
-        glfwPollEvents();
 
         try
         {

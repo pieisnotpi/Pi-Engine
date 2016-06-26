@@ -275,9 +275,10 @@ public class Window
             shaders.forEach(ShaderProgram::clear);
         }
 
-        glfwSwapBuffers(windowID);
-
         time += System.currentTimeMillis() - t;
+
+        glfwSwapBuffers(windowID);
+        glfwPollEvents();
     }
 
     public void show()
@@ -301,13 +302,18 @@ public class Window
         setWindowPos(monitor.position.x + (monitor.size.x - originalRes.x)/2, monitor.position.y + (monitor.size.y - originalRes.y)/2);
     }
 
+    public String getName() { return name; }
+    public Vector2i getWindowPos() { return pos; }
     public int getRefreshRate() { return refreshRate; }
     public int getVsync() { return vsync; }
     public boolean isAlive() { return alive; }
     public boolean isFullscreen() { return fullscreen; }
 
-    public String getName() { return name; }
-    public Vector2i getWindowPos() { return pos; }
+    /**
+     * Sets the position of the window
+     * @param xPos The new x position of the window
+     * @param yPos The new y position of the window
+     */
 
     public void setWindowPos(int xPos, int yPos)
     {
@@ -319,8 +325,6 @@ public class Window
             setFullscreen(false);
         }
 
-        pos.set(xPos, yPos);
-        originalPos.set(xPos, yPos);
         glfwSetWindowPos(windowID, xPos, yPos);
 
         setCurrentMonitor();
@@ -330,13 +334,22 @@ public class Window
         middle.set(pos.x + res.x/2, pos.y + res.y/2);
     }
 
+    /**
+     * Sets the resolution of the window
+     * @param width The new width of the window, in pixels
+     * @param height The new height of the window, in pixels
+     */
+
     public void setWindowRes(int width, int height)
     {
-        res.set(width, height);
-        middle.set(pos.x + res.x/2, pos.y + res.y/2);
-
         glfwSetWindowSize(windowID, width, height);
+        middle.set(pos.x + res.x/2, pos.y + res.y/2);
     }
+
+    /**
+     * Sets the refresh rate of the window
+     * @param refreshRate The new refresh rate, in frames-per-second
+     */
 
     public void setRefreshRate(int refreshRate)
     {
@@ -345,6 +358,13 @@ public class Window
         drawUpdate.setFrequency(refreshRate);
         inputUpdate.setFrequency(refreshRate);
     }
+
+    /**
+     * Sets the vsync value
+     * NOTE: A value of zero disables vsync
+     * NOTE: Vsync does not work with fullscreen due to performance issues
+     * @param vsync The new vsync value
+     */
 
     public void setVsync(int vsync)
     {
@@ -355,6 +375,12 @@ public class Window
         glfwSwapInterval(vsync);
     }
 
+    /**
+     * Sets the fullscreen status of the window
+     * NOTE: Fullscreen does not work with vsync due to performance issues
+     * @param fullscreen The new fullscreen value
+     */
+
     public void setFullscreen(boolean fullscreen)
     {
         this.fullscreen = fullscreen;
@@ -363,6 +389,11 @@ public class Window
         else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, originalRes.x, originalRes.y, refreshRate);
     }
 
+    /**
+     * Sets the name of the window
+     * @param name The new name of the window
+     */
+
     public void setName(String name)
     {
         if(this.name.contentEquals(name)) return;
@@ -370,6 +401,10 @@ public class Window
         this.name = name;
         glfwSetWindowTitle(windowID, name);
     }
+
+    /**
+     * Destroys the window, making it unusable
+     */
 
     public void destroy()
     {

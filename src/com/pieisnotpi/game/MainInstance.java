@@ -15,17 +15,14 @@ import static org.lwjgl.glfw.GLFW.*;
 
 class MainInstance extends GameInstance
 {
-    private Window window;
     private Scene testScene1, testScene2, editor, physics;
 
     public void init()
     {
         super.init();
 
-        window = new Window("Pi Engine", 600, 600, false, 0, PiEngine.monitorPointers.get(Window.prefMonitor), 0);
-        window.init();
-
-        windows.add(window);
+        windows.add(new Window("Pi Engine", 600, 600, false, 1, PiEngine.monitorPointers.get(Window.prefMonitor), 0));
+        windows.forEach(Window::init);
 
         testScene1 = new TestScene();
         testScene2 = new TestScene2();
@@ -37,7 +34,7 @@ class MainInstance extends GameInstance
         editor.init();
         physics.init();
 
-        window.setScene(physics);
+        windows.get(0).setScene(physics);
 
         for(Window w : windows)
         {
@@ -50,7 +47,7 @@ class MainInstance extends GameInstance
 
     public void start()
     {
-        window.show();
+        windows.forEach(Window::show);
 
         super.start();
     }
