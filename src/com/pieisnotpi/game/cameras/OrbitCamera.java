@@ -34,8 +34,6 @@ public class OrbitCamera extends Camera
 
         Vector2i res = scene.window.res;
 
-        if(!isCursorWithinViewport(cursorPos, res)) return;
-
         float cx = (float) (cursorPos.x*2f - res.x), cy = (float) (cursorPos.y*2f - res.y);
 
         if(cx > -0.001 && cx < 0.001) cx = 0;
