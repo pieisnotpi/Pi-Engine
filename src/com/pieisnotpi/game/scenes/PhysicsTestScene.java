@@ -73,7 +73,7 @@ public class PhysicsTestScene extends PauseScene
                 {
                     if(x == 0 || x == size - 1 || y == 0 || y == size - 1)
                     {
-                        FloorTile t = new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, -objZ, this);
+                        FloorTile t = new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, objZ, this);
                         tiles.put(t.body, t);
                     }
                 }
@@ -175,8 +175,8 @@ public class PhysicsTestScene extends PauseScene
         {
             Vector2f pos = window.inputManager.localCursorPos;
 
-            //objects.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), -objZ, this));
-            objects.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), -objZ, this));
+            //objects.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), objZ, this));
+            objects.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), objZ, this));
         }
         else if(key == Keyboard.KEY_LEFT_SHIFT)
         {
@@ -192,7 +192,7 @@ public class PhysicsTestScene extends PauseScene
                 i = -1;
             }
 
-            players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), -objZ, player, this));
+            players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), objZ, player, this));
         }
         else if(key == Keyboard.KEY_SPACE)
         {
