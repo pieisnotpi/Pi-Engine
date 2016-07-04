@@ -10,17 +10,22 @@ import org.joml.Vector3f;
 
 public class OrbitCamera extends Camera
 {
-    private Vector3f center;
-    private float dist, mx, my;
+    private float mx, my, radius;
     private boolean leftStatus = false, rightStatus = false, first = true;
 
-    private static final float mouseRotAmount = 0.1f, mouseMoveAmount = 0.005f;
+    private static final float mouseRotAmount = 0.1f, mouseMoveAmount = 0.005f, zoomAmount = 0.25f;
 
-    public OrbitCamera(Vector3f center, float dist, Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
+    public OrbitCamera(Vector3f pos, Vector3f center, Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
     {
-        super(new Vector3f(center.x, center.y, center.z + dist), center, viewPos, viewSize, fov, scene);
-        this.center = center;
-        this.dist = dist;
+        super(pos, center, viewPos, viewSize, fov, scene);
+        Vector3f dist = new Vector3f();
+        pos.sub(center, dist);
+
+        radius = (float) Math.sqrt(dist.x*dist.x + dist.y*dist.y + dist.z*dist.z);
+        rot.y = (float) Math.toDegrees(Math.atan2(dist.z, dist.x));
+
+        MathUtility.rotateAxisY(-rot.y, 0, 0, dist);
+        rot.x = (float) Math.toDegrees(Math.atan2(dist.y, dist.x));
     }
 
     @Override
@@ -49,16 +54,16 @@ public class OrbitCamera extends Camera
 
         if(leftStatus)
         {
-            float nx = (cy - my)*mouseRotAmount, ny = (cx - mx)*mouseRotAmount;
+            float nx = -(cy - my)*mouseRotAmount, ny = (cx - mx)*mouseRotAmount;
 
             addToRot(nx, ny, 0);
         }
-        else
+        if(rightStatus)
         {
-            float nx = (cx - mx)*mouseMoveAmount, ny = -(cy - my)*mouseMoveAmount;
+            float nx = (cx - mx)*mouseMoveAmount, ny = (cy - my)*mouseMoveAmount;
 
-            moveX(nx);
-            moveZ(ny);
+            moveZ(nx);
+            moveX(ny);
         }
 
         mx = cx;
@@ -68,18 +73,44 @@ public class OrbitCamera extends Camera
     }
 
     @Override
+    public void onScroll(float xAmount, float yAmount)
+    {
+        if(!isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) return;
+
+        radius -= yAmount*zoomAmount;
+        if(radius <= 0) radius = 0.1f;
+
+        float xr = rot.x, yr = rot.y;
+
+        if(xr == 0 && yr == 0)
+        {
+            pos.x = lookAt.x + radius;
+            positionUpdated = true;
+        }
+        else
+        {
+            rot.set(0, 0, rot.z);
+            addToRot(xr, yr, 0);
+        }
+
+        super.onScroll(xAmount, yAmount);
+    }
+
+    @Override
     public void addToRot(float xr, float yr, float zr)
     {
         if(xr == 0 && yr == 0 && zr == 0) return;
 
-        center.add(0, 0, dist, pos);
+        float px = pos.x, py = pos.y, pz = pos.z;
+
+        lookAt.add(radius, 0, 0, pos);
 
         if(rot.x + xr > 90) xr = 89.9f - rot.x;
         if(rot.x + xr < -90) xr = -89.9f - rot.x;
 
-        MathUtility.rotateAxisX(rot.x += xr, center.y, center.z, pos);
-        MathUtility.rotateAxisY(rot.y += yr, center.x, center.z, pos);
-        MathUtility.rotateAxisZ(rot.z += zr, 0, 0, up);
+        MathUtility.rotateAxisZ(rot.x += xr, lookAt.x, lookAt.y, pos);
+        MathUtility.rotateAxisY(rot.y += yr, lookAt.x, lookAt.z, pos);
+        MathUtility.rotateAxisZ(zr, 0, 0, up);
 
         rotationUpdated = true;
     }

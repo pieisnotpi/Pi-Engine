@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 public class TransitionCamera extends Camera
 {
     public float speed, angularSpeed, zoomSpeed;
-    private float moveX, moveY, moveZ, rotX, rotY, rotZ, tzoom, tfov;
+    private float moveX, moveY, moveZ, tFov, rotX = 0, rotY = 0, rotZ = 0, tZoom = 1;
 
     public TransitionCamera(Vector2f viewPos, Vector2f viewSize, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
     {
@@ -30,7 +30,7 @@ public class TransitionCamera extends Camera
         moveX = pos.x;
         moveY = pos.y;
         moveZ = pos.z;
-        tfov = fov;
+        tFov = fov;
     }
 
     public void transitionX(float nx)
@@ -100,26 +100,26 @@ public class TransitionCamera extends Camera
     {
         rotX = nx;
         float dif = getRotXAmount();
-        addToRot(dif, 0, 0);
+        addToXRot(dif);
     }
 
     public void transitionYRot(float ny)
     {
         rotY = ny;
         float dif = getRotYAmount();
-        addToRot(0, dif, 0);
+        addToYRot(dif);
     }
 
     public void transitionZRot(float nz)
     {
         rotZ = nz;
         float dif = getRotZAmount();
-        addToRot(0, 0, dif);
+        addToZRot(dif);
     }
 
     public void transitionOrthoZoom(float nz)
     {
-        tzoom = nz;
+        tZoom = nz;
 
         float dif = nz - orthoZoom;
 
@@ -131,7 +131,7 @@ public class TransitionCamera extends Camera
 
     public void transitionFov(float nf)
     {
-        tfov = nf;
+        tFov = nf;
 
         float dif = nf - fov;
 
@@ -143,14 +143,14 @@ public class TransitionCamera extends Camera
 
     public void drawUpdate()
     {
+        if(tFov != fov) transitionFov(tFov);
         if(moveX != pos.x) transitionX(moveX);
         if(moveY != pos.y) transitionY(moveY);
         if(moveZ != pos.z) transitionZ(moveZ);
         if(rotX != rot.x) transitionXRot(rotX);
         if(rotY != rot.y) transitionYRot(rotY);
         if(rotZ != rot.z) transitionZRot(rotZ);
-        if(tzoom != orthoZoom) transitionOrthoZoom(tzoom);
-        if(tfov != fov) transitionFov(tfov);
+        if(tZoom != orthoZoom) transitionOrthoZoom(tZoom);
 
         super.drawUpdate();
     }

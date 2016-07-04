@@ -7,14 +7,19 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.utility.Timer;
 import com.pieisnotpi.game.cameras.TransitionCamera;
-import com.pieisnotpi.game.objects.*;
+import com.pieisnotpi.game.objects.FloorTile;
+import com.pieisnotpi.game.objects.Player;
+import com.pieisnotpi.game.objects.Wheel;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.ContactEdge;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A scene used to test the Jbox2D library.
@@ -23,16 +28,16 @@ import java.util.List;
 public class PhysicsTestScene extends PauseScene
 {
     public List<Player> players = new ArrayList<>();
-    private List<Wheel> wheels = new ArrayList<>();
-    private List<Crate> crates = new ArrayList<>();
-    private List<FloorTile> tiles = new ArrayList<>();
+    private List<PhysicsObject> objects = new ArrayList<>();
+    private Map<Body, FloorTile> tiles = new HashMap<>();
     private boolean leftStatus = false, rightStatus = false;
 
     public TransitionCamera camera;
 
     private Text winner;
     private Timer timer = new Timer(false, 2000), resetTimer = new Timer(true, 5000);
-    private int size = 4;
+    private int size = 20;
+    private static final float objZ = -0.2f;
 
     public void init()
     {
@@ -56,11 +61,7 @@ public class PhysicsTestScene extends PauseScene
 
         if(timer.isFinished() && size > 9)
         {
-            tiles.stream().filter(tile -> tile.bodyAlive).forEach(tile ->
-            {
-                world.destroyBody(tile.body);
-                tile.bodyAlive = false;
-            });
+            tiles.forEach((b, f) -> f.destroy());
 
             size-=2;
 
@@ -72,7 +73,8 @@ public class PhysicsTestScene extends PauseScene
                 {
                     if(x == 0 || x == size - 1 || y == 0 || y == size - 1)
                     {
-                        tiles.add(new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, -0.2f, this));
+                        FloorTile t = new FloorTile(xOffset + FloorTile.scale*x, yOffset + FloorTile.scale*y, -objZ, this);
+                        tiles.put(t.body, t);
                     }
                 }
             }
@@ -88,11 +90,11 @@ public class PhysicsTestScene extends PauseScene
             Player player = players.get(i);
 
             ContactEdge e = player.body.getContactList();
-            if(e != null) tiles.stream().filter(tile -> e.other.equals(tile.body)).forEach(tile ->
+            if(e != null)
             {
-                player.destroy();
-                players.remove(player);
-            });
+                FloorTile t = tiles.get(e.other);
+                if(t != null) { player.destroy(); players.remove(i); }
+            }
         }
 
         super.drawUpdate();
@@ -105,19 +107,19 @@ public class PhysicsTestScene extends PauseScene
         world.getGravity().x = -camera.up.x*9.81f;
         world.getGravity().y = -camera.up.y*9.81f;
 
-        if(leftStatus) for(Crate crate : crates)
+        if(leftStatus) for (PhysicsObject object : objects)
         {
-            Vec2 pos = crate.body.getPosition().mul(PiEngine.PIXELS_PER_METER);
+            Vec2 pos = object.body.getPosition().mul(PiEngine.PIXELS_PER_METER);
             Vec2 force = new Vec2(0.5f/((lastCursorPos.x - pos.x)), 0.5f/((lastCursorPos.y - pos.y)));
 
-            crate.body.applyLinearImpulse(force, crate.body.getWorldCenter());
+            object.body.applyLinearImpulse(force, object.body.getWorldCenter());
         }
 
-        if(rightStatus) for(Crate crate : crates)
+        if(rightStatus) for(PhysicsObject object : objects)
         {
-            Vec2 pos = crate.body.getPosition().mul(PiEngine.PIXELS_PER_METER);
+            Vec2 pos = object.body.getPosition().mul(PiEngine.PIXELS_PER_METER);
             Vec2 force = new Vec2(lastCursorPos.x, lastCursorPos.y).subLocal(pos).mulLocal(-PiEngine.PIXELS_PER_METER*1.5f);
-            crate.body.applyLinearImpulse(force, crate.body.getWorldCenter());
+            object.body.applyLinearImpulse(force, object.body.getWorldCenter());
         }
 
         super.updatePhysics();
@@ -158,7 +160,7 @@ public class PhysicsTestScene extends PauseScene
 
             camera.transitionX(nx/players.size() + Player.scale/2);
             camera.transitionY(ny/players.size() + Player.scale/2);
-            camera.transitionOrthoZoom(-dist/4);
+            camera.transitionOrthoZoom(0.9f/dist);
         }
         else
         {
@@ -173,8 +175,8 @@ public class PhysicsTestScene extends PauseScene
         {
             Vector2f pos = window.inputManager.localCursorPos;
 
-            //crates.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), 0.2f, this));
-            wheels.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, this));
+            //objects.add(new Crate(cursorXToWorldX(pos.x, Crate.scale/2), cursorYToWorldY(pos.y, Crate.scale/2), -objZ, this));
+            objects.add(new Wheel(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), -objZ, this));
         }
         else if(key == Keyboard.KEY_LEFT_SHIFT)
         {
@@ -190,14 +192,14 @@ public class PhysicsTestScene extends PauseScene
                 i = -1;
             }
 
-            players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), 0.2f, player, this));
+            players.add(new Player(cursorXToWorldX(pos.x, Wheel.radius), cursorYToWorldY(pos.y, Wheel.radius), -objZ, player, this));
         }
         else if(key == Keyboard.KEY_SPACE)
         {
-            for(Crate crate : crates)
+            for(PhysicsObject object : objects)
             {
-                Vec2 pos = crate.body.getPosition().mul(PiEngine.PIXELS_PER_METER), force = new Vec2(lastCursorPos.x, lastCursorPos.y).subLocal(pos).mulLocal(-PiEngine.PIXELS_PER_METER*625);
-                crate.body.applyLinearImpulse(force, crate.body.getWorldCenter());
+                Vec2 pos = object.body.getPosition().mul(PiEngine.PIXELS_PER_METER), force = new Vec2(lastCursorPos.x, lastCursorPos.y).subLocal(pos).mulLocal(-PiEngine.PIXELS_PER_METER*625);
+                object.body.applyLinearImpulse(force, object.body.getWorldCenter());
             }
         }
     }
@@ -236,7 +238,7 @@ public class PhysicsTestScene extends PauseScene
     {
         players.forEach(Player::destroy);
         players.clear();
-        tiles.forEach(FloorTile::destroy);
+        tiles.forEach((b, f) -> f.destroy());
         tiles.clear();
 
         size = 40;
@@ -249,9 +251,9 @@ public class PhysicsTestScene extends PauseScene
 
         world = new World(new Vec2(0, -9.81f));
 
-        players.add(new Player(-0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, -0.2f, 0, this));
-        //players.add(new Player(0 - PhysicsObject.calcOffset(Player.scale/2), 0.2f, 0.2f, 2, this));
-        players.add(new Player(0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, -0.2f, 1, this));
+        players.add(new Player(-0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, objZ, 0, this));
+        //players.add(new Player(0 - PhysicsObject.calcOffset(Player.scale/2), 0.2f, objZ, 2, this));
+        players.add(new Player(0.5f - PhysicsObject.calcOffset(Player.scale/2), 0.2f, objZ, 1, this));
 
         timer.forceFinish();
         update();

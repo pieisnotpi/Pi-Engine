@@ -23,7 +23,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-//@SuppressWarnings("ALL")
 public class Window
 {
     public float ratio;
@@ -47,7 +46,7 @@ public class Window
     public Monitor monitor;
     public InputManager inputManager;
     public List<ShaderProgram> shaders = new ArrayList<>();
-    public Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(res), pos = new Vector2i(-1, -1), originalPos = new Vector2i(pos), middle = new Vector2i();
+    public Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(), fullscreenRes = new Vector2i(), pos = new Vector2i(-1, -1), originalPos = new Vector2i(), middle = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -199,6 +198,7 @@ public class Window
 
         inputManager.keybinds.add(new Keybind(GLFW_KEY_F11, false, (value) -> setFullscreen(!fullscreen), null));
 
+        if(fullscreenRes.x == 0 && fullscreenRes.y == 0) fullscreenRes.set(monitor.size);
         center();
         setRefreshRate(refreshRate);
         setVsync(vsync);
@@ -346,6 +346,11 @@ public class Window
         middle.set(pos.x + res.x/2, pos.y + res.y/2);
     }
 
+    public void setFullscreenRes(int width, int height)
+    {
+        fullscreenRes.set(width, height);
+    }
+
     /**
      * Sets the refresh rate of the window
      * @param refreshRate The new refresh rate, in frames-per-second
@@ -385,7 +390,7 @@ public class Window
     {
         this.fullscreen = fullscreen;
 
-        if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, 1920, 1080, refreshRate);
+        if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, fullscreenRes.x, fullscreenRes.y, refreshRate);
         else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, originalRes.x, originalRes.y, refreshRate);
     }
 

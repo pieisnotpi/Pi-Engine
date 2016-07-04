@@ -15,7 +15,7 @@ public class Camera extends GameObject
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float fov, zNear = 0.001f, zFar = 100, ratio = -1;
-    protected float orthoZoom = 0;
+    protected float orthoZoom = 1;
     protected Vector3f lookAt, lookAtDist = new Vector3f();
     protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false;
 
@@ -149,7 +149,7 @@ public class Camera extends GameObject
 
         if(m0) matrices[0].setOrtho2D(-ratio, ratio, -1, 1);
         if(m1) matrices[1].setPerspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up);
-        if(m2) matrices[2].setOrtho(-ratio*orthoZoom, ratio*orthoZoom, -1*orthoZoom, 1*orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
+        if(m2) matrices[2].setOrtho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
 
         fovUpdated = false;
         ratioUpdated = false;

@@ -21,10 +21,10 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(0, 0, 0), 4, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(4, 2, 4), new Vector3f(0, 1, 0), new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(-4, 2, 4), new Vector3f(0, 1, 0), new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(-4, 2, -4), new Vector3f(0, 1, 0), new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
+        cameras.add(new OrbitCamera(new Vector3f(4, 2, -4), new Vector3f(0, 1, 0), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
         clearColor.set(0.918f, 0.729f, 0.125f);
 
         float xOffset = -(blocks.length/2f)*Block.SIZE, zOffset = -(blocks[0].length/2f)*Block.SIZE;
