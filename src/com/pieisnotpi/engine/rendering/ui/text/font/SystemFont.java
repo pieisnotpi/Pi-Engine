@@ -40,7 +40,6 @@ public class SystemFont extends Font
         g.dispose();
 
         texture = new Texture(image);
-        texture.hasTransparency = true;
 
         pixelScale = 0.006f/metrics.charWidth('A');
         spaceCharSpace = metrics.charWidth(' ');
@@ -78,7 +77,7 @@ public class SystemFont extends Font
         g.dispose();
 
         texture = new Texture(image);
-        texture.hasTransparency = true;
+        texture.hasTranslucency = true;
 
         pixelScale = 0.006f/metrics.charWidth('A');
         spaceCharSpace = metrics.charWidth(' ');

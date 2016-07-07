@@ -66,7 +66,6 @@ public class Player extends PhysicsObject
         body.setGravityScale(gravity);
 
         quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
-        quad.transparent = false;
 
         Color numColor = new Color(0, 0, 0);
 

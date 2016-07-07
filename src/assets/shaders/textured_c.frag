@@ -11,7 +11,9 @@ void main()
 {
     vec4 texVal = texture(sampler, TexCoord);
 
-    if(Color.w != 0 && texVal.w != 0)
+    if(texVal.w == 0) discard;
+
+    if(Color.w != 0)
     {
         texVal.x = (Color.x*Color.w + texVal.x*texVal.w)/2;
         texVal.y = (Color.y*Color.w + texVal.y*texVal.w)/2;

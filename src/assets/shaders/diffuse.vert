@@ -1,27 +1,30 @@
 #version 450
 
-layout (location = 0) in vec3 VertexPosition;
-layout (location = 1) in vec3 VertexNormal;
+in vec3 VertexPosition;
+in vec2 VertexTexCoords;
+in vec3 VertexNormal;
 
-out vec3 Intensity;
+out vec2 texCoords;
+out vec3 intensity;
 
-uniform vec4 LightPosition;
 uniform vec3 Kd;
 uniform vec3 Ld;
+uniform vec4 LightPosition;
 
-uniform mat3 NM;
-uniform mat4 MVM;
-uniform mat4 PM;
+uniform mat3 NormalMatrix;
+uniform mat4 ModelViewMatrix;
+uniform mat4 ProjectionMatrix;
 uniform mat4 MVP;
 
 void main()
 {
-    vec3 normal = normalize(NM * VertexNormal);
-    vec4 eye = MVM * vec4(VertexPosition, 1);
+    vec3 normal = normalize(NormalMatrix * VertexNormal);
+    vec4 pos = vec4(VertexPosition, 1), eye = ModelViewMatrix*pos;
 
     vec3 s = normalize(vec3(LightPosition - eye));
 
-    LightIntensity = Ld * Kd * max(dot(s, normal), 0);
+    intensity = Ld*Kd*max(dot(s, normal), 0);
+    texCoords = VertexTexCoords;
 
-    gl_Position = MVP * vec4(VertexPosition, 1);
+    gl_Position = MVP*pos;
 }

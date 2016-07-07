@@ -165,25 +165,21 @@ public class Window
         glDepthMask(true);
         glClearDepth(1.0f);
 
-        PiEngine.S_TEXTURE_ID = shaders.size();
         TextureShader textureShader = new TextureShader();
         textureShader.init();
-        shaders.add(textureShader);
+        shaders.add(PiEngine.S_TEXTURE_ID, textureShader);
 
-        PiEngine.S_TEXTURE_C = shaders.size();
-        TexturedCShader texturedCShader = new TexturedCShader();
-        texturedCShader.init();
-        shaders.add(texturedCShader);
-
-        PiEngine.S_COLOR_ID = shaders.size();
         ColorShader colorShader = new ColorShader();
         colorShader.init();
-        shaders.add(colorShader);
+        shaders.add(PiEngine.S_COLOR_ID, colorShader);
 
-        PiEngine.S_TEXT_ID = shaders.size();
         TextShader textShader = new TextShader();
         textShader.init();
-        shaders.add(textShader);
+        shaders.add(PiEngine.S_TEXT_ID, textShader);
+
+        TexturedCShader texturedCShader = new TexturedCShader();
+        texturedCShader.init();
+        shaders.add(PiEngine.S_TEXTURE_C_ID, texturedCShader);
 
         drawUpdate = new GameUpdate(1, this::draw, () ->
         {
@@ -207,20 +203,6 @@ public class Window
         initialized = true;
     }
 
-    public void setScene(Scene scene)
-    {
-        if(scene.equals(this.scene)) return;
-
-        if(this.scene != null)
-        this.scene.setWindow(null);
-        this.scene = scene;
-
-        scene.setWindow(this);
-        scene.onWindowResize(res);
-
-        glClearColor(scene.clearColor.red, scene.clearColor.green, scene.clearColor.blue, scene.clearColor.alpha);
-    }
-
     public void draw()
     {
         if(scene == null) return;
@@ -242,26 +224,24 @@ public class Window
 
         for(Camera camera : scene.cameras)
         {
-            double cos = Math.cos(Math.toRadians(camera.getXRot()));
+            double cos = Math.cos(Math.toRadians(camera.getYRot() - 90));
 
-            scene.renderables.sort((o1, o2) ->
+            scene.sortedBuffer.sort((o1, o2) ->
             {
-                if(o1.transparent && o2.transparent)
-                {
-                    float z1 = o1.points[0].z, z2 = o2.points[0].z;
-                    if(o1.getMatrixID() == PiEngine.C_PERSPECTIVE) z1 *= cos;
-                    else if(o1.getMatrixID() == PiEngine.C_ORTHO2D_ID) z1++;
-                    if(o2.getMatrixID() == PiEngine.C_PERSPECTIVE) z2 *= cos;
-                    else if(o2.getMatrixID() == PiEngine.C_ORTHO2D_ID) z2++;
+                float z1 = o1.points[0].z, z2 = o2.points[0].z;
 
-                    return Float.compare(z1, z2);
-                }
-                else if(o1.transparent) return 1;
-                else if(o2.transparent) return -1;
+                if(o1.getMatrixID() == PiEngine.C_PERSPECTIVE) z1 = camera.getZ() - (float) (z1*cos);
+                else if(o1.getMatrixID() == PiEngine.C_ORTHO2D_ID) z1++;
+                if(o2.getMatrixID() == PiEngine.C_PERSPECTIVE) z2 = camera.getZ() - (float) (z2*cos);
+                else if(o2.getMatrixID() == PiEngine.C_ORTHO2D_ID) z2++;
 
-                int s = Integer.compare(o1.getShaderID(), o2.getShaderID());
+                int s = Integer.compare(Float.floatToIntBits(z1), Float.floatToIntBits(z2));
                 if(s != 0) return s;
-                else if(o1.getTexture() != null && o2.getTexture() != null) return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
+
+                s = Integer.compare(o1.getShaderID(), o2.getShaderID());
+                if(s != 0) return s;
+
+                if(o1.getTexture() != null && o2.getTexture() != null) return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
                 else return 0;
             });
 
@@ -269,16 +249,38 @@ public class Window
 
             glViewport((int) viewX, (int) viewY, (int) viewWidth, (int) viewHeight);
 
-            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).addVertex(renderable));
-            shaders.forEach(ShaderProgram::compileVertices);
-            scene.renderables.forEach(renderable -> shaders.get(renderable.getShaderID()).drawNext(camera));
-            shaders.forEach(ShaderProgram::clear);
+            shaders.forEach(s ->
+            {
+                s.compileUnsorted();
+                s.drawUnsorted(camera);
+                s.clearUnsorted();
+            });
+
+            scene.sortedBuffer.forEach(renderable -> renderable.shader.addSortedVertex(renderable));
+            shaders.forEach(ShaderProgram::compileSorted);
+            scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
+            shaders.forEach(ShaderProgram::clearSorted);
         }
 
         time += System.currentTimeMillis() - t;
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();
+    }
+
+    public void setScene(Scene scene)
+    {
+        if(scene.equals(this.scene)) return;
+
+        shaders.forEach(s -> s.unsortedBuffer.clear());
+
+        if(this.scene != null) this.scene.setWindow(null);
+        this.scene = scene;
+
+        scene.setWindow(this);
+        scene.onWindowResize(res);
+
+        glClearColor(scene.clearColor.red, scene.clearColor.green, scene.clearColor.blue, scene.clearColor.alpha);
     }
 
     public void show()

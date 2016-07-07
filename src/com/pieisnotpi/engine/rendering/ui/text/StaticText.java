@@ -65,7 +65,6 @@ public class StaticText extends UiObject
         float r = (float) image.getWidth()/image.getHeight();
 
         Texture texture = new Texture(image);
-        texture.hasTransparency = true;
 
         if(quad != null) quad.unregister();
         quad = new TexQuad(pos.x, pos.y, pos.z, 5*scale/texture.height, 5*scale/texture.width, 0, new Sprite(texture, 0, 0, texture.width, texture.height), matrixID, scene);

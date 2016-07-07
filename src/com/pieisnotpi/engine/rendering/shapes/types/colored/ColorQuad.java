@@ -16,6 +16,10 @@ public class ColorQuad extends Quad
     {
         super(x, y, z, width, height, depth, PiEngine.S_COLOR_ID, matrixID, scene);
 
+        if(c0c.getAlpha() < 1 || c1c.getAlpha() < 1 || c2c.getAlpha() < 1 || c3c.getAlpha() < 1) shouldBeSorted = true;
+
         setColors(c0c, c1c, c2c, c3c);
+
+        register();
     }
 }

@@ -23,9 +23,11 @@ public class TexQuad extends Quad
 
         this.sprite = sprite;
         this.texture = sprite.texture;
-        transparent = texture.hasTransparency;
+        shouldBeSorted = texture.hasTranslucency;
 
         setTexCoords(new Vector2f(sprite.uvx0, sprite.uvy0), new Vector2f(sprite.uvx1, sprite.uvy0), new Vector2f(sprite.uvx0, sprite.uvy1), new Vector2f(sprite.uvx1, sprite.uvy1));
+
+        register();
     }
 
     public TexQuad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Sprite sprite, int matrixID, Scene scene)
@@ -39,9 +41,11 @@ public class TexQuad extends Quad
 
         this.sprite = sprite;
         this.texture = sprite.texture;
-        transparent = texture.hasTransparency;
+        shouldBeSorted = texture.hasTranslucency;
 
         setTexCoords(new Vector2f(sprite.uvx0, sprite.uvy0), new Vector2f(sprite.uvx1, sprite.uvy0), new Vector2f(sprite.uvx0, sprite.uvy1), new Vector2f(sprite.uvx1, sprite.uvy1));
+
+        register();
     }
 
     public Sprite getQuadSprite()

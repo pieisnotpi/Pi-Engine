@@ -1,10 +1,13 @@
 #version 450
 
-in vec3 LightIntensity;
+in vec2 texCoords;
+in vec3 intensity;
 
 out vec4 FragColor;
 
+uniform sampler2D sampler;
+
 void main()
 {
-    FragColor = vec4(LightIntensity, 1);
+    FragColor = texture(sampler, texCoords)*vec4(LightIntensity, 1);
 }

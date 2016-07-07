@@ -35,7 +35,8 @@ public abstract class Scene
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
-    public List<Renderable> renderables = new ArrayList<>(100);
+    public List<Renderable> unsortedBuffer = new ArrayList<>(100);
+    public List<Renderable> sortedBuffer = new ArrayList<>(100);
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
@@ -120,17 +121,48 @@ public abstract class Scene
         this.window = window;
         registerInputs();
 
-        if(window != null) onWindowResize(window.res);
+        if(window != null)
+        {
+            onWindowResize(window.res);
+            unsortedBuffer.forEach(r ->
+            {
+                r.shader = window.shaders.get(r.getShaderID());
+                r.shader.addUnsortedVertex(r);
+            });
+            sortedBuffer.forEach(r -> r.shader = window.shaders.get(r.getShaderID()));
+        }
+        else
+        {
+            unsortedBuffer.forEach(r -> r.shader = null);
+            sortedBuffer.forEach(r -> r.shader = null);
+        }
     }
 
     public void addRenderable(Renderable renderable)
     {
-        if(!renderables.contains(renderable)) renderables.add(renderable);
+        if(window != null) renderable.shader = window.shaders.get(renderable.getShaderID());
+        else renderable.shader = null;
+
+        if(renderable.shouldBeSorted)
+        {
+            if(!sortedBuffer.contains(renderable)) sortedBuffer.add(renderable);
+        }
+        else if(!unsortedBuffer.contains(renderable))
+        {
+            unsortedBuffer.add(renderable);
+            if(renderable.shader != null) renderable.shader.addUnsortedVertex(renderable);
+        }
     }
 
     public void removeRenderable(Renderable renderable)
     {
-        renderables.remove(renderable);
+        if(renderable.shouldBeSorted) sortedBuffer.remove(renderable);
+        else
+        {
+            if(renderable.getShaderID() == PiEngine.S_COLOR_ID) System.out.println("yes");
+            unsortedBuffer.remove(renderable);
+            if(renderable.shader != null) renderable.shader.removeUnsortedVertex(renderable);
+        }
     }
 
     public void addKeybind(Keybind keybind)

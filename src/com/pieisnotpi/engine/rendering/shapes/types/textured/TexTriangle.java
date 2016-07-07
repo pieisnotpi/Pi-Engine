@@ -19,7 +19,7 @@ public class TexTriangle extends Triangle
         super(c0, c1, c2, c0tx, c1tx, c2tx, texture, shaderID, matrixID, scene);
 
         this.texture = texture;
-        if(this.texture.hasTransparency) transparent = true;
+        if(this.texture.hasTranslucency) shouldBeSorted = true;
 
         register();
     }

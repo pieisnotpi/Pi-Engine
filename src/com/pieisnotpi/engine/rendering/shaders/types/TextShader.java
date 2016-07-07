@@ -1,15 +1,15 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.renderable_types.TextRenderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.utility.BufferUtility;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
@@ -32,14 +32,27 @@ public class TextShader extends ShaderProgram
         perspName = "camera";
     }
 
-    public void compileVertices()
+    protected void putElements(List<Renderable> buffer)
+    {
+        buffer.forEach(r ->
+        {
+            TextRenderable t = (TextRenderable) r;
+
+            BufferUtility.putVec3s(vertex.buffer, t.points);
+            BufferUtility.putVec2s(coords.buffer, t.texCoords);
+            BufferUtility.putColors(textColor.buffer, t.textColors);
+            BufferUtility.putColors(outlineColor.buffer, t.outlineColors);
+        });
+    }
+
+    /*public void compileSorted()
     {
         FloatBuffer vertBuffer, coordsBuffer, textColorBuffer, outlineColorBuffer;
 
-        if(bufferSize == 0) return;
+        if(sortedBufferSize == 0) return;
         int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity == bufferSize)
+        if(capacity == sortedBufferSize)
         {
             vertBuffer = vertex.buffer;
             coordsBuffer = coords.buffer;
@@ -53,13 +66,13 @@ public class TextShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
-            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
-            textColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
-            outlineColorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
+            vertBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*3);
+            coordsBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*2);
+            textColorBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*4);
+            outlineColorBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*4);
         }
 
-        buffer.forEach(renderable ->
+        sortedBuffer.forEach(renderable ->
         {
             TextRenderable temp = (TextRenderable) renderable;
 
@@ -79,5 +92,5 @@ public class TextShader extends ShaderProgram
         coords.bindData(coordsBuffer);
         textColor.bindData(textColorBuffer);
         outlineColor.bindData(outlineColorBuffer);
-    }
+    }*/
 }

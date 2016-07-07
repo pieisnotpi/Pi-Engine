@@ -1,9 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -14,24 +11,27 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class VertexArray
 {
     public int handle, programHandle;
-    public List<Attribute> attributes;
+    public Attribute[] attributes;
 
-    public VertexArray(Attribute... attributesA)
+    public VertexArray(Attribute... attributes)
     {
-        attributes = new ArrayList<>(Arrays.asList(attributesA));
+        this.attributes = attributes;
     }
 
     public void init(int programHandle)
     {
         this.programHandle = programHandle;
 
-        for(Attribute attribute : attributes)
-        {
-            attribute.location = glGetAttribLocation(programHandle, attribute.name);
-            attribute.handle = glGenBuffers();
-        }
+        int[] handles = new int[attributes.length];
+        glGenBuffers(handles);
 
-        attributes.forEach(Attribute::bindData);
+        for(int i = 0; i < attributes.length; i++)
+        {
+            Attribute a = attributes[i];
+            a.location = glGetAttribLocation(programHandle, a.name);
+            a.handle = handles[i];
+            a.bindData();
+        }
 
         handle = glGenVertexArrays();
         glBindVertexArray(handle);
@@ -67,12 +67,7 @@ public class VertexArray
     {
         String temp = "";
 
-        for (int i = 0; i < attributes.size(); i++)
-        {
-            Attribute a = attributes.get(i);
-
-            temp += "a" + i + ": (" + a + "), ";
-        }
+        for(int i = 0; i < attributes.length; i++) temp += "a" + i + ": (" + attributes[i] + "), ";
 
         return temp;
     }

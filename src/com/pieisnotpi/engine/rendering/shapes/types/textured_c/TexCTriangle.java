@@ -12,7 +12,7 @@ public class TexCTriangle extends Triangle
 {
     public TexCTriangle(Vector3f c0, Vector3f c1, Vector3f c2, Color c0c, Color c1c, Color c2c, Vector2f c0tx, Vector2f c1tx, Vector2f c2tx, Texture texture, int matrixID, Scene scene)
     {
-        this(c0, c1, c2, c0c, c1c, c2c, c0tx, c1tx, c2tx, texture, PiEngine.S_TEXTURE_C, matrixID, scene);
+        this(c0, c1, c2, c0c, c1c, c2c, c0tx, c1tx, c2tx, texture, PiEngine.S_TEXTURE_C_ID, matrixID, scene);
     }
 
     public TexCTriangle(Vector3f c0, Vector3f c1, Vector3f c2, Color c0c, Color c1c, Color c2c, Vector2f c0tx, Vector2f c1tx, Vector2f c2tx, Texture texture, int shaderID, int matrixID, Scene scene)
@@ -28,7 +28,7 @@ public class TexCTriangle extends Triangle
         texCoords[2] = c2tx;
 
         this.texture = texture;
-        if(this.texture.hasTransparency) transparent = true;
+        if(this.texture.hasTranslucency) shouldBeSorted = true;
 
         register();
     }

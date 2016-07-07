@@ -29,7 +29,6 @@ public abstract class PauseScene extends Scene
         pausedText.disable();
 
         tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.C_ORTHO2D_ID, this);
-        tint.transparent = true;
         tint.unregister();
     }
 

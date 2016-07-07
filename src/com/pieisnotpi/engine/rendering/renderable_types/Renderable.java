@@ -11,13 +11,15 @@ import java.util.Arrays;
 
 public abstract class Renderable
 {
-    public boolean transparent = false, registered = false;
+    public boolean shouldBeSorted = false, registered = false;
     public Scene scene;
     public Texture texture;
     public Vector3f[] points;
     public Vector2f[] texCoords;
+    //public Vector3f[] normals;
     public Color[] colors;
-    public int shaderID, matrixID, vertCount, drawMode;
+    public ShaderProgram shader = null;
+    protected int shaderID, matrixID, vertCount, drawMode;
 
     public float getX() { return 0;}
     public float getY() { return 0;}
@@ -126,6 +128,7 @@ public abstract class Renderable
 
         points = new Vector3f[vertCount];
         colors = new Color[vertCount];
+        //normals = new Vector3f[vertCount];
         texCoords = new Vector2f[vertCount];
 
         Arrays.fill(points, new Vector3f(0, 0, 0));

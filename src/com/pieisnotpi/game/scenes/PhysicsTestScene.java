@@ -160,7 +160,7 @@ public class PhysicsTestScene extends PauseScene
 
             camera.transitionX(nx/players.size() + Player.scale/2);
             camera.transitionY(ny/players.size() + Player.scale/2);
-            camera.transitionOrthoZoom(0.9f/dist);
+            camera.transitionOrthoZoom(1.05f/dist);
         }
         else
         {

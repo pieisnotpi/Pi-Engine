@@ -27,8 +27,6 @@ public class Quad extends Renderable
 
         if(height == 0) setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y, z + depth), new Vector3f(x + width, y, z + depth));
         else setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z + depth), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z + depth));
-
-        register();
     }
 
     public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, int shaderID, int matrixID, Scene scene)
@@ -41,8 +39,6 @@ public class Quad extends Renderable
         this.matrixID = matrixID;
 
         setPoints(c0, c1, c2, c3);
-
-        register();
     }
 
     public float getX()

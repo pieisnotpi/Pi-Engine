@@ -29,15 +29,14 @@ public class TextQuad extends TextRenderable
         this.scene = scene;
         this.shaderID = PiEngine.S_TEXT_ID;
         this.matrixID = matrixID;
-        this.transparent = true;
         this.cSprite = cSprite;
         this.sprite = cSprite.sprite;
         this.texture = sprite.texture;
 
         setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z));
         setTexCoords(new Vector2f(sprite.uvx0, sprite.uvy0), new Vector2f(sprite.uvx1, sprite.uvy0), new Vector2f(sprite.uvx0, sprite.uvy1), new Vector2f(sprite.uvx1, sprite.uvy1));
-        setTextColors(textColor, textColor, textColor, textColor);
-        setOutlineColors(outlineColor, outlineColor, outlineColor, outlineColor);
+        setQuadTextColor(textColor, textColor, textColor, textColor);
+        setQuadOutlineColor(outlineColor, outlineColor, outlineColor, outlineColor);
 
         register();
     }
@@ -50,6 +49,11 @@ public class TextQuad extends TextRenderable
     public void setQuadTextColor(Color c0, Color c1, Color c2, Color c3)
     {
         setTextColors(c0, c1, c2, c3);
+
+        boolean temp = false;
+        for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        if(!temp) for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        shouldBeSorted = temp;
     }
 
     public void setQuadOutlineColor(Color color)
@@ -60,6 +64,11 @@ public class TextQuad extends TextRenderable
     public void setQuadOutlineColor(Color c0, Color c1, Color c2, Color c3)
     {
         setOutlineColors(c0, c1, c2, c3);
+
+        boolean temp = false;
+        for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        shouldBeSorted = temp;
     }
 
     public float getX()

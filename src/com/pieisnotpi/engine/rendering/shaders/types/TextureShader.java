@@ -1,14 +1,14 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.utility.BufferUtility;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
@@ -29,14 +29,30 @@ public class TextureShader extends ShaderProgram
         perspName = "camera";
     }
 
-    public void compileVertices()
+    protected void putElements(List<Renderable> buffer)
+    {
+        buffer.sort((o1, o2) ->
+        {
+            int s = Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
+            if(s != 0) return s;
+            else return Integer.compare(o1.getMatrixID(), o2.getMatrixID());
+        });
+
+        buffer.forEach(r ->
+        {
+            BufferUtility.putVec3s(vertex.buffer, r.points);
+            BufferUtility.putVec2s(coords.buffer, r.texCoords);
+        });
+    }
+
+    /*public void compileSorted()
     {
         FloatBuffer vertBuffer, coordsBuffer;
 
-        if(bufferSize == 0) return;
+        if(sortedBufferSize == 0) return;
         int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity == bufferSize)
+        if(capacity == sortedBufferSize)
         {
             vertBuffer = vertex.buffer;
             coordsBuffer = coords.buffer;
@@ -46,11 +62,11 @@ public class TextureShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
-            coordsBuffer = BufferUtils.createFloatBuffer(bufferSize*2);
+            vertBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *3);
+            coordsBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *2);
         }
 
-        buffer.forEach(renderable ->
+        sortedBuffer.forEach(renderable ->
         {
             renderable.preCompile(this);
             BufferUtility.putVec3s(vertBuffer, renderable.points);
@@ -62,5 +78,5 @@ public class TextureShader extends ShaderProgram
 
         vertex.bindData(vertBuffer);
         coords.bindData(coordsBuffer);
-    }
+    }*/
 }

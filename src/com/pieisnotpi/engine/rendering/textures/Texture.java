@@ -9,9 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -21,13 +19,12 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 public class Texture
 {
     public static Map<String, Texture> textures = new HashMap<>();
-    //public static List<Texture> textures = new ArrayList<>();
     public static String defaultPath = "/assets/textures/";
 
     private int texID = -1, samplerID = 0;
     private String path;
 
-    public boolean hasTransparency = false;
+    public boolean hasTranslucency = false;
     public int width, height;
     public ByteBuffer bytes;
     public String name;
@@ -120,6 +117,8 @@ public class Texture
             for(int x = 0; x < width; x++)
             {
                 int pixel = pixels[y*width + x];
+                int alpha = pixel >> 24;
+                if(alpha > 0 && alpha < 255) hasTranslucency = true;
 
                 bytes.put((byte) ((pixel >> 16) & 0xFF));
                 bytes.put((byte) ((pixel >> 8) & 0xFF));
@@ -149,7 +148,7 @@ public class Texture
             for(int x = 0; x < width; x++)
             {
                 Color pixel = image.getPixelReader().getColor(x, y);
-                if(pixel.getOpacity() != 1) hasTransparency = true;
+                if(pixel.getOpacity() > 0 && pixel.getOpacity() < 1) hasTranslucency = true;
 
                 bytes.put((byte) ((int) (pixel.getRed()*255) & 0xff));
                 bytes.put((byte) ((int) (pixel.getGreen()*255) & 0xff));

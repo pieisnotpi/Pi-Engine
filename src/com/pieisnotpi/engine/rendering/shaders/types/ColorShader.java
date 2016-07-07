@@ -1,14 +1,14 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.utility.BufferUtility;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
@@ -29,14 +29,23 @@ public class ColorShader extends ShaderProgram
         perspName = "camera";
     }
 
-    public void compileVertices()
+    protected void putElements(List<Renderable> buffer)
+    {
+        buffer.forEach(r ->
+        {
+            BufferUtility.putVec3s(vertex.buffer, r.points);
+            BufferUtility.putColors(colors.buffer, r.colors);
+        });
+    }
+
+    /*public void compileSorted()
     {
         FloatBuffer vertBuffer, colorBuffer;
 
-        if(bufferSize == 0) return;
+        if(sortedBufferSize == 0) return;
         int capacity = vertex.buffer.capacity()/3;
 
-        if(capacity == bufferSize)
+        if(capacity == sortedBufferSize)
         {
             vertBuffer = vertex.buffer;
             colorBuffer = colors.buffer;
@@ -46,11 +55,11 @@ public class ColorShader extends ShaderProgram
         }
         else
         {
-            vertBuffer = BufferUtils.createFloatBuffer(bufferSize*3);
-            colorBuffer = BufferUtils.createFloatBuffer(bufferSize*4);
+            vertBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *3);
+            colorBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *4);
         }
 
-        buffer.forEach(renderable ->
+        sortedBuffer.forEach(renderable ->
         {
             renderable.preCompile(this);
             BufferUtility.putVec3s(vertBuffer, renderable.points);
@@ -62,5 +71,5 @@ public class ColorShader extends ShaderProgram
 
         vertex.bindData(vertBuffer);
         colors.bindData(colorBuffer);
-    }
+    }*/
 }
