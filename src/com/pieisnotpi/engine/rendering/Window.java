@@ -115,6 +115,7 @@ public class Window
         this.share = share;
 
         res.set(width, height);
+        originalRes.set(width, height);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
         monitor = PiEngine.monitorMap.get(monitorID);
     }
@@ -371,7 +372,7 @@ public class Window
         this.fullscreen = fullscreen;
 
         if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, fullscreenRes.x, fullscreenRes.y, refreshRate);
-        else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, res.x, res.y, refreshRate);
+        else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, originalRes.x, originalRes.y, refreshRate);
     }
 
     /**
