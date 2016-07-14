@@ -51,7 +51,7 @@ public class TestScene2 extends PauseScene
         }
 
         String t3dt = "This text is waving.", t3d2t = "I.\nLike.\nTests.";
-        SystemFont font = new SystemFont("Arial", 96, SystemFont.PLAIN, true);
+        SystemFont font = new SystemFont("Arial", 48, SystemFont.PLAIN, true);
         float t3dw = Text.approxWidth(t3dt, 24, font), t3d2w = Text.approxWidth(t3d2t, 24, Text.pixelFont);
 
         String t = "This is some example text.\nIt's purpose is to test the performance of text\nI've run out of text to test with, so this is some filler:\nThis line is intended to be short.\nThis line is intended to be incredibly long and painful to read. I sincerely hope it is interpreted appropriately.\nDid you know that earth's gravity is approximately 9.81m/s?\nThat's pretty interesting.\nOf course, you're entitled to not like that fact, but you must remember, I'm entitled to not like you.\nThat seems pretty fair, doesn't it? I don't know.\nI guess some may see that as a personal attack for not being interested in physics.\nMaybe they'd see it that way because that's exactly what it is.\nIf you're not interested in physics facts, you're basically dead to me.\nIs that too harsh? Not at all.\nThose with no interest in the fundamental mechanics of the universe obviously have no souls.\nThat might as well be a scientific fact.\n";
