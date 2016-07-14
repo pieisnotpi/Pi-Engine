@@ -1,15 +1,14 @@
 package com.pieisnotpi.engine.rendering.ui.text;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.UiObject;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.text.TextQuad;
+import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.rendering.ui.text.effects.TextEffect;
 import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.rendering.ui.text.font.Font;
 import com.pieisnotpi.engine.rendering.ui.text.font.PixelFont;
 import com.pieisnotpi.engine.scene.Scene;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +24,8 @@ public class Text extends UiObject
     public float newlineSpace;
 
     public static PixelFont pixelFont = new PixelFont();
-    public int shaderID, alignmentID = -1;
+    public int shaderID;
 
-    public static final int CENTERED = 0, LEFT = 1, RIGHT = 2;
-
-    private float ratio = 1;
     private Color textColor, outlineColor;
     private Font font;
 
@@ -121,7 +117,7 @@ public class Text extends UiObject
 
     public void setText(String value)
     {
-        if(value.equals(text) || !enabled) return;
+        if(value == null || value.equals(text) || value.equals("") || !enabled) return;
 
         unregister();
 
@@ -187,19 +183,6 @@ public class Text extends UiObject
         String t = text;
         text = "";
         setText(t);
-    }
-
-    public void onWindowResize(Vector2i res)
-    {
-        ratio = (float) res.x/res.y;
-        align();
-    }
-
-    private void align()
-    {
-        if(alignmentID == 0) setX(-size.x/2);
-        else if(alignmentID == 1) setX(-ratio + 0.05f);
-        else if(alignmentID == 2) setX(ratio - size.x - 0.05f);
     }
 
     public void enable()

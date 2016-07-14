@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering;
 
-import com.pieisnotpi.engine.game_objects.GameObject;
+import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
 import org.joml.Matrix4f;
@@ -11,12 +11,11 @@ import org.joml.Vector3f;
 public class Camera extends GameObject
 {
     public Vector2f viewPos, viewSize;
-    public Vector3f up = new Vector3f(0, 1, 0);
     public Matrix4f[] matrices = new Matrix4f[3];
 
     public float fov, zNear = 0.001f, zFar = 100, ratio = -1;
     protected float orthoZoom = 1;
-    protected Vector3f lookAt, lookAtDist = new Vector3f();
+    protected Vector3f lookAt, lookAtDist = new Vector3f(), up = new Vector3f(0, 1, 0);
     protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false;
 
     public Camera(Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
@@ -47,6 +46,16 @@ public class Camera extends GameObject
     public float getOrthoZoom()
     {
         return orthoZoom;
+    }
+
+    public Vector3f getLookAt()
+    {
+        return lookAt;
+    }
+
+    public Vector3f getUp()
+    {
+        return up;
     }
 
     public void onWindowResize(Vector2i res)

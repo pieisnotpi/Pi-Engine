@@ -1,15 +1,14 @@
 package com.pieisnotpi.engine.scene;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.Mousebind;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.Window;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.jbox2d.common.Vec2;
@@ -74,8 +73,8 @@ public abstract class Scene
         pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
         world = new World(new Vec2(0, -9.81f));
 
-        fps.alignmentID = Text.LEFT;
-        pps.alignmentID = Text.LEFT;
+        fps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.TOP, 0.05f, -0.15f);
+        pps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.BOTTOM, 0.05f, 0.05f);
 
         physicsUpdate = new GameUpdate(physicsPollsPerSecond, this::updatePhysics, () ->
         {
@@ -123,7 +122,7 @@ public abstract class Scene
 
         if(window != null)
         {
-            onWindowResize(window.res);
+            onWindowResize(window.getWindowRes());
             unsortedBuffer.forEach(r ->
             {
                 r.shader = window.shaders.get(r.getShaderID());

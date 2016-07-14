@@ -37,7 +37,7 @@ public class OrbitCamera extends Camera
             return;
         }
 
-        Vector2i res = scene.window.res;
+        Vector2i res = scene.window.getWindowRes();
 
         float cx = (float) (cursorPos.x*2f - res.x), cy = (float) (cursorPos.y*2f - res.y);
 
@@ -75,7 +75,7 @@ public class OrbitCamera extends Camera
     @Override
     public void onScroll(float xAmount, float yAmount)
     {
-        if(!isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) return;
+        if(!isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.getWindowRes())) return;
 
         radius -= yAmount*zoomAmount;
         if(radius <= 0) radius = 0.1f;
@@ -118,7 +118,7 @@ public class OrbitCamera extends Camera
     @Override
     public void onLeftClick()
     {
-        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) leftStatus = true;
+        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.getWindowRes())) leftStatus = true;
         super.onLeftClick();
     }
 
@@ -132,7 +132,7 @@ public class OrbitCamera extends Camera
     @Override
     public void onRightClick()
     {
-        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.res)) rightStatus = true;
+        if(isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.getWindowRes())) rightStatus = true;
         super.onRightClick();
     }
 

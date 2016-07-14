@@ -1,6 +1,5 @@
 package com.pieisnotpi.game.cameras;
 
-import com.pieisnotpi.engine.game_objects.GameObject;
 import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
@@ -8,6 +7,7 @@ import com.pieisnotpi.engine.input.devices.DS4;
 import com.pieisnotpi.engine.input.devices.Xbox;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.scenes.PauseScene;
 import org.joml.Vector2d;
@@ -59,7 +59,7 @@ public class FirstPersonCamera extends Camera
                 ignoreNextMovement = hideCursor = !hideCursor;
                 if(scene.window != null) if(hideCursor)
                 {
-                    glfwSetCursorPos(scene.window.windowID, scene.window.res.x/2, scene.window.res.y/2);
+                    glfwSetCursorPos(scene.window.windowID, scene.window.getWindowRes().x/2, scene.window.getWindowRes().y/2);
                     glfwSetInputMode(scene.window.windowID, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
                     scene.gameObjects.forEach(GameObject::onMouseExited);
                 }
@@ -153,7 +153,7 @@ public class FirstPersonCamera extends Camera
 
     public void onMouseMovementUnscaled(Vector2d cursorPos)
     {
-        Vector2i res = scene.window.res;
+        Vector2i res = scene.window.getWindowRes();
         float cx = (float) (cursorPos.x*2 - res.x), cy = (float) (cursorPos.y*2 - res.y);
 
         if(hideCursor && !ignoreNextMovement)
@@ -168,7 +168,7 @@ public class FirstPersonCamera extends Camera
 
             addToRot(nx, ny, 0);
 
-            glfwSetCursorPos(scene.window.windowID, scene.window.res.x/2f, scene.window.res.y/2f);
+            glfwSetCursorPos(scene.window.windowID, res.x/2f, res.y/2f);
         }
 
         ignoreNextMovement = false;

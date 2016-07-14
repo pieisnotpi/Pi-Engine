@@ -56,7 +56,7 @@ class MainInstance extends GameInstance
     {
         super.onMonitorDisconnect(monitor);
 
-        windows.stream().filter(window -> monitor.isPointInMonitor(window.middle)).forEach(window ->
+        windows.stream().filter(window -> monitor.isPointInMonitor(window.getMiddle())).forEach(window ->
         {
             window.monitor = Window.getPrefMonitor();
             window.center();

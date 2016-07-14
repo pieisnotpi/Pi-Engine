@@ -1,7 +1,6 @@
 package com.pieisnotpi.game.objects;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.PhysicsObject;
 import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.devices.DS4;

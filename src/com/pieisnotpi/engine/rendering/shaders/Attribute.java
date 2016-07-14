@@ -1,10 +1,12 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
+import com.pieisnotpi.engine.output.Logger;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.glGetAttribLocation;
 
 public class Attribute
 {
@@ -12,11 +14,10 @@ public class Attribute
     public FloatBuffer buffer;
     public int location, handle, size;
 
-    public Attribute(String name, int location, int size)
+    public Attribute(String name, int size)
     {
         this.name = name;
         this.buffer = BufferUtils.createFloatBuffer(0);
-        this.location = location;
         this.size = size;
     }
 
@@ -26,6 +27,14 @@ public class Attribute
         this.buffer = value;
         this.location = location;
         this.size = size;
+    }
+
+    public void init(int programID)
+    {
+        location = glGetAttribLocation(programID, name);
+        if(location == -1) Logger.SHADER_PROGRAM.err("Attribute not found '" + name + "' in program " + programID);
+        handle = glGenBuffers();
+        bindData();
     }
 
     public void bindData()

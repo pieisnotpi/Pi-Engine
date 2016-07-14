@@ -4,6 +4,7 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Window;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWJoystickCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -43,10 +44,12 @@ public class InputManager
         {
             if(!window.focused) return;
 
-            cursorPos.x = xPos;
-            cursorPos.y = window.res.y - yPos;
+            Vector2i res = window.getWindowRes();
 
-            localCursorPos.set((float) (((2*window.ratio)/window.res.x)*cursorPos.x) - window.ratio, (float) (((float) 2/window.res.y)*cursorPos.y) - 1);
+            cursorPos.x = xPos;
+            cursorPos.y = res.y - yPos;
+
+            localCursorPos.set((float) (((2*window.ratio)/res.x)*cursorPos.x) - window.ratio, (float) (((float) 2/res.y)*cursorPos.y) - 1);
             window.scene.onMouseMovementUnscaled(cursorPos);
             window.scene.onMouseMovement(localCursorPos);
         }));

@@ -28,6 +28,8 @@ public class Model
         {
             string = string.replaceAll(" ", "");
 
+            if(string.charAt(0) == '#') continue;
+
             if(string.startsWith("cube"))
             {
                 int index = string.indexOf('(');

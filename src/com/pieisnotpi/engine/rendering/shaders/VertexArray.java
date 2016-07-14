@@ -4,7 +4,8 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -25,13 +26,7 @@ public class VertexArray
         int[] handles = new int[attributes.length];
         glGenBuffers(handles);
 
-        for(int i = 0; i < attributes.length; i++)
-        {
-            Attribute a = attributes[i];
-            a.location = glGetAttribLocation(programHandle, a.name);
-            a.handle = handles[i];
-            a.bindData();
-        }
+        for(Attribute a : attributes) a.init(programHandle);
 
         handle = glGenVertexArrays();
         glBindVertexArray(handle);

@@ -1,8 +1,8 @@
 package com.pieisnotpi.engine.rendering.ui.button;
 
-import com.pieisnotpi.engine.game_objects.UiObject;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.colored.ColorQuad;
+import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;

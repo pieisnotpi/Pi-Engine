@@ -1,9 +1,9 @@
 package com.pieisnotpi.engine.rendering.ui.button;
 
-import com.pieisnotpi.engine.game_objects.UiObject;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.textured_c.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
+import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
 import org.joml.Vector2f;

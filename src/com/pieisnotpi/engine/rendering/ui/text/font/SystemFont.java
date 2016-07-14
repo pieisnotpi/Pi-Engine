@@ -11,7 +11,7 @@ public class SystemFont extends Font
     private FontMetrics metrics;
     private String sequence = "";
 
-    public static final int PLAIN = java.awt.Font.PLAIN, BOLD = java.awt.Font.BOLD;
+    public static final int PLAIN = java.awt.Font.PLAIN, BOLD = java.awt.Font.BOLD, ITALIC = java.awt.Font.ITALIC;
 
     public SystemFont(String family, int size, int style, boolean antiAlias)
     {

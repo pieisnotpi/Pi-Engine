@@ -1,7 +1,6 @@
 package com.pieisnotpi.game.objects;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.PhysicsObject;
 import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;

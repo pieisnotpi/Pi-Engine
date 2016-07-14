@@ -1,12 +1,12 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
-import com.pieisnotpi.engine.rendering.renderable_types.TextRenderable;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
+import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;

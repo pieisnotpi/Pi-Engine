@@ -1,5 +1,6 @@
-package com.pieisnotpi.engine.game_objects;
+package com.pieisnotpi.engine.rendering.ui;
 
+import com.pieisnotpi.engine.scene.GameObject;
 import org.joml.Vector2f;
 
 public abstract class UiObject extends GameObject

@@ -28,8 +28,8 @@ public class CubeModel
         return "x0: " + x0 + ", y0: " + y0 + ", z0: " + z0 + ", x1: " + x1 + ", y1: " + y1 + ", z1: " + z1;
     }
 
-    public TexCube toTexCube(float x, float y, float z, float scale, int matrixID, Scene scene)
+    public TexCube toTexCube(float x, float y, float z, float scale, int shaderID, int matrixID, Scene scene)
     {
-        return new TexCube(x + (x0 * scale), y + (y0 * scale), z + (z0 * scale), (x1 - x0)*scale, (y1 - y0)*scale, (z1 - z0)*scale, topSprite, sideSprite, bottomSprite, matrixID, scene);
+        return new TexCube(x + (x0 * scale), y + (y0 * scale), z + (z0 * scale), (x1 - x0)*scale, (y1 - y0)*scale, (z1 - z0)*scale, topSprite, sideSprite, bottomSprite, shaderID, matrixID, scene);
     }
 }

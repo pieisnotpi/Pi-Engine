@@ -2,9 +2,7 @@ package com.pieisnotpi.engine.rendering.shaders;
 
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Window;
-import org.lwjgl.BufferUtils;
 
-import java.nio.IntBuffer;
 import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -16,7 +14,7 @@ public class ShaderFile
 
     public ShaderFile(String path, int shaderType)
     {
-        this.path = path;
+        this.path = path.replaceAll("\\\\", "/");
 
         Scanner scanner = new Scanner(Window.class.getResourceAsStream(path));
 
@@ -30,12 +28,14 @@ public class ShaderFile
         glShaderSource(shaderID, code);
         glCompileShader(shaderID);
 
-        IntBuffer status = BufferUtils.createIntBuffer(1);
+        int status = glGetShaderi(shaderID, GL_COMPILE_STATUS);
 
-        glGetShaderiv(shaderID, GL_COMPILE_STATUS, status);
-
-        if(status.get() == 0) Logger.SHADER_COMPILER.debugErr("Failed shader\t'" + path.substring(path.lastIndexOf('/') + 1) + '\'');
-        else Logger.SHADER_COMPILER.debug("Compiled shader\t'" + path.substring(path.lastIndexOf('/') + 1) + '\'');
+        if(status == 0)
+        {
+            String log = glGetShaderInfoLog(shaderID).replaceAll("\n", "\n\t");
+            Logger.SHADER_COMPILER.err("Failed shader '" + path.substring(path.lastIndexOf('/') + 1) + "'\n\t" + log);
+        }
+        else Logger.SHADER_COMPILER.debug("Compiled shader '" + path.substring(path.lastIndexOf('/') + 1) + '\'');
     }
 
     public void attach(int program)

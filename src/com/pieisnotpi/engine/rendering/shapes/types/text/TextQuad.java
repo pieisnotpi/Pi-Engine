@@ -2,14 +2,13 @@ package com.pieisnotpi.engine.rendering.shapes.types.text;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.renderable_types.TextRenderable;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
+import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 
 import static com.pieisnotpi.engine.utility.MathUtility.*;
 
@@ -23,7 +22,6 @@ public class TextQuad extends TextRenderable
     public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line, int matrixID, Scene scene)
     {
         setDefaults(4);
-        drawMode = GL11.GL_TRIANGLE_STRIP;
 
         this.line = line;
         this.scene = scene;

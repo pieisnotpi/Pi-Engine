@@ -22,7 +22,7 @@ public class TexCircle extends Circle
 
     public Triangle assembleVertex(float x0, float y0, float z0, float x1, float y1)
     {
-        return new TexTriangle(new Vector3f(x0, y0, z0), new Vector3f(x, y, z0), new Vector3f(x1, y1, z0), new Vector2f(xToSpriteX(x0), yToSpriteY(y0)), new Vector2f(xToSpriteX(x), yToSpriteY(y)), new Vector2f(xToSpriteX(x1), yToSpriteY(y1)), sprite.texture, matrixID, scene);
+        return new TexTriangle(new Vector3f(x0, z0, y0), new Vector3f(x, z0, y), new Vector3f(x1, z0, y1), new Vector2f(xToSpriteX(x0), yToSpriteY(y0)), new Vector2f(xToSpriteX(x), yToSpriteY(y)), new Vector2f(xToSpriteX(x1), yToSpriteY(y1)), sprite.texture, PiEngine.S_ADS_ID, matrixID, scene);
     }
 
     private float xToSpriteX(float x)

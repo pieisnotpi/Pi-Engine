@@ -5,10 +5,7 @@ import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shaders.types.ColorShader;
-import com.pieisnotpi.engine.rendering.shaders.types.TextShader;
-import com.pieisnotpi.engine.rendering.shaders.types.TextureShader;
-import com.pieisnotpi.engine.rendering.shaders.types.TexturedCShader;
+import com.pieisnotpi.engine.rendering.shaders.types.*;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.joml.Vector2i;
@@ -16,8 +13,8 @@ import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -45,8 +42,8 @@ public class Window
     public String name;
     public Monitor monitor;
     public InputManager inputManager;
-    public List<ShaderProgram> shaders = new ArrayList<>();
-    public Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(), fullscreenRes = new Vector2i(), pos = new Vector2i(-1, -1), originalPos = new Vector2i(), middle = new Vector2i();
+    public Map<Integer, ShaderProgram> shaders = new HashMap<>();
+    protected Vector2i res = new Vector2i(0, 0), originalRes = new Vector2i(), fullscreenRes = new Vector2i(), pos = new Vector2i(-1, -1), originalPos = new Vector2i(), middle = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -118,7 +115,6 @@ public class Window
         this.share = share;
 
         res.set(width, height);
-        originalRes.set(width, height);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
         monitor = PiEngine.monitorMap.get(monitorID);
     }
@@ -165,21 +161,7 @@ public class Window
         glDepthMask(true);
         glClearDepth(1.0f);
 
-        TextureShader textureShader = new TextureShader();
-        textureShader.init();
-        shaders.add(PiEngine.S_TEXTURE_ID, textureShader);
-
-        ColorShader colorShader = new ColorShader();
-        colorShader.init();
-        shaders.add(PiEngine.S_COLOR_ID, colorShader);
-
-        TextShader textShader = new TextShader();
-        textShader.init();
-        shaders.add(PiEngine.S_TEXT_ID, textShader);
-
-        TexturedCShader texturedCShader = new TexturedCShader();
-        texturedCShader.init();
-        shaders.add(PiEngine.S_TEXTURE_C_ID, texturedCShader);
+        initShaders();
 
         drawUpdate = new GameUpdate(1, this::draw, () ->
         {
@@ -249,17 +231,11 @@ public class Window
 
             glViewport((int) viewX, (int) viewY, (int) viewWidth, (int) viewHeight);
 
-            shaders.forEach(s ->
-            {
-                s.compileUnsorted();
-                s.drawUnsorted(camera);
-                s.clearUnsorted();
-            });
+            shaders.forEach((i, s) -> s.drawUnsorted(camera));
 
             scene.sortedBuffer.forEach(renderable -> renderable.shader.addSortedVertex(renderable));
-            shaders.forEach(ShaderProgram::compileSorted);
             scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
-            shaders.forEach(ShaderProgram::clearSorted);
+            shaders.forEach((i, s) -> s.clearSorted());
         }
 
         time += System.currentTimeMillis() - t;
@@ -272,7 +248,7 @@ public class Window
     {
         if(scene.equals(this.scene)) return;
 
-        shaders.forEach(s -> s.unsortedBuffer.clear());
+        shaders.forEach((i, s) -> s.unsortedBuffer.clear());
 
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
@@ -301,10 +277,12 @@ public class Window
 
     public void center()
     {
-        setWindowPos(monitor.position.x + (monitor.size.x - originalRes.x)/2, monitor.position.y + (monitor.size.y - originalRes.y)/2);
+        setWindowPos(monitor.position.x + (monitor.size.x - res.x)/2, monitor.position.y + (monitor.size.y - res.y)/2);
     }
 
     public String getName() { return name; }
+    public Vector2i getMiddle() { return middle; }
+    public Vector2i getWindowRes() { return res; }
     public Vector2i getWindowPos() { return pos; }
     public int getRefreshRate() { return refreshRate; }
     public int getVsync() { return vsync; }
@@ -393,7 +371,7 @@ public class Window
         this.fullscreen = fullscreen;
 
         if(fullscreen) glfwSetWindowMonitor(windowID, monitor.monitorID, 0, 0, fullscreenRes.x, fullscreenRes.y, refreshRate);
-        else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, originalRes.x, originalRes.y, refreshRate);
+        else glfwSetWindowMonitor(windowID, NULL, originalPos.x, originalPos.y, res.x, res.y, refreshRate);
     }
 
     /**
@@ -422,6 +400,15 @@ public class Window
             alive = false;
             glfwDestroyWindow(windowID);
         }
+    }
+
+    protected void initShaders()
+    {
+        shaders.put(PiEngine.S_TEXTURE_ID, new TextureShader().init());
+        shaders.put(PiEngine.S_COLOR_ID, new ColorShader().init());
+        shaders.put(PiEngine.S_TEXT_ID, new TextShader().init());
+        shaders.put(PiEngine.S_TEXTURE_C_ID, new TexturedCShader().init());
+        shaders.put(PiEngine.S_ADS_ID, new ADSShader().init());
     }
 
     private void setCurrentMonitor()

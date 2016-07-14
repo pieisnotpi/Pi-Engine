@@ -1,13 +1,14 @@
 package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.PhysicsObject;
 import com.pieisnotpi.engine.input.devices.Keyboard;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
+import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.utility.Timer;
 import com.pieisnotpi.game.cameras.TransitionCamera;
 import com.pieisnotpi.game.objects.FloorTile;
+import com.pieisnotpi.game.objects.PhysicsObject;
 import com.pieisnotpi.game.objects.Player;
 import com.pieisnotpi.game.objects.Wheel;
 import org.jbox2d.common.Vec2;
@@ -52,7 +53,7 @@ public class PhysicsTestScene extends PauseScene
         reset();
 
         winner = new Text("", 12, 0, 0.1f, 0.7f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_ORTHO2D_ID, this);
-        winner.alignmentID = Text.CENTERED;
+        winner.setAlignment(GameObject.HAlignment.CENTER, GameObject.VAlignment.CENTER, 0, 0);
     }
 
     public void update()
@@ -104,8 +105,8 @@ public class PhysicsTestScene extends PauseScene
     {
         //camera.addToZRot(0.1f);
 
-        world.getGravity().x = -camera.up.x*9.81f;
-        world.getGravity().y = -camera.up.y*9.81f;
+        world.getGravity().x = -camera.getUp().x*9.81f;
+        world.getGravity().y = -camera.getUp().y*9.81f;
 
         if(leftStatus) for (PhysicsObject object : objects)
         {

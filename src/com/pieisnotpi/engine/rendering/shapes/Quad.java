@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shapes;
 
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;

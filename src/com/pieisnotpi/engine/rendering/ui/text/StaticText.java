@@ -1,10 +1,10 @@
 package com.pieisnotpi.engine.rendering.ui.text;
 
-import com.pieisnotpi.engine.game_objects.UiObject;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
+import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.scene.Scene;
 
 import java.awt.*;

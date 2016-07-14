@@ -1,10 +1,10 @@
 package com.pieisnotpi.game.test_editor;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.game_objects.UiObject;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.types.textured_c.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
+import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.scene.Scene;
 
 public class EditorTile extends UiObject

@@ -1,6 +1,7 @@
-package com.pieisnotpi.engine.game_objects;
+package com.pieisnotpi.game.objects;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.scene.GameObject;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;

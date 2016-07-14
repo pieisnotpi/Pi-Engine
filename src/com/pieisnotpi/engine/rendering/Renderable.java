@@ -1,6 +1,5 @@
-package com.pieisnotpi.engine.rendering.renderable_types;
+package com.pieisnotpi.engine.rendering;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
@@ -16,7 +15,7 @@ public abstract class Renderable
     public Texture texture;
     public Vector3f[] points;
     public Vector2f[] texCoords;
-    //public Vector3f[] normals;
+    public Vector3f[] normals;
     public Color[] colors;
     public ShaderProgram shader = null;
     protected int shaderID, matrixID, vertCount, drawMode;
@@ -117,7 +116,7 @@ public abstract class Renderable
     {
         for(int a = 0, b = 0; a < this.texCoords.length; a++, b++)
         {
-            if(b >= colors.length) b = 0;
+            if(b >= texCoords.length) b = 0;
             if(texCoords[b] != null) this.texCoords[a] = texCoords[b];
         }
     }
@@ -128,23 +127,24 @@ public abstract class Renderable
 
         points = new Vector3f[vertCount];
         colors = new Color[vertCount];
-        //normals = new Vector3f[vertCount];
+        normals = new Vector3f[vertCount];
         texCoords = new Vector2f[vertCount];
 
         Arrays.fill(points, new Vector3f(0, 0, 0));
         Arrays.fill(colors, new Color(0, 0, 0));
+        Arrays.fill(normals, new Vector3f(0, 0, 0));
         Arrays.fill(texCoords, new Vector2f(0, 0));
     }
 
     /**
-     * A method run by the shader compiler directly before compiling
+     * A method run by the shader program directly before compiling
      * @param shader The shader program currently compiling
      */
 
     public void preCompile(ShaderProgram shader) {}
 
     /**
-     * A method run by the renderer directly before drawing.
+     * A method run by the shader program directly before drawing.
      * @param shader The shader program currently drawing
      */
 

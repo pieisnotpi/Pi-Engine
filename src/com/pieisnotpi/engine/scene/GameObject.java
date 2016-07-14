@@ -1,8 +1,7 @@
-package com.pieisnotpi.engine.game_objects;
+package com.pieisnotpi.engine.scene;
 
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.rendering.Window;
-import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -10,11 +9,18 @@ import org.joml.Vector3f;
 
 public abstract class GameObject
 {
+    public enum HAlignment { NONE, LEFT, CENTER, RIGHT }
+    public enum VAlignment { NONE, BOTTOM, CENTER, TOP }
+
     protected final Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
     private final Vector3f c = new Vector3f();
+    private HAlignment hAlign = HAlignment.NONE;
+    private VAlignment vAlign = VAlignment.NONE;
+    private Vector2f offset = new Vector2f();
+    private boolean shouldAlign = false;
 
     public void update() {}
     public void drawUpdate() {}
@@ -51,7 +57,7 @@ public abstract class GameObject
     public void onMiddleRelease() {}
     public void onKeyPressed(int key, int mods) {}
     public void onKeyReleased(int key, int mods) {}
-    public void onWindowResize(Vector2i res) {}
+    public void onWindowResize(Vector2i res) { align(res); }
     public void onScroll(float xAmount, float yAmount) {}
     public void onMouseEntered() {}
     public void onMouseExited() {}
@@ -77,6 +83,56 @@ public abstract class GameObject
     public float getZRot() { return rot.z; }
     public int getMatrixID() { return matrixID; }
     public Scene getScene() { return scene; }
+    public Vector3f getPos() { return pos; }
+
+    public final void setHAlignment(HAlignment align, float offset) { setAlignment(align, vAlign, offset, this.offset.y); }
+    public final void setVAlignment(VAlignment align, float offset) { setAlignment(hAlign, align, this.offset.x, offset); }
+
+    public void setAlignment(HAlignment hAlign, VAlignment vAlign, float hOffset, float vOffset)
+    {
+        this.hAlign = hAlign;
+        this.vAlign = vAlign;
+
+        shouldAlign = !(hAlign.equals(HAlignment.NONE) && vAlign.equals(VAlignment.NONE));
+
+        offset.set(hOffset, vOffset);
+
+        align();
+    }
+
+    protected void align()
+    {
+        if(scene.window != null) align(scene.window.getWindowRes());
+    }
+
+    protected void align(Vector2i res)
+    {
+        if(!shouldAlign) return;
+
+        float ratio = (float) res.x/res.y;
+
+        if(!hAlign.equals(HAlignment.NONE))
+        {
+            float nx = pos.x;
+
+            if(hAlign.equals(HAlignment.LEFT)) nx = -ratio + offset.x;
+            else if(hAlign.equals(HAlignment.CENTER)) nx = -size.x/2;
+            else if(hAlign.equals(HAlignment.RIGHT)) nx = ratio - size.x + offset.x;
+
+            if(nx != pos.x) setX(nx);
+        }
+
+        if(!vAlign.equals(VAlignment.NONE))
+        {
+            float ny = pos.y;
+
+            if(vAlign.equals(VAlignment.BOTTOM)) ny = -1 + offset.y;
+            else if(vAlign.equals(VAlignment.CENTER)) ny = -size.y/2;
+            else if(vAlign.equals(VAlignment.TOP)) ny = 1 + offset.y;
+
+            if(ny != pos.y) setY(ny);
+        }
+    }
 
     public void setCx(float cx)
     {

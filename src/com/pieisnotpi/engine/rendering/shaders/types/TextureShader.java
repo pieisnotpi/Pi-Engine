@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.renderable_types.Renderable;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -23,15 +23,15 @@ public class TextureShader extends ShaderProgram
 
         shaderID = PiEngine.S_TEXTURE_ID;
 
-        vertex = new Attribute("VertexPosition", 0, 3);
-        coords = new Attribute("VertexTexCoords", 1, 2);
+        vertex = new Attribute("VertexPosition", 3);
+        coords = new Attribute("VertexTexCoords", 2);
         array = new VertexArray(vertex, coords);
         perspName = "camera";
     }
 
     protected void putElements(List<Renderable> buffer)
     {
-        buffer.sort((o1, o2) ->
+        if(!buffer.get(0).shouldBeSorted) buffer.sort((o1, o2) ->
         {
             int s = Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
             if(s != 0) return s;
@@ -44,39 +44,4 @@ public class TextureShader extends ShaderProgram
             BufferUtility.putVec2s(coords.buffer, r.texCoords);
         });
     }
-
-    /*public void compileSorted()
-    {
-        FloatBuffer vertBuffer, coordsBuffer;
-
-        if(sortedBufferSize == 0) return;
-        int capacity = vertex.buffer.capacity()/3;
-
-        if(capacity == sortedBufferSize)
-        {
-            vertBuffer = vertex.buffer;
-            coordsBuffer = coords.buffer;
-
-            vertBuffer.position(0);
-            coordsBuffer.position(0);
-        }
-        else
-        {
-            vertBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *3);
-            coordsBuffer = BufferUtils.createFloatBuffer(sortedBufferSize *2);
-        }
-
-        sortedBuffer.forEach(renderable ->
-        {
-            renderable.preCompile(this);
-            BufferUtility.putVec3s(vertBuffer, renderable.points);
-            BufferUtility.putVec2s(coordsBuffer, renderable.texCoords);
-        });
-
-        vertBuffer.flip();
-        coordsBuffer.flip();
-
-        vertex.bindData(vertBuffer);
-        coords.bindData(coordsBuffer);
-    }*/
 }

@@ -27,9 +27,9 @@ public class PiEngine
     // Matrix IDs
     public static final int C_ORTHO2D_ID = 0, C_PERSPECTIVE = 1, C_ORTHO = 2;
     // Shader IDs (initialized in Window)
-    public static final int S_TEXTURE_ID = 0, S_COLOR_ID = 1, S_TEXT_ID = 2, S_TEXTURE_C_ID = 3;
+    public static final int S_TEXTURE_ID = 0, S_COLOR_ID = 1, S_TEXT_ID = 2, S_TEXTURE_C_ID = 3, S_ADS_ID = 4;
     // Rendering to physics coordinate conversion
-    public static final float PIXELS_PER_METER = (0.1f/2);
+    public static final float PIXELS_PER_METER = 0.05f;
     // Debug mode
     public static boolean debug = false;
     // GL Version
