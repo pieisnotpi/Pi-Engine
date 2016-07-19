@@ -209,7 +209,6 @@ public class Window
 
         scene.drawUpdate();
         shaders.forEach((i, s) -> s.compileUnsorted());
-        time += System.currentTimeMillis() - t;
 
         for(Camera camera : scene.cameras)
         {
@@ -260,7 +259,7 @@ public class Window
             }
         }
 
-
+        time += System.currentTimeMillis() - t;
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();
