@@ -15,6 +15,11 @@ public class Sprite
 
     public Sprite(Texture texture, int x0, int y0, int x1, int y1)
     {
+        this(texture, x0, y0, x1, y1, true);
+    }
+
+    public Sprite(Texture texture, int x0, int y0, int x1, int y1, boolean flipY)
+    {
         float xMult = (float) 1/texture.width, yMult = (float) 1/texture.height;
 
         this.x0 = x0;
@@ -28,7 +33,7 @@ public class Sprite
         uvy0 = y0*yMult;
         uvy1 = y1*yMult;
 
-        if(uvy0 < uvy1)
+        if(flipY)
         {
             float t = uvy0;
             uvy0 = uvy1;

@@ -1,7 +1,9 @@
-package com.pieisnotpi.engine.rendering.shaders.types;
+package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -15,29 +17,32 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TexturedCShader extends ShaderProgram
 {
-    private Attribute vertex, color, coords;
-
     public TexturedCShader()
     {
         super(new ShaderFile("/assets/shaders/textured_c.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/textured_c.frag", GL_FRAGMENT_SHADER));
 
         shaderID = PiEngine.S_TEXTURE_ID;
 
-        vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
-        color = new Attribute("VertexColor", BufferUtility.colorToFloatBuffer(), 1, 4);
-        coords = new Attribute("VertexTexCoords", BufferUtility.vec2ToFloatBuffer(), 2, 2);
-        array = new VertexArray(vertex, color, coords);
+        unsortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexColor", 4), new Attribute("VertexTexCoords", 2));
+        sortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexColor", 4), new Attribute("VertexTexCoords", 2));
         perspName = "camera";
     }
 
-    protected void putElements(List<Renderable> buffer)
+    protected void putElements(List<Renderable> buffer, Attribute[] a)
     {
         buffer.forEach(r ->
         {
-            BufferUtility.putVec3s(vertex.buffer, r.points);
-            BufferUtility.putColors(color.buffer, r.colors);
-            BufferUtility.putVec2s(coords.buffer, r.texCoords);
+            BufferUtility.putVec3s(a[0].buffer, r.points);
+            BufferUtility.putColors(a[1].buffer, r.colors);
+            BufferUtility.putVec2s(a[2].buffer, r.texCoords);
         });
+    }
+
+    @Override
+    public void bindPRUniforms(Camera camera, Renderable r)
+    {
+        super.bindPRUniforms(camera, r);
+        if(Window.lastTextureID != r.texture.getTexID()) r.texture.bind(0);
     }
 
     /*public void compileSorted()

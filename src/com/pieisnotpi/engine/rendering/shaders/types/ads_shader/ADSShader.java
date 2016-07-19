@@ -1,8 +1,9 @@
-package com.pieisnotpi.engine.rendering.shaders.types;
+package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -25,17 +26,15 @@ public class ADSShader extends ShaderProgram
     private Matrix4f mv = new Matrix4f();
     private Matrix3f normal = new Matrix3f();
     private Vector4f lp = new Vector4f();
-    private Vector3f kd = new Vector3f(0.2f), ks = new Vector3f(0.2f), ka = new Vector3f(0.2f);
-    private float shininess = 10;
+    private Vector3f kd = new Vector3f(-1), ks = new Vector3f(-1), ka = new Vector3f(-1);
+    private float s = -1;
 
     public ADSShader()
     {
         super(new ShaderFile("/assets/shaders/ads.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/ads.frag", GL_FRAGMENT_SHADER));
 
-        vertices = new Attribute("VertexPosition", 3);
-        normals = new Attribute("VertexNormal", 3);
-        texCoords = new Attribute("VertexTexCoord", 2);
-        array = new VertexArray(vertices, normals, texCoords);
+        unsortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexNormal", 3), new Attribute("VertexTexCoord", 2));
+        sortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexNormal", 3), new Attribute("VertexTexCoord", 2));
         perspName = "MVP";
 
         lights[0] = new Light(new Vector3f(10, 5, 10), new Vector3f(2, 0, 0));
@@ -47,7 +46,7 @@ public class ADSShader extends ShaderProgram
     public void bindUniforms(Camera camera)
     {
         mv.setLookAt(camera.getPos(), camera.getLookAt(), camera.getUp());
-        Matrix4f mvp = camera.matrices[PiEngine.C_PERSPECTIVE];
+        Matrix4f mvp = camera.getMatrix(PiEngine.C_PERSPECTIVE);
 
         for(int i = 0; i < lights.length; i++)
         {
@@ -67,25 +66,52 @@ public class ADSShader extends ShaderProgram
 
         setUniformMat4("ModelViewMatrix", mv);
         setUniformMat3("NormalMatrix", normal);
-        // Diffuse
-        setUniformVec3("Kd", kd);
-        // Ambient
-        setUniformVec3("Ka", ka);
-        // Specular
-        setUniformVec3("Ks", ks);
-        setUniformFloat("Shininess", shininess);
     }
 
     @Override
-    protected void putElements(List<Renderable> buffer)
+    public void bindPRUniforms(Camera camera, Renderable r)
+    {
+        super.bindPRUniforms(camera, r);
+        if(Window.lastTextureID != r.texture.getTexID()) r.texture.bind(0);
+        ADSMaterial m = (ADSMaterial) r.material;
+
+        if(!compare(ka, m.ka)) setUniformVec3("Ka", ka.set(m.ka));
+        if(!compare(kd, m.kd)) setUniformVec3("Kd", kd.set(m.kd));
+        if(!compare(ks, m.ks)) setUniformVec3("Ks", ks.set(m.ks));
+        if(s != m.s) setUniformFloat("Shininess", s = m.s);
+    }
+
+    @Override
+    protected void putElements(List<Renderable> buffer, Attribute[] a)
     {
         buffer.forEach(r ->
         {
-            normalize(r.points, r.normals);
-            BufferUtility.putVec3s(vertices.buffer, r.points);
-            BufferUtility.putVec3s(normals.buffer, r.normals);
-            BufferUtility.putVec2s(texCoords.buffer, r.texCoords);
+            BufferUtility.putVec3s(a[0].buffer, r.points);
+            BufferUtility.putVec3s(a[1].buffer, r.normals);
+            BufferUtility.putVec2s(a[2].buffer, r.texCoords);
         });
+    }
+
+    @Override
+    public void clearUnsorted()
+    {
+        super.clearUnsorted();
+
+        ka.set(-1);
+        kd.set(-1);
+        ks.set(-1);
+        s = -1;
+    }
+
+    @Override
+    public void clearSorted()
+    {
+        super.clearSorted();
+
+        ka.set(-1);
+        kd.set(-1);
+        ks.set(-1);
+        s = -1;
     }
 
     public class Light
@@ -100,8 +126,8 @@ public class ADSShader extends ShaderProgram
         }
     }
 
-    private void normalize(Vector3f[] points, Vector3f[] normals)
+    private boolean compare(Vector3f v0, Vector3f v1)
     {
-        for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
+        return v0.hashCode() == v1.hashCode() || (v0.x == v1.x && v0.y == v1.y && v0.z == v1.z);
     }
 }

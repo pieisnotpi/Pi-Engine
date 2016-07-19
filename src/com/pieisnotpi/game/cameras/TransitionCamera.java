@@ -3,6 +3,7 @@ package com.pieisnotpi.game.cameras;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 /**
@@ -14,14 +15,14 @@ public class TransitionCamera extends Camera
     public float speed, angularSpeed, zoomSpeed;
     private float moveX, moveY, moveZ, tFov, rotX = 0, rotY = 0, rotZ = 0, tZoom = 1;
 
-    public TransitionCamera(Vector2f viewPos, Vector2f viewSize, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
+    public TransitionCamera(float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
     {
-        this(new Vector3f(), new Vector3f(0, 0, -10), viewPos, viewSize, fov, speed, angularSpeed, zoomSpeed, scene);
+        this(new Vector3f(), new Vector3f(0, 0, -10), fov, speed, angularSpeed, zoomSpeed, scene);
     }
 
-    public TransitionCamera(Vector3f position, Vector3f lookAt, Vector2f viewPos, Vector2f viewSize, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
+    public TransitionCamera(Vector3f position, Vector3f lookAt, float fov, float speed, float angularSpeed, float zoomSpeed, Scene scene)
     {
-        super(position, lookAt, viewPos, viewSize, fov, scene);
+        super(position, lookAt, fov, scene);
 
         this.speed = speed;
         this.angularSpeed = angularSpeed;
@@ -31,6 +32,20 @@ public class TransitionCamera extends Camera
         moveY = pos.y;
         moveZ = pos.z;
         tFov = fov;
+    }
+
+    @Override
+    public TransitionCamera setViewport(Vector2f viewPos, Vector2f viewSize)
+    {
+        super.setViewport(viewPos, viewSize);
+        return this;
+    }
+
+    @Override
+    public TransitionCamera setFramebufferRes(Vector2i res)
+    {
+        super.setFramebufferRes(res);
+        return this;
     }
 
     public void transitionX(float nx)

@@ -2,6 +2,7 @@ package com.pieisnotpi.engine.rendering.shapes;
 
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -16,29 +17,35 @@ public class Quad extends Renderable
 
     protected Quad() {}
 
-    public Quad(float x, float y, float z, float width, float height, float depth, int shaderID, int matrixID, Scene scene)
+    public Quad(float x, float y, float z, float width, float height, float depth, Material material, int matrixID, Scene scene)
     {
-        setDefaults(4);
-        drawMode = GL11.GL_TRIANGLE_STRIP;
+        setDefaults(4, GL11.GL_TRIANGLE_STRIP, material);
 
         this.scene = scene;
-        this.shaderID = shaderID;
         this.matrixID = matrixID;
 
         if(height == 0) setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y, z + depth), new Vector3f(x + width, y, z + depth));
         else setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z + depth), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z + depth));
     }
 
-    public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, int shaderID, int matrixID, Scene scene)
+    public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Material material, int matrixID, Scene scene)
     {
-        setDefaults(4);
-        drawMode = GL11.GL_TRIANGLE_STRIP;
+        setDefaults(4, GL11.GL_TRIANGLE_STRIP, material);
 
         this.scene = scene;
-        this.shaderID = shaderID;
         this.matrixID = matrixID;
 
         setPoints(c0, c1, c2, c3);
+    }
+
+    public void setPos(float x, float y, float z)
+    {
+        float xDif = x - getX(), yDif = y - getY(), zDif = z - getZ();
+
+        points[0].add(xDif, yDif, zDif);
+        points[1].add(xDif, yDif, zDif);
+        points[2].add(xDif, yDif, zDif);
+        points[3].add(xDif, yDif, zDif);
     }
 
     public float getX()

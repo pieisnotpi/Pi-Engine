@@ -46,7 +46,7 @@ public class PhysicsTestScene extends PauseScene
 
         name = "Physics Testing";
 
-        cameras.add(camera = new TransitionCamera(new Vector2f(0, 0), new Vector2f(1, 1), 90, 0.075f, 0, 0.05f, this));
+        cameras.add(camera = new TransitionCamera(90, 0.075f, 0, 0.05f, this).setViewport(new Vector2f(0, 0), new Vector2f(1, 1)));
 
         clearColor.set(0.4f, 0.4f, 1);
 

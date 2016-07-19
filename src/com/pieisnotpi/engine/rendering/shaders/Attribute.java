@@ -21,14 +21,6 @@ public class Attribute
         this.size = size;
     }
 
-    public Attribute(String name, FloatBuffer value, int location, int size)
-    {
-        this.name = name;
-        this.buffer = value;
-        this.location = location;
-        this.size = size;
-    }
-
     public void init(int programID)
     {
         location = glGetAttribLocation(programID, name);

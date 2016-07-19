@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.scene;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.audio.AudioListener;
 import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
@@ -10,6 +11,7 @@ import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
+import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
@@ -27,6 +29,7 @@ import java.util.List;
 
 public abstract class Scene
 {
+    public AudioListener listener;
     public World world;
     public Text fps, pps;
     public Window window;
@@ -46,7 +49,7 @@ public abstract class Scene
 
     protected Scene() {}
 
-    public boolean shouldUpdate = true, shouldUpdatePhysics = true;
+    public boolean shouldUpdate = true, shouldUpdatePhysics = false;
 
     public void onJoystickConnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickConnect(joystick)); }
     public void onJoystickDisconnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickDisconnect(joystick)); }
@@ -72,6 +75,7 @@ public abstract class Scene
         fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
         pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
         world = new World(new Vec2(0, -9.81f));
+        listener = new AudioListener(this);
 
         fps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.TOP, 0.05f, -0.15f);
         pps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.BOTTOM, 0.05f, 0.05f);
@@ -80,7 +84,7 @@ public abstract class Scene
         {
             String time = "" + (float) physicsUpdate.totalTimeTaken/physicsUpdate.updates;
             if(time.length() >= 5) time = time.substring(0, 5);
-            pps.setText(physicsUpdate.updates + "pps/" + time + "mspp");
+            pps.setText(String.format("%dpps/%smspp", physicsUpdate.updates, time));
         });
 
         gameUpdate = new GameUpdate(60, this::update);
@@ -141,6 +145,8 @@ public abstract class Scene
     {
         if(window != null) renderable.shader = window.shaders.get(renderable.getShaderID());
         else renderable.shader = null;
+
+        if(renderable.getClass().isAssignableFrom(TextRenderable.class)) System.out.println(renderable.shouldBeSorted);
 
         if(renderable.shouldBeSorted)
         {

@@ -21,55 +21,30 @@ public class Texture
     public static Map<String, Texture> textures = new HashMap<>();
     public static String defaultPath = "/assets/textures/";
 
-    private int texID = -1, samplerID = 0;
-    private String path;
-
-    public boolean hasTranslucency = false;
+    private int texID = -1;
     public int width, height;
-    public ByteBuffer bytes;
-    public String name;
 
     public Texture(Image image)
     {
-        this(image, 0);
-    }
-
-    public Texture(String path)
-    {
-        this(path, 0);
-    }
-
-    public Texture(Image image, int samplerID)
-    {
-        this.samplerID = samplerID;
         texID = glGenTextures();
         compileTexture(image);
     }
 
     public Texture(BufferedImage image)
     {
-        this(image, 0);
-    }
-
-    public Texture(BufferedImage image, int samplerID)
-    {
-        this.samplerID = samplerID;
         texID = glGenTextures();
         compileTexture(image);
     }
 
-    public Texture(String path, int samplerID)
+    public Texture(int texID, int width, int height)
     {
-        this.samplerID = samplerID;
-        this.path = path;
-        name = path;
+        this.texID = texID;
+        this.width = width;
+        this.height = height;
+    }
 
-        int begin = Integer.max(name.lastIndexOf('\\') + 1, Integer.max(name.lastIndexOf('/') + 1, 0)), end;
-
-        if((end = name.lastIndexOf('.')) == -1) end = name.length();
-
-        name = name.substring(begin, end);
-
+    public Texture(String path)
+    {
         try
         {
             InputStream file = Texture.class.getResourceAsStream(path);
@@ -94,9 +69,9 @@ public class Texture
         }
     }
 
-    public void bind()
+    public void bind(int sampler)
     {
-        glActiveTexture(GL_TEXTURE0 + samplerID);
+        glActiveTexture(GL_TEXTURE0 + sampler);
         glBindTexture(GL_TEXTURE_2D, texID);
 
         Window.lastTextureID = texID;
@@ -107,31 +82,9 @@ public class Texture
         width = image.getWidth();
         height = image.getHeight();
 
-        int[] pixels = new int[width*height];
-        image.getRGB(0, 0, width, height, pixels, 0, width);
-
-        bytes = ByteBuffer.allocateDirect(width*height*4);
-
-        for(int y = 0; y < height; y++)
-        {
-            for(int x = 0; x < width; x++)
-            {
-                int pixel = pixels[y*width + x];
-                int alpha = pixel >> 24;
-                if(alpha > 0 && alpha < 255) hasTranslucency = true;
-
-                bytes.put((byte) ((pixel >> 16) & 0xFF));
-                bytes.put((byte) ((pixel >> 8) & 0xFF));
-                bytes.put((byte) (pixel & 0xFF));
-                bytes.put((byte) ((pixel >> 24) & 0xFF));
-            }
-        }
-
-        bytes.flip();
-
-        bind();
+        bind(0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
@@ -141,27 +94,9 @@ public class Texture
         width = (int) image.getWidth();
         height = (int) image.getHeight();
 
-        bytes = ByteBuffer.allocateDirect(4 * width * height);
-
-        for(int y = 0; y < height; y++)
-        {
-            for(int x = 0; x < width; x++)
-            {
-                Color pixel = image.getPixelReader().getColor(x, y);
-                if(pixel.getOpacity() > 0 && pixel.getOpacity() < 1) hasTranslucency = true;
-
-                bytes.put((byte) ((int) (pixel.getRed()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getGreen()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getBlue()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getOpacity()*255) & 0xff));
-            }
-        }
-
-        bytes.flip();
-
-        bind();
+        bind(0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
@@ -169,16 +104,6 @@ public class Texture
     public int getTexID()
     {
         return texID;
-    }
-
-    public int getSamplerID()
-    {
-        return samplerID;
-    }
-
-    public String toString()
-    {
-        return path;
     }
 
     public void finalize() throws Throwable
@@ -210,5 +135,56 @@ public class Texture
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static ByteBuffer getBytes(Image image)
+    {
+        int w = (int) image.getWidth(), h = (int) image.getHeight();
+
+        ByteBuffer bytes = ByteBuffer.allocateDirect((int) (4*image.getWidth()*image.getHeight()));
+
+        for(int y = 0; y < h; y++)
+        {
+            for(int x = 0; x < w; x++)
+            {
+                Color pixel = image.getPixelReader().getColor(x, y);
+
+                bytes.put((byte) ((int) (pixel.getRed()*255) & 0xff));
+                bytes.put((byte) ((int) (pixel.getGreen()*255) & 0xff));
+                bytes.put((byte) ((int) (pixel.getBlue()*255) & 0xff));
+                bytes.put((byte) ((int) (pixel.getOpacity()*255) & 0xff));
+            }
+        }
+
+        bytes.flip();
+
+        return bytes;
+    }
+
+    public static ByteBuffer getBytes(BufferedImage image)
+    {
+        int w = image.getWidth(), h = image.getHeight();
+
+        int[] pixels = new int[w*h];
+        image.getRGB(0, 0, w, h, pixels, 0, w);
+
+        ByteBuffer bytes = ByteBuffer.allocateDirect(w*h*4);
+
+        for(int y = 0; y < h; y++)
+        {
+            for(int x = 0; x < w; x++)
+            {
+                int pixel = pixels[y*w + x];
+
+                bytes.put((byte) ((pixel >> 16) & 0xFF));
+                bytes.put((byte) ((pixel >> 8) & 0xFF));
+                bytes.put((byte) (pixel & 0xFF));
+                bytes.put((byte) ((pixel >> 24) & 0xFF));
+            }
+        }
+
+        bytes.flip();
+
+        return bytes;
     }
 }

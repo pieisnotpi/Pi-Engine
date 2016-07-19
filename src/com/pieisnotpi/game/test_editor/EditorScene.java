@@ -24,7 +24,7 @@ public class EditorScene extends Scene
 
         name = "Editor";
 
-        cameras.add(new Camera(new Vector2f(0, 0), new Vector2f(1, 1), 90, this));
+        cameras.add(new Camera(90, this).setViewport(new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.6f, 0.6f, 0.6f);
 
         fps.disable();

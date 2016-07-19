@@ -2,7 +2,7 @@ package com.pieisnotpi.engine.rendering.ui.text;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.text.TextQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextQuad;
 import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.rendering.ui.text.effects.TextEffect;
 import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;

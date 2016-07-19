@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering;
 
+import com.pieisnotpi.engine.rendering.textures.FrameBuffer;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
@@ -10,37 +11,64 @@ import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
-    public Vector2f viewPos, viewSize;
-    public Matrix4f[] matrices = new Matrix4f[3];
+    protected Vector2f viewPos, viewSize;
+    protected Matrix4f[] matrices = new Matrix4f[3];
+    public FrameBuffer frameBuffer;
 
-    public float fov, zNear = 0.001f, zFar = 100, ratio = -1;
+    protected float fov, zNear = 0.001f, zFar = 100, ratio = -1;
     protected float orthoZoom = 1;
     protected Vector3f lookAt, lookAtDist = new Vector3f(), up = new Vector3f(0, 1, 0);
-    protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false;
+    protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false, drawFbo = false, drawView = false;
 
-    public Camera(Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
+    public Camera(float fov, Scene scene)
     {
-        this(new Vector3f(), new Vector3f(0, 0, -10), viewPos, viewSize, fov, scene);
+        this(new Vector3f(), new Vector3f(0, 0, -10), fov, scene);
     }
 
-    public Camera(Vector3f position, Vector3f lookAt, Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
+    public Camera(Vector3f position, Vector3f lookAt, float fov, Scene scene)
     {
         this.pos.set(position);
         this.lookAt = lookAt;
-        this.viewPos = viewPos;
-        this.viewSize = viewSize;
         this.fov = fov;
         this.scene = scene;
 
         lookAt.sub(position, lookAtDist);
 
-        matrices[0] = new Matrix4f().ortho2D(-1, 1, -1, 1);
-        matrices[1] = new Matrix4f().perspective((float) Math.toRadians(fov), 1, zNear, zFar);
-        matrices[2] = new Matrix4f().ortho(-1, 1, -1, 1, zNear, zFar, false);
+        matrices[0] = new Matrix4f();
+        matrices[1] = new Matrix4f();
+        matrices[2] = new Matrix4f();
 
         scene.gameObjects.add(this);
 
         setCenter(0, 0, 0);
+    }
+
+    public Camera setViewport(Vector2f viewPos, Vector2f viewSize)
+    {
+        drawView = true;
+        this.viewPos = viewPos;
+        this.viewSize = viewSize;
+        if(frameBuffer != null) frameBuffer.resLocked = false;
+        return this;
+    }
+
+    public Camera setFramebufferRes(Vector2i res)
+    {
+        drawFbo = true;
+        if(frameBuffer == null) frameBuffer = new FrameBuffer(res, !drawView);
+        else { frameBuffer.setRes(res.x, res.y); frameBuffer.resLocked = !drawView; }
+        if(!drawView) { ratio = (float) res.x/res.y; ratioUpdated = true; }
+        return this;
+    }
+
+    public void disableViewDrawing()
+    {
+        drawView = false;
+    }
+
+    public void disableFboDrawing()
+    {
+        drawFbo = false;
     }
 
     public float getOrthoZoom()
@@ -58,11 +86,38 @@ public class Camera extends GameObject
         return up;
     }
 
+    public Vector2f getViewPos()
+    {
+        return viewPos;
+    }
+
+    public Vector2f getViewSize()
+    {
+        return viewSize;
+    }
+
+    public Matrix4f getMatrix(int matrixID)
+    {
+        if(matrixID > -1 && matrixID < matrices.length) return matrices[matrixID];
+        else return null;
+    }
+
+    public float getFov() { return fov; }
+
+    public float getZNear() { return zNear; }
+
+    public float getZFar() { return zFar; }
+
+    public boolean shouldDrawFbo() { return drawFbo; }
+
+    public boolean shouldDrawView() { return drawView; }
+
     public void onWindowResize(Vector2i res)
     {
         super.onWindowResize(res);
 
-        this.ratio = (res.x*viewSize.x)/(res.y*viewSize.y);
+        if(drawView) this.ratio = (res.x*viewSize.x)/(res.y*viewSize.y);
+        if(drawFbo && !frameBuffer.resLocked) frameBuffer.setRes((int) (res.x*viewSize.x), (int) (res.y*viewSize.y));
 
         ratioUpdated = true;
     }
@@ -88,18 +143,12 @@ public class Camera extends GameObject
         positionUpdated = true;
     }
 
-    public void setPosition(Vector3f position)
-    {
-        this.pos.set(position);
-        positionUpdated = true;
-    }
-
-    public void setLookAt(Vector3f lookAt)
+    /*public void setLookAt(Vector3f lookAt)
     {
         this.lookAt = lookAt;
         lookAt.sub(pos, lookAtDist);
         positionUpdated = true;
-    }
+    }*/
 
     public void setOrthoZoom(float zoom)
     {

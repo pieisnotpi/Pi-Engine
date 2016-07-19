@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.ui.text;
 
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.UiObject;

@@ -1,7 +1,9 @@
-package com.pieisnotpi.engine.rendering.shaders.types;
+package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -16,32 +18,34 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class TextShader extends ShaderProgram
 {
-    private Attribute vertex, coords, textColor, outlineColor;
-
     public TextShader()
     {
         super(new ShaderFile("/assets/shaders/text.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/text.frag", GL_FRAGMENT_SHADER));
 
         shaderID = PiEngine.S_TEXT_ID;
 
-        vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
-        coords = new Attribute("VertexTexCoords", BufferUtility.vec2ToFloatBuffer(), 1, 2);
-        textColor = new Attribute("VertexTextColor", BufferUtility.colorToFloatBuffer(), 2, 4);
-        outlineColor = new Attribute("VertexOutlineColor", BufferUtility.colorToFloatBuffer(), 3, 4);
-        array = new VertexArray(vertex, coords, textColor, outlineColor);
+        unsortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexTexCoords", 2), new Attribute("VertexTextColor", 4), new Attribute("VertexOutlineColor", 4));
+        sortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexTexCoords", 2), new Attribute("VertexTextColor", 4), new Attribute("VertexOutlineColor", 4));
         perspName = "camera";
     }
 
-    protected void putElements(List<Renderable> buffer)
+    @Override
+    public void bindPRUniforms(Camera camera, Renderable r)
+    {
+        super.bindPRUniforms(camera, r);
+        if(Window.lastTextureID != r.texture.getTexID()) r.texture.bind(0);
+    }
+
+    protected void putElements(List<Renderable> buffer, Attribute[] a)
     {
         buffer.forEach(r ->
         {
             TextRenderable t = (TextRenderable) r;
 
-            BufferUtility.putVec3s(vertex.buffer, t.points);
-            BufferUtility.putVec2s(coords.buffer, t.texCoords);
-            BufferUtility.putColors(textColor.buffer, t.textColors);
-            BufferUtility.putColors(outlineColor.buffer, t.outlineColors);
+            BufferUtility.putVec3s(a[0].buffer, t.points);
+            BufferUtility.putVec2s(a[1].buffer, t.texCoords);
+            BufferUtility.putColors(a[2].buffer, t.textColors);
+            BufferUtility.putColors(a[3].buffer, t.outlineColors);
         });
     }
 

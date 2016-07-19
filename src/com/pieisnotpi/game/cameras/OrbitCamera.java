@@ -15,9 +15,9 @@ public class OrbitCamera extends Camera
 
     private static final float mouseRotAmount = 0.1f, mouseMoveAmount = 0.005f, zoomAmount = 0.25f;
 
-    public OrbitCamera(Vector3f pos, Vector3f center, Vector2f viewPos, Vector2f viewSize, float fov, Scene scene)
+    public OrbitCamera(Vector3f pos, Vector3f center, float fov, Scene scene)
     {
-        super(pos, center, viewPos, viewSize, fov, scene);
+        super(pos, center, fov, scene);
         Vector3f dist = new Vector3f();
         pos.sub(center, dist);
 
@@ -26,6 +26,23 @@ public class OrbitCamera extends Camera
 
         MathUtility.rotateAxisY(-rot.y, 0, 0, dist);
         rot.x = (float) Math.toDegrees(Math.atan2(dist.y, dist.x));
+
+        /*scene.listener.setPosition(pos.x, pos.y, pos.z);
+        scene.listener.setRotation(rot.x, rot.y, rot.z);*/
+    }
+
+    @Override
+    public OrbitCamera setViewport(Vector2f viewPos, Vector2f viewSize)
+    {
+        super.setViewport(viewPos, viewSize);
+        return this;
+    }
+
+    @Override
+    public OrbitCamera setFramebufferRes(Vector2i res)
+    {
+        super.setFramebufferRes(res);
+        return this;
     }
 
     @Override
@@ -64,6 +81,8 @@ public class OrbitCamera extends Camera
 
             moveZ(nx);
             moveX(ny);
+
+            updateAL(false, true);
         }
 
         mx = cx;
@@ -93,6 +112,8 @@ public class OrbitCamera extends Camera
             addToRot(xr, yr, 0);
         }
 
+        updateAL(false, true);
+
         super.onScroll(xAmount, yAmount);
     }
 
@@ -112,7 +133,18 @@ public class OrbitCamera extends Camera
         MathUtility.rotateAxisY(rot.y += yr, lookAt.x, lookAt.z, pos);
         MathUtility.rotateAxisZ(zr, 0, 0, up);
 
+        updateAL(true, true);
+
         rotationUpdated = true;
+    }
+
+    private void updateAL(boolean updateRot, boolean updatePos)
+    {
+        /*if(scene.cameras.size() == 1)
+        {
+            if(updateRot) scene.listener.setRotation(rot.x + 180, rot.y + 180, rot.z);
+            if(updatePos) scene.listener.setPosition(pos);
+        }*/
     }
 
     @Override

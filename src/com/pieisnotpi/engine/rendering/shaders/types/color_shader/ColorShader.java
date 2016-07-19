@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types;
+package com.pieisnotpi.engine.rendering.shaders.types.color_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
@@ -15,26 +15,23 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class ColorShader extends ShaderProgram
 {
-    private Attribute vertex, colors;
-
     public ColorShader()
     {
         super(new ShaderFile("/assets/shaders/color.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/color.frag", GL_FRAGMENT_SHADER));
 
         shaderID = PiEngine.S_COLOR_ID;
 
-        vertex = new Attribute("VertexPosition", BufferUtility.vec3ToFloatBuffer(), 0, 3);
-        colors = new Attribute("VertexColor", BufferUtility.colorToFloatBuffer(), 1, 4);
-        array = new VertexArray(vertex, colors);
+        unsortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexColor", 4));
+        sortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexColor", 4));
         perspName = "camera";
     }
 
-    protected void putElements(List<Renderable> buffer)
+    protected void putElements(List<Renderable> buffer, Attribute[] a)
     {
         buffer.forEach(r ->
         {
-            BufferUtility.putVec3s(vertex.buffer, r.points);
-            BufferUtility.putColors(colors.buffer, r.colors);
+            BufferUtility.putVec3s(a[0].buffer, r.points);
+            BufferUtility.putColors(a[1].buffer, r.colors);
         });
     }
 

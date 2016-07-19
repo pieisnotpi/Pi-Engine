@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering.ui.text.effects;
 
-import com.pieisnotpi.engine.rendering.shapes.types.text.TextQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class WaveEffect implements TextEffect
 
     public void process(Text text)
     {
-        List<TextQuad> chars = text.getChars();
+        List<TextQuad> chars = text.chars;
 
         int prevLine = 0, t = 0;
 

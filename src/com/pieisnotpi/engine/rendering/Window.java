@@ -5,7 +5,11 @@ import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shaders.types.*;
+import com.pieisnotpi.engine.rendering.shaders.types.ads_shader.ADSShader;
+import com.pieisnotpi.engine.rendering.shaders.types.color_shader.ColorShader;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexturedCShader;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TextureShader;
+import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextShader;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import org.joml.Vector2i;
@@ -204,9 +208,13 @@ public class Window
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.drawUpdate();
+        shaders.forEach((i, s) -> s.compileUnsorted());
+        time += System.currentTimeMillis() - t;
 
         for(Camera camera : scene.cameras)
         {
+            if(!camera.shouldDrawView() && !camera.shouldDrawFbo()) return;
+
             double cos = Math.cos(Math.toRadians(camera.getYRot() - 90));
 
             scene.sortedBuffer.sort((o1, o2) ->
@@ -228,18 +236,31 @@ public class Window
                 else return 0;
             });
 
-            float viewX = camera.viewPos.x*res.x, viewY = camera.viewPos.y*res.y, viewWidth = camera.viewSize.x*res.x, viewHeight = camera.viewSize.y*res.y;
-
-            glViewport((int) viewX, (int) viewY, (int) viewWidth, (int) viewHeight);
-
-            shaders.forEach((i, s) -> s.drawUnsorted(camera));
-
             scene.sortedBuffer.forEach(renderable -> renderable.shader.addSortedVertex(renderable));
-            scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
-            shaders.forEach((i, s) -> s.clearSorted());
+            shaders.forEach((i, s) -> s.compileSorted());
+
+            if(camera.shouldDrawFbo())
+            {
+                camera.frameBuffer.bind();
+                glViewport(0, 0, camera.frameBuffer.res.x, camera.frameBuffer.res.y);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                shaders.forEach((i, s) -> s.drawUnsorted(camera));
+
+                scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
+                camera.frameBuffer.unbind();
+            }
+
+            if(camera.shouldDrawView())
+            {
+                glViewport((int) (res.x*camera.viewPos.x), (int) (res.y*camera.viewPos.y), (int) (res.x*camera.viewSize.x), (int) (res.y*camera.viewSize.y));
+
+                shaders.forEach((i, s) -> s.drawUnsorted(camera));
+
+                scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
+            }
         }
 
-        time += System.currentTimeMillis() - t;
+
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();

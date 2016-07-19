@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering;
 
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
@@ -18,7 +19,8 @@ public abstract class Renderable
     public Vector3f[] normals;
     public Color[] colors;
     public ShaderProgram shader = null;
-    protected int shaderID, matrixID, vertCount, drawMode;
+    public Material material;
+    protected int matrixID, vertCount, drawMode;
 
     public float getX() { return 0;}
     public float getY() { return 0;}
@@ -45,17 +47,19 @@ public abstract class Renderable
         return cz/points.length;
     }
 
-    public int getShaderID() { return shaderID; }
+    public int getShaderID() { return material.shaderID; }
     public int getMatrixID() { return matrixID; }
     public int getVertCount() { return vertCount; }
     public int getDrawMode() { return drawMode; }
     public Texture getTexture() { return texture; }
+    public Material getMaterial() { return material; }
 
     public void setX(float x, int index)
     {
         float dif = x - points[index].x;
 
         for(Vector3f point : points) point.x += dif;
+        normalize();
     }
 
     public void setY(float y, int index)
@@ -63,6 +67,7 @@ public abstract class Renderable
         float dif = y - points[index].y;
 
         for(Vector3f point : points) point.y += dif;
+        normalize();
     }
 
     public void setZ(float z, int index)
@@ -70,6 +75,7 @@ public abstract class Renderable
         float dif = z - points[index].z;
 
         for(Vector3f point : points) point.z += dif;
+        normalize();
     }
 
     public void register()
@@ -99,11 +105,13 @@ public abstract class Renderable
             if(b >= points.length) b = 0;
             if(points[b] != null) this.points[a] = points[b];
         }
+
+        normalize();
     }
 
     public void setColors(Color... colors)
     {
-        if(colors.length == 0) return;
+        if(!material.usesColors || colors.length == 0) return;
 
         for(int a = 0, b = 0; a < this.colors.length; a++, b++)
         {
@@ -114,6 +122,8 @@ public abstract class Renderable
 
     public void setTexCoords(Vector2f... texCoords)
     {
+        if(!material.usesTexCoords || texCoords.length == 0) return;
+
         for(int a = 0, b = 0; a < this.texCoords.length; a++, b++)
         {
             if(b >= texCoords.length) b = 0;
@@ -121,19 +131,24 @@ public abstract class Renderable
         }
     }
 
-    protected void setDefaults(int vertCount)
+    public void normalize()
+    {
+        if(!material.usesNormals) return;
+        for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
+    }
+
+    protected void setDefaults(int vertCount, int drawMode, Material material)
     {
         this.vertCount = vertCount;
+        this.drawMode = drawMode;
+        this.material = material;
 
         points = new Vector3f[vertCount];
-        colors = new Color[vertCount];
-        normals = new Vector3f[vertCount];
-        texCoords = new Vector2f[vertCount];
-
         Arrays.fill(points, new Vector3f(0, 0, 0));
-        Arrays.fill(colors, new Color(0, 0, 0));
-        Arrays.fill(normals, new Vector3f(0, 0, 0));
-        Arrays.fill(texCoords, new Vector2f(0, 0));
+
+        if(material.usesColors) { colors = new Color[vertCount]; Arrays.fill(colors, new Color(0, 0, 0)); }
+        if(material.usesNormals) { normals = new Vector3f[vertCount]; Arrays.fill(normals, new Vector3f(0, 0, 0)); }
+        if(material.usesTexCoords) { texCoords = new Vector2f[vertCount]; Arrays.fill(texCoords, new Vector2f(0, 0)); }
     }
 
     /**

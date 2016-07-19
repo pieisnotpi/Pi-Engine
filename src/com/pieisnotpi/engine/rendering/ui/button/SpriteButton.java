@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.ui.button;
 
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.textured_c.TexCQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.scene.Scene;

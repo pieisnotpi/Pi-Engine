@@ -4,7 +4,6 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.Window;
-import com.pieisnotpi.engine.rendering.textures.Texture;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -26,13 +25,13 @@ public abstract class ShaderProgram
     public List<Renderable> sortedBuffer;
     protected Window window;
     protected String perspName = "camera", samplerName = "sampler";
-    protected VertexArray array;
+    protected VertexArray unsortedArray, sortedArray;
     protected ShaderFile[] shaders;
     protected Matrix4f perspective;
     private Map<String, Integer> uniformLocations = new HashMap<>();
 
     protected int programID, shaderID, sortedBufferSize = 0, unsortedBufferSize = 0;
-    private int index = 0, vertCount = -100, lastMatrix = -1, lastSampler = -1;
+    private int index = 0, vertCount = 0, lastMatrix = -1, lastSampler = -1;
 
     private static FloatBuffer vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat3b = BufferUtils.createFloatBuffer(9), mat4b = BufferUtils.createFloatBuffer(16);
 
@@ -52,7 +51,8 @@ public abstract class ShaderProgram
         glLinkProgram(programID);
         glUseProgram(programID);
 
-        array.init(programID);
+        unsortedArray.init(programID);
+        sortedArray.init(programID);
 
         return this;
     }
@@ -61,24 +61,22 @@ public abstract class ShaderProgram
     {
         if(unsortedBufferSize == 0) return;
 
-        for(Attribute attribute : array.attributes)
+        for(Attribute attribute : unsortedArray.attributes)
         {
             int size = attribute.size*unsortedBufferSize;
 
-            if(attribute.buffer.limit() >= size)
-            {
-                attribute.buffer.position(0);
-                if(attribute.buffer.limit() > size) attribute.buffer.limit(size);
-            }
+            if(attribute.buffer.limit() == size) attribute.buffer.position(0);
+            else if(attribute.buffer.limit() > size) attribute.buffer.position(0).limit(size);
             else attribute.buffer = BufferUtils.createFloatBuffer(size);
         }
 
-        putElements(unsortedBuffer);
+        putElements(unsortedBuffer, unsortedArray.attributes);
 
-        for(Attribute attribute : array.attributes)
+        for(Attribute attribute : unsortedArray.attributes)
         {
             attribute.buffer.flip();
             attribute.bindData();
+            attribute.buffer.clear();
         }
     }
 
@@ -86,28 +84,26 @@ public abstract class ShaderProgram
     {
         if(sortedBufferSize == 0) return;
 
-        for(Attribute attribute : array.attributes)
+        for(Attribute attribute : sortedArray.attributes)
         {
             int size = attribute.size*sortedBufferSize;
 
-            if(attribute.buffer.limit() >= size)
-            {
-                attribute.buffer.position(0);
-                if(attribute.buffer.limit() > size) attribute.buffer.limit(size);
-            }
+            if(attribute.buffer.limit() == size) attribute.buffer.position(0);
+            else if(attribute.buffer.limit() > size) attribute.buffer.position(0).limit(size);
             else attribute.buffer = BufferUtils.createFloatBuffer(size);
         }
 
-        putElements(sortedBuffer);
+        putElements(sortedBuffer, sortedArray.attributes);
 
-        for(Attribute attribute : array.attributes)
+        for(Attribute attribute : sortedArray.attributes)
         {
             attribute.buffer.flip();
             attribute.bindData();
+            attribute.buffer.clear();
         }
     }
 
-    protected abstract void putElements(List<Renderable> buffer);
+    protected abstract void putElements(List<Renderable> buffer, Attribute[] attributes);
 
     public void addUnsortedVertex(Renderable renderable)
     {
@@ -151,40 +147,24 @@ public abstract class ShaderProgram
 
     public void bindPRUniforms(Camera camera, Renderable renderable)
     {
-        if(renderable.getMatrixID() != lastMatrix) setUniformMat4(perspName, camera.matrices[lastMatrix = renderable.getMatrixID()]);
+        if(renderable.getMatrixID() != lastMatrix) setUniformMat4(perspName, camera.getMatrix(lastMatrix = renderable.getMatrixID()));
     }
 
     public void drawUnsorted(Camera camera)
     {
         if(unsortedBuffer.size() == 0) return;
 
-        compileUnsorted();
+        use();
+        unsortedArray.bind();
         bindUniforms(camera);
 
-        int curVert = -unsortedBuffer.get(0).getVertCount();
+        vertCount = -unsortedBuffer.get(0).getVertCount();
 
         for(Renderable r : unsortedBuffer)
         {
-            Texture tex = r.getTexture();
-            int matrixID = r.getMatrixID();
-
             r.preDraw(this);
-
             bindPRUniforms(camera, r);
-
-            if(tex != null)
-            {
-                if(tex.getTexID() != Window.lastTextureID)
-                {
-                    tex.bind();
-                    setUniformInt(samplerName, lastSampler = tex.getSamplerID());
-                }
-                else if(lastSampler == -1) setUniformInt(samplerName, lastSampler = tex.getSamplerID());
-
-                if(tex.getSamplerID() != lastSampler) setUniformInt(samplerName, lastSampler = tex.getSamplerID());
-            }
-
-            glDrawArrays(r.getDrawMode(), curVert += r.getVertCount(), r.getVertCount());
+            glDrawArrays(r.getDrawMode(), vertCount += r.getVertCount(), r.getVertCount());
         }
 
         clearUnsorted();
@@ -194,36 +174,26 @@ public abstract class ShaderProgram
     {
         if(sortedBuffer.size() == 0) return;
 
-        Renderable renderable = sortedBuffer.get(index);
-        Texture tex = renderable.getTexture();
-        int matrixID = renderable.getMatrixID();
+        Renderable r = sortedBuffer.get(index++);
+        int matrixID = r.getMatrixID();
 
         if(index == 0)
         {
-            compileSorted();
             bindUniforms(camera);
-            vertCount = -renderable.getVertCount();
+            vertCount = -r.getVertCount();
         }
 
-        renderable.preDraw(this);
-
-        bindPRUniforms(camera, renderable);
-
-        if(tex != null)
+        if(Window.lastShaderID != programID)
         {
-            if(tex.getTexID() != Window.lastTextureID)
-            {
-                tex.bind();
-                setUniformInt("sampler", lastSampler = tex.getSamplerID());
-            }
-            else if(lastSampler == -1) setUniformInt("sampler", lastSampler = tex.getSamplerID());
-
-            if(tex.getSamplerID() != lastSampler) setUniformInt("sampler", lastSampler = tex.getSamplerID());
+            use();
+            sortedArray.bind();
         }
 
-        glDrawArrays(renderable.getDrawMode(), vertCount += renderable.getVertCount(), renderable.getVertCount());
+        r.preDraw(this);
+        bindPRUniforms(camera, r);
+        glDrawArrays(r.getDrawMode(), vertCount += r.getVertCount(), r.getVertCount());
 
-        index++;
+        if(index == sortedBuffer.size() - 1) clearSorted();
     }
 
     public void use()
@@ -233,14 +203,10 @@ public abstract class ShaderProgram
         glUseProgram(programID);
 
         Window.lastShaderID = programID;
-
-        if(array != null) array.bind();
-        else Logger.SHADER_PROGRAM.err("Attempted to bind a null array, shader program must be corrupt");
     }
 
     public void setUniformMat3(String name, Matrix3f mat3)
     {
-        use();
         int location = getUniformLocation(name);
         mat3.get(mat3b);
 
@@ -250,7 +216,6 @@ public abstract class ShaderProgram
 
     public void setUniformMat4(String name, Matrix4f mat4)
     {
-        use();
         int location = getUniformLocation(name);
         mat4.get(mat4b);
 
@@ -259,25 +224,24 @@ public abstract class ShaderProgram
 
     public void setUniformVec3(String name, Vector3f vec3)
     {
-        use();
         int location = getUniformLocation(name);
         vec3.get(vec3b);
 
         if(location > -1) glUniform3fv(location, vec3b);
+        vec3b.clear();
     }
 
     public void setUniformVec4(String name, Vector4f vec4)
     {
-        use();
         int location = getUniformLocation(name);
         vec4.get(vec4b);
 
         if(location > -1) glUniform4fv(location, vec4b);
+        vec4b.clear();
     }
 
     public void setUniformInt(String name, int value)
     {
-        use();
         int location = getUniformLocation(name);
 
         if(location > -1) glUniform1i(location, value);
@@ -285,7 +249,6 @@ public abstract class ShaderProgram
 
     public void setUniformFloat(String name, float value)
     {
-        use();
         int location = getUniformLocation(name);
 
         if(location > -1) glUniform1f(location, value);
@@ -297,7 +260,7 @@ public abstract class ShaderProgram
         if(t == null)
         {
             t = glGetUniformLocation(programID, name);
-            if(t  > -1) uniformLocations.put(name, t);
+            if(t != -1) uniformLocations.put(name, t);
             else Logger.SHADER_PROGRAM.err("Program " + programID + " attempted to find non-existent uniform '" + name + '\'');
         }
         return t;
@@ -329,16 +292,13 @@ public abstract class ShaderProgram
     {
         sortedBuffer.clear();
 
-        lastSampler = -1;
         lastMatrix = -1;
         index = 0;
-        vertCount = -100;
         sortedBufferSize = 0;
     }
 
     public void clearUnsorted()
     {
-        lastSampler = -1;
         lastMatrix = -1;
     }
 }

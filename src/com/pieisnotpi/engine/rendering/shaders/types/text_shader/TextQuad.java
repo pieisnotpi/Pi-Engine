@@ -1,6 +1,5 @@
-package com.pieisnotpi.engine.rendering.shapes.types.text;
+package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
@@ -25,7 +24,6 @@ public class TextQuad extends TextRenderable
 
         this.line = line;
         this.scene = scene;
-        this.shaderID = PiEngine.S_TEXT_ID;
         this.matrixID = matrixID;
         this.cSprite = cSprite;
         this.sprite = cSprite.sprite;
@@ -67,6 +65,16 @@ public class TextQuad extends TextRenderable
         for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
         if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
         shouldBeSorted = temp;
+    }
+
+    public void setPos(float x, float y, float z)
+    {
+        float xDif = x - getX(), yDif = y - getY(), zDif = z - getZ();
+
+        points[0].add(xDif, yDif, zDif);
+        points[1].add(xDif, yDif, zDif);
+        points[2].add(xDif, yDif, zDif);
+        points[3].add(xDif, yDif, zDif);
     }
 
     public float getX()

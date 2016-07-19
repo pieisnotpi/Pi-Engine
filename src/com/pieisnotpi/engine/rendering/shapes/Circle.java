@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering.shapes;
 
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.scene.Scene;
 
 import java.util.ArrayList;
@@ -8,18 +9,19 @@ import java.util.List;
 public abstract class Circle
 {
     protected float x, y, z, radius;
-    protected int sides, shaderID, matrixID;
+    protected int sides, matrixID;
+    protected Material material;
     protected Scene scene;
     public List<Triangle> vertices;
 
-    protected Circle(float x, float y, float z, float radius, int sides, int shaderID, int matrixID, Scene scene)
+    protected Circle(float x, float y, float z, float radius, int sides, Material material, int matrixID, Scene scene)
     {
         this.x = x;
         this.y = y;
         this.z = z;
         this.radius = radius;
         this.sides = sides;
-        this.shaderID = shaderID;
+        this.material = material;
         this.matrixID = matrixID;
         this.scene = scene;
     }

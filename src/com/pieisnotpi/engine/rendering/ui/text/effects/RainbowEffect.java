@@ -15,7 +15,7 @@ public class RainbowEffect implements TextEffect
 
     public void process(Text text)
     {
-        for(int i = 0; i < text.getChars().size(); i++)
+        for(int i = 0; i < text.chars.size(); i++)
         {
             float r = 0, g = 0, b = 0;
             float sine = (float) (1.5 + 1.5*Math.sin(Math.toRadians((x + difference*i)*speed)));
@@ -36,7 +36,7 @@ public class RainbowEffect implements TextEffect
                 b = 1 - r;
             }
 
-            text.getChars().get(i).setQuadTextColor(new Color(r, g, b));
+            text.chars.get(i).setQuadTextColor(new Color(r, g, b));
         }
 
         x++;

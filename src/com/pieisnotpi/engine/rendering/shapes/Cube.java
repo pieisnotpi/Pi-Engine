@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.rendering.shapes;
 
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.scene.Scene;
 
 public class Cube extends Renderable
@@ -9,17 +10,16 @@ public class Cube extends Renderable
 
     protected Cube() {}
 
-    public Cube(float x, float y, float z, float width, float height, float depth, int shaderID, int matrixID, Scene scene)
+    public Cube(float x, float y, float z, float width, float height, float depth, Material material, int matrixID, Scene scene)
     {
-        sides[0] = new Quad(x, y, z, width, height, 0, shaderID, matrixID, scene);
-        sides[1] = new Quad(x, y, z, 0, height, depth, shaderID, matrixID, scene);
-        sides[2] = new Quad(x, y, z, 0, height, depth, shaderID, matrixID, scene);
-        sides[3] = new Quad(x, y, z + depth, width, height, 0, shaderID, matrixID, scene);
-        sides[4] = new Quad(x, y + height, z, width, 0, depth, shaderID, matrixID, scene);
-        sides[5] = new Quad(x, y, z, width, 0, depth, shaderID, matrixID, scene);
+        sides[0] = new Quad(x, y, z, width, height, 0, material, matrixID, scene);
+        sides[1] = new Quad(x, y, z, 0, height, depth, material, matrixID, scene);
+        sides[2] = new Quad(x, y, z, 0, height, depth, material, matrixID, scene);
+        sides[3] = new Quad(x, y, z + depth, width, height, 0, material, matrixID, scene);
+        sides[4] = new Quad(x, y + height, z, width, 0, depth, material, matrixID, scene);
+        sides[5] = new Quad(x, y, z, width, 0, depth, material, matrixID, scene);
 
         this.scene = scene;
-        this.shaderID = shaderID;
         this.matrixID = matrixID;
     }
 

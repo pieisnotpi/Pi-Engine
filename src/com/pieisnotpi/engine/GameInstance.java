@@ -1,21 +1,15 @@
 package com.pieisnotpi.engine;
 
+import com.pieisnotpi.engine.audio.AudioPlayer;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.Version;
-import org.lwjgl.glfw.GLFWMonitorCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_CONNECTED;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.opengl.GL11.GL_VERSION;
-import static org.lwjgl.opengl.GL11.glGetString;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 public abstract class GameInstance
 {
@@ -24,10 +18,12 @@ public abstract class GameInstance
 
     public List<Window> windows = new ArrayList<>();
     public List<GameUpdate> updates = new ArrayList<>();
+    public AudioPlayer player;
 
     public void init()
     {
         if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
+        player = new AudioPlayer();
     }
 
     public void start()
@@ -96,6 +92,8 @@ public abstract class GameInstance
                 }
             }
         }
+
+        player.destroy();
     }
 
     public void onMonitorConnect(Monitor monitor)

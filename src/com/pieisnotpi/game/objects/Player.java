@@ -6,7 +6,7 @@ import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.devices.DS4;
 import com.pieisnotpi.engine.input.devices.Xbox;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shapes.types.textured.TexQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;

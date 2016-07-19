@@ -3,7 +3,11 @@ package com.pieisnotpi.game.scenes;
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.devices.Keyboard;
+import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
+import com.pieisnotpi.engine.rendering.textures.Sprite;
+import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.rendering.ui.text.effects.WaveEffect;
 import com.pieisnotpi.engine.rendering.ui.text.font.SystemFont;
@@ -12,11 +16,12 @@ import com.pieisnotpi.game.blocks.Block;
 import com.pieisnotpi.game.blocks.Metal;
 import com.pieisnotpi.game.cameras.OrbitCamera;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class TestScene2 extends PauseScene
 {
-    private final static int w = 50, h = 50;
+    private final static int w = 100, h = 100;
     protected Block[][] blocks = new Block[w][h];
 
     public void init()
@@ -24,13 +29,17 @@ public class TestScene2 extends PauseScene
         super.init();
 
         name = "Test Scene 2";
+        Camera c;
 
-        //cameras.add(new FirstPersonCamera(new Vector2f(0, 0), new Vector2f(1, 1), 90, 0, this));
-        cameras.add(new OrbitCamera(new Vector3f(0, 2, -10), new Vector3f(0, 0, 0), new Vector2f(0, 0), new Vector2f(1, 1), 90, this));
-        /*cameras.add(new OrbitCamera(new Vector3f(4, 2, 4), new Vector3f(0, 1, 0), new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(-4, 2, 4), new Vector3f(0, 1, 0), new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(-4, 2, -4), new Vector3f(0, 1, 0), new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));
-        cameras.add(new OrbitCamera(new Vector3f(4, 2, -4), new Vector3f(0, 1, 0), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), 90, this));*/
+        cameras.add(c = new OrbitCamera(new Vector3f(4, 2, 4), new Vector3f(0, 1, 0), 90, this).setViewport(new Vector2f(0, 0), new Vector2f(1, 1)).setFramebufferRes(new Vector2i(512, 512)));
+        /*cameras.add(c = new OrbitCamera(new Vector3f(4, 2, 4), new Vector3f(0, 1, 0), 90, this).setViewport(new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)).setFramebufferRes(new Vector2i(512, 512)));
+        cameras.add(new OrbitCamera(new Vector3f(-4, 2, 4), new Vector3f(0, 1, 0), 90, this).setViewport(new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f)));
+        cameras.add(new OrbitCamera(new Vector3f(-4, 2, -4), new Vector3f(0, 1, 0), 90, this).setViewport(new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f)));
+        cameras.add(new OrbitCamera(new Vector3f(4, 2, -4), new Vector3f(0, 1, 0), 90, this).setViewport(new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));*/
+
+        Texture tex = c.frameBuffer.texture;
+        TexQuad texQuad = new TexQuad(-0.4445f, 1, 0.2f, 0.889f, 0.5f, 0, new Sprite(tex, 0, 0, tex.width, tex.height, false), PiEngine.C_PERSPECTIVE, this);
+
         clearColor.set(0.918f, 0.729f, 0.125f);
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;

@@ -7,7 +7,7 @@ import java.util.Calendar;
 
 public class Logger
 {
-    public static final Logger TEXTURES = new Logger("TEXTURES"), SHADER_COMPILER = new Logger("SHADER_COMPILER"), SHADER_PROGRAM = new Logger("SHADER_PROGRAM"), SYSTEM = new Logger("SYSTEM");
+    public static final Logger TEXTURES = new Logger("TEXTURES"), SHADER_COMPILER = new Logger("SHADER_COMPILER"), SHADER_PROGRAM = new Logger("SHADER_PROGRAM"), SYSTEM = new Logger("SYSTEM"), AUDIO = new Logger("Audio");
 
     private String identity;
     private static final String LOG = "LOG", ERR = "ERR", DEBUG = "DEBUG", DEBUG_ERR = "DEBUG_ERR";

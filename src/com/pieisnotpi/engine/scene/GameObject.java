@@ -84,6 +84,7 @@ public abstract class GameObject
     public int getMatrixID() { return matrixID; }
     public Scene getScene() { return scene; }
     public Vector3f getPos() { return pos; }
+    public Vector3f getRot() { return rot; }
 
     public final void setHAlignment(HAlignment align, float offset) { setAlignment(align, vAlign, offset, this.offset.y); }
     public final void setVAlignment(VAlignment align, float offset) { setAlignment(hAlign, align, this.offset.x, offset); }

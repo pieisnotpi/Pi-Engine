@@ -1,7 +1,9 @@
 package com.pieisnotpi.engine.rendering.ui.text;
 
+import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -12,6 +14,8 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
 public class TextRenderable extends Renderable
 {
     public Color[] textColors, outlineColors;
+
+    private static final Material m = new Material(PiEngine.S_TEXT_ID, false, false, true);
 
     public void setTextColors(Color... textColors)
     {
@@ -27,6 +31,7 @@ public class TextRenderable extends Renderable
     {
         this.vertCount = vertCount;
         this.drawMode = GL_TRIANGLE_STRIP;
+        this.material = m;
 
         points = new Vector3f[vertCount];
         texCoords = new Vector2f[vertCount];

@@ -11,7 +11,6 @@ import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.game.scenes.PauseScene;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -36,14 +35,14 @@ public class FirstPersonCamera extends Camera
     private float mouseRotAmount = 0.05f, moveAmount = 2.4f, joySensitivity = 120;
     private boolean hideCursor = false, ignoreNextMovement = false;
 
-    public FirstPersonCamera(Vector2f viewPos, Vector2f viewSize, float fov, int joystick, Scene scene)
+    public FirstPersonCamera(float fov, int joystick, Scene scene)
     {
-        this(new Vector3f(0, 0, 0), viewPos, viewSize, fov, joystick, scene);
+        this(new Vector3f(0, 0, 0), fov, joystick, scene);
     }
 
-    public FirstPersonCamera(Vector3f position, Vector2f viewPos, Vector2f viewSize, float fov, int joystick, Scene scene)
+    public FirstPersonCamera(Vector3f position, float fov, int joystick, Scene scene)
     {
-        super(position, position.sub(0, 0, 10, new Vector3f()), viewPos, viewSize, fov, scene);
+        super(position, position.sub(0, 0, 10, new Vector3f()), fov, scene);
         this.joystick = joystick;
 
         if(joystick == 0)
@@ -151,6 +150,34 @@ public class FirstPersonCamera extends Camera
         }
     }
 
+    @Override
+    public void addToRot(float xr, float yr, float zr)
+    {
+        super.addToRot(xr, yr, zr);
+        updateAL(true, false);
+    }
+
+    @Override
+    public void moveX(float a)
+    {
+        super.moveX(a);
+        updateAL(false, true);
+    }
+
+    @Override
+    public void moveY(float a)
+    {
+        super.moveY(a);
+        updateAL(false, true);
+    }
+
+    @Override
+    public void moveZ(float a)
+    {
+        super.moveZ(a);
+        updateAL(false, true);
+    }
+
     public void onMouseMovementUnscaled(Vector2d cursorPos)
     {
         Vector2i res = scene.window.getWindowRes();
@@ -163,15 +190,21 @@ public class FirstPersonCamera extends Camera
 
             float nx = cy*mouseRotAmount, ny = cx*mouseRotAmount;
 
-            /*if(nx + rot.x >= 90) nx = 89.9f;
-            else if(nx + rot.x <= -90) nx = -89.9f;*/
-
             addToRot(nx, ny, 0);
 
             glfwSetCursorPos(scene.window.windowID, res.x/2f, res.y/2f);
         }
 
         ignoreNextMovement = false;
+    }
+
+    private void updateAL(boolean updateRot, boolean updatePos)
+    {
+        if(scene.cameras.size() == 1)
+        {
+            if(updateRot) scene.listener.setRotation(rot.x, rot.y, rot.z);
+            if(updatePos) scene.listener.setPosition(pos);
+        }
     }
 
     public void destroy()

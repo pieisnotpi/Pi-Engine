@@ -2,8 +2,9 @@ package com.pieisnotpi.game.blocks;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.model.Model;
+import com.pieisnotpi.engine.rendering.shaders.Material;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexCube;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
-import com.pieisnotpi.engine.rendering.shapes.types.textured.TexCube;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
@@ -19,7 +20,7 @@ public class Block extends GameObject
     public Sprite top, side, bottom;
     public List<TexCube> cubes;
 
-    public Block(float x, float y, float z, Model model, int shaderID, Scene scene)
+    public Block(float x, float y, float z, Model model, Material material, Scene scene)
     {
         pos.set(x, y, z);
         size.set(SIZE);
@@ -28,7 +29,7 @@ public class Block extends GameObject
         defaultCenter();
 
         cubes = new ArrayList<>();
-        cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE, shaderID, PiEngine.C_PERSPECTIVE, scene)).collect(Collectors.toList()));
+        cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE, material, PiEngine.C_PERSPECTIVE, scene)).collect(Collectors.toList()));
     }
 
     public void addToRot(float xr, float yr, float zr)
