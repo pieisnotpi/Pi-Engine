@@ -7,10 +7,16 @@ struct LightInfo
 };
 
 uniform LightInfo lights[4];
-uniform vec3 Kd;
-uniform vec3 Ka;
-uniform vec3 Ks;
-uniform float Shininess;
+
+struct Material
+{
+    vec3 Kd;
+    vec3 Ka;
+    vec3 Ks;
+    float Shininess;
+};
+
+uniform Material m;
 uniform sampler2D sampler;
 
 in vec3 Position;
@@ -31,7 +37,7 @@ vec3 ads(int index)
     vec3 s = normalize(d);
     vec3 h = normalize(normalize(-Position) + s);
 
-    return i*(Ka + Kd*max(dot(s, Normal), 0.0) + Ks*pow(max(dot(h, n), 0.0), Shininess))/ds;
+    return i*(m.Ka + m.Kd*max(dot(s, Normal), 0.0) + m.Ks*pow(max(dot(h, n), 0.0), m.Shininess))/ds;
 }
 
 void main()

@@ -1,17 +1,15 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
 
-import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.scene.Scene;
-import org.joml.Vector3f;
 
 public class TexCQuad extends TexQuad
 {
-    protected Sprite sprite;
+    public TexCQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite)
+    {
+        super(x, y, z, width, height, depth, sprite);
+    }
+    /*protected Sprite sprite;
     private static final Material m = new Material(PiEngine.S_TEXTURE_C_ID, true, false, true);
 
     public TexCQuad(float x, float y, float z, float width, float height, float depth, Sprite sprite, Color color, int matrixID, Scene scene)
@@ -33,5 +31,5 @@ public class TexCQuad extends TexQuad
     public void preCompile(ShaderProgram shader)
     {
         if(sprite.isAnimated) sprite.updateAnimation();
-    }
+    }*/
 }

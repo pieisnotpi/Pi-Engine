@@ -1,26 +1,20 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
-public class Material
-{
-    public int shaderID;
-    public boolean usesColors, usesNormals, usesTexCoords;
+import com.pieisnotpi.engine.rendering.Renderable;
 
-    public Material(int shaderID, boolean usesColors, boolean usesNormals, boolean usesTexCoords)
+import java.util.List;
+
+public abstract class Material
+{
+    public int shaderID, matrixID;
+    public ShaderProgram shader = null;
+
+    public Material(int shaderID, int matrixID)
     {
         this.shaderID = shaderID;
-        this.usesColors = usesColors;
-        this.usesNormals = usesNormals;
-        this.usesTexCoords = usesTexCoords;
+        this.matrixID = matrixID;
     }
 
-    @Override
-    public boolean equals(Object obj)
-    {
-        boolean t = super.equals(obj);
-        if(t) return true;
-
-        if(!getClass().equals(obj.getClass())) return false;
-        Material m = (Material) obj;
-        return (shaderID == m.shaderID && usesColors == m.usesColors && usesNormals == m.usesNormals && usesTexCoords == m.usesTexCoords);
-    }
+    public abstract Attribute[] genAttributes();
+    public abstract void putElements(List<Renderable> renderables, VertexArray array);
 }

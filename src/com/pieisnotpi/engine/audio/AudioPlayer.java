@@ -46,11 +46,4 @@ public class AudioPlayer
         alcDestroyContext(context);
         alcCloseDevice(deviceID);
     }
-
-    protected void finalize() throws Throwable
-    {
-        alcDestroyContext(context);
-        alcCloseDevice(deviceID);
-        super.finalize();
-    }
 }

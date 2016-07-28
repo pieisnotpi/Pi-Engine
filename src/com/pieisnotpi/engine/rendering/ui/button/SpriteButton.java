@@ -16,10 +16,9 @@ public class SpriteButton extends UiObject
 
     final static Color blank = new Color(0, 0, 0, 0), highlighted = new Color(0.8f, 0.8f, 0.8f);
 
-    public SpriteButton(float x, float y, float z, float scale, Sprite sprite, int matrixID, Scene scene)
+    public SpriteButton(float x, float y, float z, Sprite sprite, int matrixID, Scene scene)
     {
         pos.set(x, y, z);
-        this.scale = scale/100;
         this.matrixID = matrixID;
         this.scene = scene;
 
@@ -30,12 +29,10 @@ public class SpriteButton extends UiObject
 
     public void setSprite(Sprite sprite)
     {
-        float r = (float) (sprite.x1 - sprite.x0)/(sprite.y1 - sprite.y0);
+        float w = (sprite.uvx1 - sprite.uvx0)*sprite.texture.width, h = (sprite.uvy1 - sprite.uvy0)*sprite.texture.height;
 
-        size.set(scale, scale/r, 0);
-
-        if(base != null) base.unregister();
-        base = new TexCQuad(pos.x, pos.y, pos.z, size.x, size.y, 0, sprite, blank, matrixID, scene);
+        size.set(w, h, 0);
+        //base = new TexCQuad(pos.x, pos.y, pos.z, size.x, size.y, 0, sprite, blank, matrixID, scene);
 
         defaultCenter();
     }
@@ -62,7 +59,7 @@ public class SpriteButton extends UiObject
 
     public void onScroll(float xAmount, float yAmount)
     {
-        setY(pos.y + yAmount/(scale*2));
+        setY(pos.y + yAmount/2);
     }
 
     public void onLeftClick()
@@ -123,6 +120,5 @@ public class SpriteButton extends UiObject
     public void destroy()
     {
         super.destroy();
-        base.unregister();
     }
 }

@@ -1,11 +1,9 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;
-import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -18,23 +16,18 @@ public class TextQuad extends TextRenderable
     protected Sprite sprite;
     public CharSprite cSprite;
 
-    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line, int matrixID, Scene scene)
+    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line)
     {
         setDefaults(4);
 
         this.line = line;
-        this.scene = scene;
-        this.matrixID = matrixID;
         this.cSprite = cSprite;
         this.sprite = cSprite.sprite;
-        this.texture = sprite.texture;
 
         setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z));
         setTexCoords(new Vector2f(sprite.uvx0, sprite.uvy0), new Vector2f(sprite.uvx1, sprite.uvy0), new Vector2f(sprite.uvx0, sprite.uvy1), new Vector2f(sprite.uvx1, sprite.uvy1));
         setQuadTextColor(textColor, textColor, textColor, textColor);
         setQuadOutlineColor(outlineColor, outlineColor, outlineColor, outlineColor);
-
-        register();
     }
 
     public void setQuadTextColor(Color color)
@@ -49,7 +42,6 @@ public class TextQuad extends TextRenderable
         boolean temp = false;
         for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
         if(!temp) for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
-        shouldBeSorted = temp;
     }
 
     public void setQuadOutlineColor(Color color)
@@ -64,7 +56,6 @@ public class TextQuad extends TextRenderable
         boolean temp = false;
         for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
         if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
-        shouldBeSorted = temp;
     }
 
     public void setPos(float x, float y, float z)
@@ -141,10 +132,5 @@ public class TextQuad extends TextRenderable
         zRot += amount;
 
         rotateAxisZ(amount, pointX, pointY, points);
-    }
-
-    public void preCompile(ShaderProgram shader)
-    {
-        if(sprite.isAnimated) sprite.updateAnimation();
     }
 }

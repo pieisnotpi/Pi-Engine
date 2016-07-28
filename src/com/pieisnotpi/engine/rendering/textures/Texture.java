@@ -74,7 +74,7 @@ public class Texture
         glActiveTexture(GL_TEXTURE0 + sampler);
         glBindTexture(GL_TEXTURE_2D, texID);
 
-        Window.lastTextureID = texID;
+        Window.boundTextures[sampler] = texID;
     }
 
     public void compileTexture(BufferedImage image)

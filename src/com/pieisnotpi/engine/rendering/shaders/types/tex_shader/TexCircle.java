@@ -1,22 +1,18 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex_shader;
 
-import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shapes.Circle;
 import com.pieisnotpi.engine.rendering.shapes.Triangle;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class TexCircle extends Circle
 {
     Sprite sprite;
-    private static final Material m = new Material(PiEngine.S_TEXTURE_ID, false, false, true);
 
-    public TexCircle(float x, float y, float z, float radius, int sides, Sprite sprite, int matrixID, Scene scene)
+    public TexCircle(float x, float y, float z, float radius, int sides, Sprite sprite)
     {
-        super(x, y, z, radius, sides, m, matrixID, scene);
+        super(x, y, z, radius, sides);
         this.sprite = sprite;
 
         assemble();
@@ -24,7 +20,7 @@ public class TexCircle extends Circle
 
     public Triangle assembleVertex(float x0, float y0, float z0, float x1, float y1)
     {
-        return new TexTriangle(new Vector3f(x0, z0, y0), new Vector3f(x, z0, y), new Vector3f(x1, z0, y1), new Vector2f(xToSpriteX(x0), yToSpriteY(y0)), new Vector2f(xToSpriteX(x), yToSpriteY(y)), new Vector2f(xToSpriteX(x1), yToSpriteY(y1)), sprite.texture, material, matrixID, scene);
+        return new TexTriangle(new Vector3f(x0, z0, y0), new Vector3f(x, z0, y), new Vector3f(x1, z0, y1), new Vector2f(xToSpriteX(x0), yToSpriteY(y0)), new Vector2f(xToSpriteX(x), yToSpriteY(y)), new Vector2f(xToSpriteX(x1), yToSpriteY(y1)));
     }
 
     private float xToSpriteX(float x)

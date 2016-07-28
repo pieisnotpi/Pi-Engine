@@ -11,15 +11,14 @@ public abstract class Font
     protected List<CharSprite> sprites = new ArrayList<>();
     protected Texture texture;
 
-    public float pixelScale, letterSpace, spaceCharSpace, newLineSpace;
+    public float letterSpace, spaceCharSpace, newLineSpace;
     public CharSprite nullChar;
 
     protected Font() {}
 
-    protected Font(Texture texture, float pixelScale, float letterSpace, float spaceCharSpace, float newLineSpace)
+    protected Font(Texture texture, float letterSpace, float spaceCharSpace, float newLineSpace)
     {
         this.texture = texture;
-        this.pixelScale = pixelScale;
         this.letterSpace = letterSpace;
         this.spaceCharSpace = spaceCharSpace;
         this.newLineSpace = newLineSpace;
@@ -35,5 +34,10 @@ public abstract class Font
     {
         for(CharSprite cs : sprites) if(c == cs.c) return cs;
         return nullChar;
+    }
+
+    public Texture getTexture()
+    {
+        return texture;
     }
 }

@@ -24,7 +24,7 @@ public class StaticText extends UiObject
 
     public StaticText(String text, Font font, boolean antiAlias, float scale, float x, float y, float z, Color textColor, int matrixID, Scene scene)
     {
-        pos.set(x, y, z);
+        /*pos.set(x, y, z);
         this.scale = scale;
         this.matrixID = matrixID;
         this.scene = scene;
@@ -32,7 +32,7 @@ public class StaticText extends UiObject
         this.textColor = textColor;
         this.text = text;
 
-        setFont(font);
+        setFont(font);*/
     }
 
     public void setFont(Font font)
@@ -66,8 +66,7 @@ public class StaticText extends UiObject
 
         Texture texture = new Texture(image);
 
-        if(quad != null) quad.unregister();
-        quad = new TexQuad(pos.x, pos.y, pos.z, 5*scale/texture.height, 5*scale/texture.width, 0, new Sprite(texture, 0, 0, texture.width, texture.height), matrixID, scene);
+        quad = new TexQuad(pos.x, pos.y, pos.z, 5/texture.height, 5/texture.width, 0, new Sprite(texture, 0, 0, texture.width, texture.height));
     }
 
     public void setX(float x)

@@ -1,13 +1,11 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.Mesh;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
@@ -21,19 +19,14 @@ public class TextShader extends ShaderProgram
     public TextShader()
     {
         super(new ShaderFile("/assets/shaders/text.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/text.frag", GL_FRAGMENT_SHADER));
-
-        shaderID = PiEngine.S_TEXT_ID;
-
-        unsortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexTexCoords", 2), new Attribute("VertexTextColor", 4), new Attribute("VertexOutlineColor", 4));
-        sortedArray = new VertexArray(new Attribute("VertexPosition", 3), new Attribute("VertexTexCoords", 2), new Attribute("VertexTextColor", 4), new Attribute("VertexOutlineColor", 4));
-        perspName = "camera";
     }
 
-    @Override
-    public void bindPRUniforms(Camera camera, Renderable r)
+    public void bindPMUniforms(Camera camera, Mesh mesh)
     {
-        super.bindPRUniforms(camera, r);
-        if(Window.lastTextureID != r.texture.getTexID()) r.texture.bind(0);
+        super.bindPMUniforms(camera, mesh);
+
+        TextMaterial m = (TextMaterial) mesh.material;
+        for(int i = 0; i < m.textures.length; i++) m.textures[i].bind(i);
     }
 
     protected void putElements(List<Renderable> buffer, Attribute[] a)
@@ -48,53 +41,4 @@ public class TextShader extends ShaderProgram
             BufferUtility.putColors(a[3].buffer, t.outlineColors);
         });
     }
-
-    /*public void compileSorted()
-    {
-        FloatBuffer vertBuffer, coordsBuffer, textColorBuffer, outlineColorBuffer;
-
-        if(sortedBufferSize == 0) return;
-        int capacity = vertex.buffer.capacity()/3;
-
-        if(capacity == sortedBufferSize)
-        {
-            vertBuffer = vertex.buffer;
-            coordsBuffer = coords.buffer;
-            textColorBuffer = textColor.buffer;
-            outlineColorBuffer = outlineColor.buffer;
-
-            vertBuffer.position(0);
-            coordsBuffer.position(0);
-            textColorBuffer.position(0);
-            outlineColorBuffer.position(0);
-        }
-        else
-        {
-            vertBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*3);
-            coordsBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*2);
-            textColorBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*4);
-            outlineColorBuffer = BufferUtils.createFloatBuffer(sortedBufferSize*4);
-        }
-
-        sortedBuffer.forEach(renderable ->
-        {
-            TextRenderable temp = (TextRenderable) renderable;
-
-            renderable.preCompile(this);
-            BufferUtility.putVec3s(vertBuffer, temp.points);
-            BufferUtility.putVec2s(coordsBuffer, temp.texCoords);
-            BufferUtility.putColors(textColorBuffer, temp.textColors);
-            BufferUtility.putColors(outlineColorBuffer, temp.outlineColors);
-        });
-
-        vertBuffer.flip();
-        coordsBuffer.flip();
-        textColorBuffer.flip();
-        outlineColorBuffer.flip();
-
-        vertex.bindData(vertBuffer);
-        coords.bindData(coordsBuffer);
-        textColor.bindData(textColorBuffer);
-        outlineColor.bindData(outlineColorBuffer);
-    }*/
 }

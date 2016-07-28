@@ -28,7 +28,6 @@ public class EditorScene extends Scene
         clearColor.set(0.6f, 0.6f, 0.6f);
 
         fps.disable();
-        pps.disable();
 
         int max = Integer.max(tiles.length, tiles[0].length);
 

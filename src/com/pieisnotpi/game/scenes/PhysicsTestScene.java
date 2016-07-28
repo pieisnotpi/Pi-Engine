@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.input.devices.Keyboard;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.GameObject;
+import com.pieisnotpi.engine.updates.GameUpdate;
 import com.pieisnotpi.engine.utility.Timer;
 import com.pieisnotpi.game.cameras.TransitionCamera;
 import com.pieisnotpi.game.objects.FloorTile;
@@ -16,6 +17,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.ContactEdge;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,8 @@ import java.util.Map;
 
 public class PhysicsTestScene extends PauseScene
 {
+    public World world;
+    public Text pps;
     public List<Player> players = new ArrayList<>();
     private List<PhysicsObject> objects = new ArrayList<>();
     private Map<Body, FloorTile> tiles = new HashMap<>();
@@ -35,6 +39,7 @@ public class PhysicsTestScene extends PauseScene
 
     public TransitionCamera camera;
 
+    private GameUpdate physicsUpdate;
     private Text winner;
     private Timer timer = new Timer(false, 2000), resetTimer = new Timer(true, 5000);
     private int size = 20;
@@ -45,6 +50,7 @@ public class PhysicsTestScene extends PauseScene
         super.init();
 
         name = "Physics Testing";
+        world = new World(new Vec2(0, -9.81f));
 
         cameras.add(camera = new TransitionCamera(90, 0.075f, 0, 0.05f, this).setViewport(new Vector2f(0, 0), new Vector2f(1, 1)));
 
@@ -52,8 +58,22 @@ public class PhysicsTestScene extends PauseScene
 
         reset();
 
-        winner = new Text("", 12, 0, 0.1f, 0.7f, new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_ORTHO2D_ID, this);
+        pps = new Text("", new Vector3f(0), PiEngine.C_ORTHO2D_ID, this);
+        pps.getMesh().setScale(3, 3, 1);
+        pps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.BOTTOM, 0.05f, 0.05f);
+
+        winner = new Text("", new Vector3f(0, 0.1f, 0.7f), new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.C_ORTHO2D_ID, this);
+        winner.getMesh().setScale(4, 4, 1);
         winner.setAlignment(GameObject.HAlignment.CENTER, GameObject.VAlignment.CENTER, 0, 0);
+
+        physicsUpdate = new GameUpdate(physicsPollsPerSecond, this::updatePhysics, () ->
+        {
+            String time = "" + (float) physicsUpdate.totalTimeTaken/physicsUpdate.updates;
+            if(time.length() >= 5) time = time.substring(0, 5);
+            pps.setText(String.format("%dpps/%smspp", physicsUpdate.updates, time));
+        });
+
+        PiEngine.instance.updates.add(physicsUpdate);
     }
 
     public void update()
@@ -103,6 +123,7 @@ public class PhysicsTestScene extends PauseScene
 
     public void updatePhysics()
     {
+        if(!shouldUpdatePhysics || window == null) return;
         //camera.addToZRot(0.1f);
 
         world.getGravity().x = -camera.getUp().x*9.81f;
@@ -123,7 +144,8 @@ public class PhysicsTestScene extends PauseScene
             object.body.applyLinearImpulse(force, object.body.getWorldCenter());
         }
 
-        super.updatePhysics();
+        world.step(1f/physicsPollsPerSecond, 20, 10);
+        gameObjects.forEach(GameObject::physicsUpdate);
 
         if(players.size() == 1)
         {

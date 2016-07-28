@@ -36,7 +36,7 @@ public class WaveEffect implements TextEffect
 
             if(c.line != prevLine) t = 0;
 
-            float offset = -text.newlineSpace*c.line + text.getFont().pixelScale*text.scale*c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*t)*speed)));
+            float offset = -text.newlineSpace*c.line + c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif*t)*speed)));
 
             c.setY(offset + text.getY() + sine);
 

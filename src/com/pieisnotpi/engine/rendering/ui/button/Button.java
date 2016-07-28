@@ -18,10 +18,9 @@ public class Button extends UiObject
     public boolean leftStatus = false, rightStatus = false;
     private static final float SPACING_CONST = 0.00417f;
 
-    public Button(String textValue, float scale, float x, float y, float z, int matrixID, Scene scene)
+    public Button(String textValue, float x, float y, float z, int matrixID, Scene scene)
     {
         pos.set(x, y, z);
-        this.scale = scale;
         this.matrixID = matrixID;
         this.scene = scene;
 
@@ -32,34 +31,34 @@ public class Button extends UiObject
 
     public void setText(String textValue)
     {
-        if(text == null) text = new Text(textValue, scale, pos.x + scale*SPACING_CONST, pos.y + scale*SPACING_CONST, pos.z + 0.001f, new Color(0, 0, 0), new Color(1, 1, 1, 0), matrixID, scene);
+        /*if(text == null) text = new Text(textValue, scale, pos.x + scale.x*SPACING_CONST, pos.y + scale.y*SPACING_CONST, pos.z + 0.001f, new Color(0, 0, 0), new Color(1, 1, 1, 0), matrixID, scene);
         else text.setText(textValue);
 
-        size.set(text.getWidth() + scale*SPACING_CONST*2, text.getHeight() + scale*SPACING_CONST*2, 0);
+        size.set(text.getWidth() + scale.x*SPACING_CONST*2, text.getHeight() + scale.y*SPACING_CONST*2, 0);
 
         base = new ColorQuad(pos.x, pos.y, pos.z, size.x, size.y, 0, b0, b0, t0, t0, matrixID, scene);
 
-        defaultCenter();
+        defaultCenter();*/
     }
 
     public void setX(float value)
     {
-        if(value == pos.x) return;
+        /*if(value == pos.x) return;
 
         super.setX(value);
 
         base.setX(value);
-        text.setX(scale* SPACING_CONST + value);
+        text.setX(scale* SPACING_CONST + value);*/
     }
 
     public void setY(float value)
     {
-        if(value == pos.y) return;
+        /*if(value == pos.y) return;
 
         super.setY(value);
 
         base.setY(value);
-        text.setY(scale*SPACING_CONST + value);
+        text.setY(scale*SPACING_CONST + value);*/
     }
 
     public void setZ(float value)
@@ -92,7 +91,7 @@ public class Button extends UiObject
 
     public void onScroll(float xAmount, float yAmount)
     {
-        setY(pos.y + yAmount/(scale*2));
+        //setY(pos.y + yAmount/(scale*2));
     }
 
     public void onLeftClick()
@@ -168,6 +167,6 @@ public class Button extends UiObject
     {
         super.destroy();
         text.destroy();
-        base.unregister();
+        //base.unregister();
     }
 }

@@ -1,8 +1,6 @@
 package com.pieisnotpi.game.scenes;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Camera;
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shaders.types.color_shader.ColorQuad;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
@@ -23,23 +21,23 @@ public abstract class PauseScene extends Scene
     {
         super.init();
 
-        pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.C_ORTHO2D_ID, this);
+        /*pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.C_ORTHO2D_ID, this);
         pausedText.setX(pausedText.getX() - pausedText.getWidth()/2);
         pausedText.setY(pausedText.getY() - pausedText.getHeight()/2);
-        pausedText.disable();
+        pausedText.disable();*/
 
-        tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.C_ORTHO2D_ID, this);
-        tint.unregister();
+        /*tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.C_ORTHO2D_ID, this);
+        tint.unregister();*/
     }
 
     public void onWindowResize(Vector2i res)
     {
         float ratio = (float) res.x/res.y;
 
-        tint.points[0].set(-ratio, -ratio, 0.7f);
+        /*tint.points[0].set(-ratio, -ratio, 0.7f);
         tint.points[1].set(ratio, -ratio, 0.7f);
         tint.points[2].set(-ratio, ratio, 0.7f);
-        tint.points[3].set(ratio, ratio, 0.7f);
+        tint.points[3].set(ratio, ratio, 0.7f);*/
 
         super.onWindowResize(res);
     }
@@ -64,7 +62,5 @@ public abstract class PauseScene extends Scene
 
         if(paused) pausedText.enable();
         else pausedText.disable();
-
-        tint.toggle();
     }
 }

@@ -5,15 +5,11 @@ import org.joml.Vector2f;
 
 public abstract class UiObject extends GameObject
 {
-    public float scale;
     public boolean mouseHoverStatus = false;
-    private Vector2f lastCursorPos = new Vector2f(-10, -10);
 
     @Override
     public void onMouseMovement(Vector2f cursorPos)
     {
-        lastCursorPos.set(cursorPos);
-
         if(isPointInsideObject(cursorPos))
         {
             if(!mouseHoverStatus) onMouseEntered();

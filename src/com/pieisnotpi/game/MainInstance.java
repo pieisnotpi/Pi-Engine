@@ -6,12 +6,11 @@ import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.Window;
 import com.pieisnotpi.engine.scene.Scene;
-import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import com.pieisnotpi.game.scenes.TestScene;
 import com.pieisnotpi.game.scenes.TestScene2;
-import com.pieisnotpi.game.test_editor.EditorScene;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_2;
 
 class MainInstance extends GameInstance
 {
@@ -21,18 +20,17 @@ class MainInstance extends GameInstance
     {
         super.init();
 
-        windows.add(new Window("Pi Engine", 600, 600, false, 1, PiEngine.monitorPointers.get(Window.prefMonitor), 0));
-        windows.forEach(Window::init);
+        windows.add(new Window("Pi Engine", 600, 600, false, 1, PiEngine.monitorPointers.get(Window.prefMonitor), 0).init());
 
         testScene1 = new TestScene();
         testScene2 = new TestScene2();
-        editor = new EditorScene();
-        physics = new PhysicsTestScene();
+        //editor = new EditorScene();
+        //physics = new PhysicsTestScene();
 
         testScene1.init();
         testScene2.init();
-        editor.init();
-        physics.init();
+        //editor.init();
+        //physics.init();
 
         windows.get(0).setScene(testScene2);
 
@@ -40,8 +38,8 @@ class MainInstance extends GameInstance
         {
             w.inputManager.keybinds.add(new Keybind(GLFW_KEY_1, false, (value) -> w.setScene(testScene1), null));
             w.inputManager.keybinds.add(new Keybind(GLFW_KEY_2, false, (value) -> w.setScene(testScene2), null));
-            w.inputManager.keybinds.add(new Keybind(GLFW_KEY_3, false, (value) -> w.setScene(editor), null));
-            w.inputManager.keybinds.add(new Keybind(GLFW_KEY_4, false, (value) -> w.setScene(physics), null));
+            //w.inputManager.keybinds.add(new Keybind(GLFW_KEY_3, false, (value) -> w.setScene(editor), null));
+            //w.inputManager.keybinds.add(new Keybind(GLFW_KEY_4, false, (value) -> w.setScene(physics), null));
         }
     }
 

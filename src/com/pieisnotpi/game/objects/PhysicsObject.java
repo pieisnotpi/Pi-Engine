@@ -2,6 +2,7 @@ package com.pieisnotpi.game.objects;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.scene.GameObject;
+import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -20,6 +21,7 @@ public abstract class PhysicsObject extends GameObject
     public Shape shape;
 
     public boolean bodyAlive = false;
+    protected PhysicsTestScene scene;
 
     public static final float offset = toRenderCoord(1);
 
@@ -87,6 +89,5 @@ public abstract class PhysicsObject extends GameObject
             scene.world.destroyBody(body);
             bodyAlive = false;
         }
-
     }
 }

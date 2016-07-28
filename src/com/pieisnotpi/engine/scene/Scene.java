@@ -8,16 +8,15 @@ import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.Mousebind;
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.Mesh;
 import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.ui.text.Text;
-import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
 import com.pieisnotpi.engine.updates.GameUpdate;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.World;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,21 +29,21 @@ import java.util.List;
 public abstract class Scene
 {
     public AudioListener listener;
-    public World world;
-    public Text fps, pps;
+    public Text fps;
     public Window window;
     public String name = "Scene";
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
-    public List<Renderable> unsortedBuffer = new ArrayList<>(100);
-    public List<Renderable> sortedBuffer = new ArrayList<>(100);
+    public List<Mesh> unsortedMeshes = new ArrayList<>(500);
+    //public List<Renderable> unsortedBuffer = new ArrayList<>(100);
+    //public List<Renderable> sortedBuffer = new ArrayList<>(100);
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
     public Vector2f lastCursorPos = new Vector2f();
 
-    private GameUpdate physicsUpdate, gameUpdate;
+    private GameUpdate gameUpdate;
     protected int physicsPollsPerSecond = 60, updatesPerSecond = 60;
 
     protected Scene() {}
@@ -72,24 +71,14 @@ public abstract class Scene
 
     public void init()
     {
-        fps = new Text("", 12, 0, 0.85f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
-        pps = new Text("", 12, 0, -0.95f, 0.8f, PiEngine.C_ORTHO2D_ID, this);
-        world = new World(new Vec2(0, -9.81f));
+        fps = new Text("", new Vector3f(0, 0, -0.1f), PiEngine.C_ORTHO2D_ID, this);
+        fps.getMesh().scale(1.1f, 1.1f, 1);
         listener = new AudioListener(this);
 
-        fps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.TOP, 0.05f, -0.15f);
-        pps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.BOTTOM, 0.05f, 0.05f);
-
-        physicsUpdate = new GameUpdate(physicsPollsPerSecond, this::updatePhysics, () ->
-        {
-            String time = "" + (float) physicsUpdate.totalTimeTaken/physicsUpdate.updates;
-            if(time.length() >= 5) time = time.substring(0, 5);
-            pps.setText(String.format("%dpps/%smspp", physicsUpdate.updates, time));
-        });
+        fps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.TOP, 10, -40);
 
         gameUpdate = new GameUpdate(60, this::update);
 
-        PiEngine.instance.updates.add(physicsUpdate);
         PiEngine.instance.updates.add(gameUpdate);
     }
 
@@ -107,15 +96,6 @@ public abstract class Scene
         gameObjects.forEach(GameObject::drawUpdate);
     }
 
-    public void updatePhysics()
-    {
-        if(!shouldUpdatePhysics || window == null) return;
-
-
-        world.step(1f/physicsPollsPerSecond, 20, 10);
-        gameObjects.forEach(GameObject::physicsUpdate);
-    }
-
     public void setWindow(Window window)
     {
         gameObjects.forEach(g -> g.onWindowChanged(this.window, window));
@@ -127,46 +107,44 @@ public abstract class Scene
         if(window != null)
         {
             onWindowResize(window.getWindowRes());
-            unsortedBuffer.forEach(r ->
+            unsortedMeshes.forEach(m ->
             {
-                r.shader = window.shaders.get(r.getShaderID());
-                r.shader.addUnsortedVertex(r);
+                m.material.shader = window.shaders.get(m.material.shaderID);
+                m.material.shader.addUnsortedMesh(m);
             });
-            sortedBuffer.forEach(r -> r.shader = window.shaders.get(r.getShaderID()));
+            //sortedBuffer.forEach(r -> r.shader = window.shaders.get(r.getShaderID()));
         }
         else
         {
-            unsortedBuffer.forEach(r -> r.shader = null);
-            sortedBuffer.forEach(r -> r.shader = null);
+            unsortedMeshes.forEach(m -> m.material.shader = null);
+            //sortedBuffer.forEach(m -> m.material.shader = null);
         }
     }
 
-    public void addRenderable(Renderable renderable)
+    public void addMesh(Mesh mesh)
     {
-        if(window != null) renderable.shader = window.shaders.get(renderable.getShaderID());
-        else renderable.shader = null;
+        Material m = mesh.material;
+        if(window != null) m.shader = window.shaders.get(m.shaderID);
+        else m.shader = null;
 
-        if(renderable.getClass().isAssignableFrom(TextRenderable.class)) System.out.println(renderable.shouldBeSorted);
-
-        if(renderable.shouldBeSorted)
+        //if(renderable.shouldBeSorted)
+        //{
+        //    if(!sortedBuffer.contains(renderable)) sortedBuffer.add(renderable);
+        //}
+        //else if(!unsortedBuffer.contains(renderable))
         {
-            if(!sortedBuffer.contains(renderable)) sortedBuffer.add(renderable);
-        }
-        else if(!unsortedBuffer.contains(renderable))
-        {
-            unsortedBuffer.add(renderable);
-            if(renderable.shader != null) renderable.shader.addUnsortedVertex(renderable);
+            unsortedMeshes.add(mesh);
+            if(m.shader != null) m.shader.addUnsortedMesh(mesh);
         }
     }
 
-    public void removeRenderable(Renderable renderable)
+    public void removeMesh(Mesh mesh)
     {
-        if(renderable.shouldBeSorted) sortedBuffer.remove(renderable);
-        else
+        //if(renderable.shouldBeSorted) sortedBuffer.remove(renderable);
+        //else
         {
-            if(renderable.getShaderID() == PiEngine.S_COLOR_ID) System.out.println("yes");
-            unsortedBuffer.remove(renderable);
-            if(renderable.shader != null) renderable.shader.removeUnsortedVertex(renderable);
+            unsortedMeshes.remove(mesh);
+            if(mesh.material.shader != null) mesh.material.shader.removeUnsortedMesh(mesh);
         }
     }
 
@@ -204,12 +182,6 @@ public abstract class Scene
     {
         mousebinds.remove(mousebind);
         if(window != null) window.inputManager.mousebinds.remove(mousebind);
-    }
-
-    public void setPhysicsPollsPerSecond(int pps)
-    {
-        physicsPollsPerSecond = pps;
-        physicsUpdate.setFrequency(pps);
     }
 
     public void setUpdatesPerSecond(int ups)

@@ -15,13 +15,13 @@ import java.nio.file.Paths;
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.stb.STBVorbis.*;
 
-public class AudioFile
+public class AudioBuffer
 {
     public int channels, sampleRate, sampleLength, bufferID;
     private ShortBuffer samples;
     private String name;
 
-    public AudioFile(String path)
+    public AudioBuffer(String path)
     {
         path = path.replaceAll("\\\\", "/");
         name = path.substring(path.lastIndexOf('/') + 1);
@@ -30,22 +30,31 @@ public class AudioFile
         bufferID = alGenBuffers();
     }
 
-    public AudioFile clipSeconds(float start)
+    public AudioBuffer(ShortBuffer buffer, int sampleRate, int channels)
+    {
+        this.samples = buffer;
+        this.sampleRate = sampleRate;
+        this.channels = channels;
+        this.sampleLength = buffer.limit();
+        bufferID = alGenBuffers();
+    }
+
+    public AudioBuffer clipSeconds(float start)
     {
         return clipSeconds(start, (float) sampleLength/sampleRate);
     }
 
-    public AudioFile clipSeconds(float start, float end)
+    public AudioBuffer clipSeconds(float start, float end)
     {
         return clip((int) (start*sampleRate), (int) (end*sampleRate));
     }
 
-    public AudioFile clip(int start)
+    public AudioBuffer clip(int start)
     {
         return clip(start, sampleLength);
     }
 
-    public AudioFile clip(int start, int end)
+    public AudioBuffer clip(int start, int end)
     {
         sampleLength = end - start;
 
@@ -59,11 +68,11 @@ public class AudioFile
         return this;
     }
 
-    public AudioFile bind()
+    public AudioBuffer bind()
     {
         if(samples != null)
         {
-            alBufferData(bufferID, AL_FORMAT_MONO16, samples, sampleRate);
+            alBufferData(bufferID, channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, samples, sampleRate);
             int error = alGetError();
             if(error != AL_NO_ERROR) Logger.AUDIO.err(String.format("Error with file '%s': %s", name, alGetString(error)));
         }
@@ -100,7 +109,7 @@ public class AudioFile
 
             ShortBuffer pcm = BufferUtils.createShortBuffer(sampleLength);
 
-            int samples = stb_vorbis_get_samples_short_interleaved(decoder, channels, pcm);
+            pcm.limit(sampleLength = stb_vorbis_get_samples_short_interleaved(decoder, channels, pcm)*channels);
 
             stb_vorbis_close(decoder);
 

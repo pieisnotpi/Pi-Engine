@@ -20,8 +20,11 @@ import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL31.GL_PRIMITIVE_RESTART;
+import static org.lwjgl.opengl.GL31.glPrimitiveRestartIndex;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window
@@ -29,7 +32,8 @@ public class Window
     public float ratio;
     public long windowID;
     public boolean focused = true;
-    public static int lastShaderID = -1, lastTextureID = -1, prefMonitor = 0;
+    public static int[] boundTextures = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    public static int lastShaderID = -1, prefMonitor = 0;
 
     private int vsync, refreshRate = -1;
     private long share, time = 0;
@@ -124,9 +128,9 @@ public class Window
         monitor = PiEngine.monitorMap.get(monitorID);
     }
 
-    public void init()
+    public Window init()
     {
-        if(initialized) return;
+        if(initialized) return this;
 
         windowID = glfwCreateWindow(res.x, res.y, name, NULL, share);
         if(windowID == NULL) throw new RuntimeException("Failed to create the GLFW window");
@@ -164,7 +168,9 @@ public class Window
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glDepthMask(true);
-        glClearDepth(1.0f);
+
+        glEnable(GL_PRIMITIVE_RESTART);
+        glPrimitiveRestartIndex(ShaderProgram.primitiveRestart);
 
         initShaders();
 
@@ -188,6 +194,8 @@ public class Window
         setFullscreen(fullscreen);
 
         initialized = true;
+
+        return this;
     }
 
     public void draw()
@@ -208,7 +216,6 @@ public class Window
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.drawUpdate();
-        shaders.forEach((i, s) -> s.compileUnsorted());
 
         for(Camera camera : scene.cameras)
         {
@@ -216,7 +223,7 @@ public class Window
 
             double cos = Math.cos(Math.toRadians(camera.getYRot() - 90));
 
-            scene.sortedBuffer.sort((o1, o2) ->
+            /*scene.sortedBuffer.sort((o1, o2) ->
             {
                 float z1 = o1.points[0].z, z2 = o2.points[0].z;
 
@@ -228,15 +235,11 @@ public class Window
                 int s = Integer.compare(Float.floatToIntBits(z1), Float.floatToIntBits(z2));
                 if(s != 0) return s;
 
-                s = Integer.compare(o1.getShaderID(), o2.getShaderID());
-                if(s != 0) return s;
+                return Integer.compare(o1.getShaderID(), o2.getShaderID());
+            });*/
 
-                if(o1.getTexture() != null && o2.getTexture() != null) return Integer.compare(o1.getTexture().getTexID(), o2.getTexture().getTexID());
-                else return 0;
-            });
-
-            scene.sortedBuffer.forEach(renderable -> renderable.shader.addSortedVertex(renderable));
-            shaders.forEach((i, s) -> s.compileSorted());
+            /*scene.sortedBuffer.forEach(renderable -> renderable.shader.addSortedVertex(renderable));
+            shaders.forEach((i, s) -> s.compileSorted());*/
 
             if(camera.shouldDrawFbo())
             {
@@ -245,7 +248,7 @@ public class Window
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 shaders.forEach((i, s) -> s.drawUnsorted(camera));
 
-                scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
+                //scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
                 camera.frameBuffer.unbind();
             }
 
@@ -255,7 +258,7 @@ public class Window
 
                 shaders.forEach((i, s) -> s.drawUnsorted(camera));
 
-                scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
+                //scene.sortedBuffer.forEach(renderable -> renderable.shader.drawNextSorted(camera));
             }
         }
 
@@ -269,7 +272,7 @@ public class Window
     {
         if(scene.equals(this.scene)) return;
 
-        shaders.forEach((i, s) -> s.unsortedBuffer.clear());
+        shaders.forEach((i, s) -> s.unsortedMeshes.clear());
 
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
@@ -419,6 +422,7 @@ public class Window
             hide();
 
             alive = false;
+            glfwFreeCallbacks(windowID);
             glfwDestroyWindow(windowID);
         }
     }

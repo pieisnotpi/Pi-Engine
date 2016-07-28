@@ -38,10 +38,52 @@ public class Sprite
             float t = uvy0;
             uvy0 = uvy1;
             uvy1 = t;
+
+            uvy0 -= 0.0001f;
+            uvy1 += 0.0001f;
+        }
+        else
+        {
+            uvy0 += 0.0001f;
+            uvy1 -= 0.0001f;
         }
 
-        uvy0 -= 0.0001f;
-        uvy1 += 0.0001f;
+        this.texture = texture;
+    }
+
+    public Sprite(Texture texture, float x0, float y0, float x1, float y1)
+    {
+        this(texture, x0, y0, x1, y1, true);
+    }
+
+    public Sprite(Texture texture, float uvx0, float uvy0, float uvx1, float uvy1, boolean flipY)
+    {
+        float xMult = (float) 1/texture.width, yMult = (float) 1/texture.height;
+
+        x0 = (int) (uvx0/xMult);
+        x1 = (int) (uvx1/xMult);
+        y0 = (int) (uvy0/yMult);
+        y1 = (int) (uvy1/yMult);
+
+        this.uvx0 = uvx0;
+        this.uvx1 = uvx1;
+        this.uvy0 = uvy0;
+        this.uvy1 = uvy1;
+
+        if(flipY)
+        {
+            float t = this.uvy0;
+            this.uvy0 = this.uvy1;
+            this.uvy1 = t;
+
+            this.uvy0 -= 0.0001f;
+            this.uvy1 += 0.0001f;
+        }
+        else
+        {
+            this.uvy0 += 0.0001f;
+            this.uvy1 -= 0.0001f;
+        }
 
         this.texture = texture;
     }

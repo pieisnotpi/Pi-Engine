@@ -5,34 +5,39 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glGetAttribLocation;
 
 public class Attribute
 {
     public String name;
     public FloatBuffer buffer;
-    public int location, handle, size;
+    public int location = -1, bufferID, size;
 
-    public Attribute(String name, int size)
+    public Attribute(String name, int size, int location)
     {
         this.name = name;
         this.buffer = BufferUtils.createFloatBuffer(0);
         this.size = size;
+        this.location = location;
     }
 
-    public void init(int programID)
+    public Attribute init()
     {
-        location = glGetAttribLocation(programID, name);
-        if(location == -1) Logger.SHADER_PROGRAM.err("Attribute not found '" + name + "' in program " + programID);
-        handle = glGenBuffers();
-        bindData();
+        bufferID = glGenBuffers();
+        return this;
+    }
+
+    public void bind()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
     }
 
     public void bindData()
     {
-        glBindBuffer(GL_ARRAY_BUFFER, handle);
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
     }
 
     public void bindData(FloatBuffer value)
@@ -41,14 +46,19 @@ public class Attribute
         bindData();
     }
 
-    public String toString()
+    public void destroy()
     {
-        return "Name: " + name + ", Handle: " + handle + ", Location: " + location;
+        glDeleteBuffers(bufferID);
     }
 
-    public void finalize() throws Throwable
+    private void checkError()
     {
-        super.finalize();
-        glDeleteBuffers(handle);
+        int e = glGetError();
+
+        while(e != GL_NO_ERROR)
+        {
+            Logger.SHADER_PROGRAM.err("Vertex Array Error Code: " + e);
+            e = glGetError();
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.BodyType;
 
@@ -21,14 +22,14 @@ public class FloorTile extends PhysicsObject
         size.set(scale, scale, 0);
 
         this.matrixID = PiEngine.C_ORTHO;
-        this.scene = scene;
+        this.scene = (PhysicsTestScene) scene;
 
         PolygonShape t = new PolygonShape();
         t.setAsBox(toPhysicsCoord(scale)/2, toPhysicsCoord(scale)/2);
 
         init(x, y, 1, BodyType.STATIC, t);
 
-        quad = new TexQuad(x + calcOffset(scale/2), y + calcOffset(scale/2), z, scale, scale, z, sprite, matrixID, scene);
+        quad = new TexQuad(x + calcOffset(scale/2), y + calcOffset(scale/2), z, scale, scale, z, sprite);
 
         scene.gameObjects.add(this);
 
@@ -41,6 +42,5 @@ public class FloorTile extends PhysicsObject
     public void destroy()
     {
         super.destroy();
-        quad.unregister();
     }
 }

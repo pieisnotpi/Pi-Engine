@@ -2,8 +2,6 @@ package com.pieisnotpi.engine.rendering.shapes;
 
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
@@ -13,28 +11,19 @@ public class Quad extends Renderable
 {
     public float xRot = 0, yRot = 0, zRot = 0;
 
-    public boolean registered = true;
-
     protected Quad() {}
 
-    public Quad(float x, float y, float z, float width, float height, float depth, Material material, int matrixID, Scene scene)
+    public Quad(float x, float y, float z, float width, float height, float depth)
     {
-        setDefaults(4, GL11.GL_TRIANGLE_STRIP, material);
-
-        this.scene = scene;
-        this.matrixID = matrixID;
+        setDefaults(4, GL11.GL_TRIANGLE_STRIP);
 
         if(height == 0) setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y, z + depth), new Vector3f(x + width, y, z + depth));
         else setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z + depth), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z + depth));
     }
 
-    public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Material material, int matrixID, Scene scene)
+    public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3)
     {
-        setDefaults(4, GL11.GL_TRIANGLE_STRIP, material);
-
-        this.scene = scene;
-        this.matrixID = matrixID;
-
+        setDefaults(4, GL11.GL_TRIANGLE_STRIP);
         setPoints(c0, c1, c2, c3);
     }
 
@@ -149,26 +138,6 @@ public class Quad extends Renderable
         texCoords[1].set(x1, y0);
         texCoords[2].set(x0, y1);
         texCoords[3].set(x1, y1);
-    }
-
-    public void toggle()
-    {
-        if(registered) unregister();
-        else register();
-    }
-
-    public void register()
-    {
-        scene.addRenderable(this);
-
-        registered = true;
-    }
-
-    public void unregister()
-    {
-        scene.removeRenderable(this);
-
-        registered = false;
     }
 
     public String toString()

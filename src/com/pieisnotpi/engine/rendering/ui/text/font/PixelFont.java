@@ -7,7 +7,7 @@ public class PixelFont extends Font
 {
     public PixelFont()
     {
-        super(Texture.getTexture("text"), 0.001f, -1, 4, 10);
+        super(Texture.getTexture("text"), -1, 4, 10);
     }
 
     protected void init()

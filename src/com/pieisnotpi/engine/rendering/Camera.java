@@ -12,10 +12,10 @@ import org.joml.Vector3f;
 public class Camera extends GameObject
 {
     protected Vector2f viewPos, viewSize;
-    protected Matrix4f[] matrices = new Matrix4f[3];
+    public Matrix4f[] matrices = new Matrix4f[3];
     public FrameBuffer frameBuffer;
 
-    protected float fov, zNear = 0.001f, zFar = 100, ratio = -1;
+    protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
     protected float orthoZoom = 1;
     protected Vector3f lookAt, lookAtDist = new Vector3f(), up = new Vector3f(0, 1, 0);
     protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false, drawFbo = false, drawView = false;
@@ -205,7 +205,7 @@ public class Camera extends GameObject
         else if(positionUpdated || rotationUpdated) m1 = m2 = true;
         else { if(fovUpdated) m1 = true; if(zoomUpdated) m2 = true; }
 
-        if(m0) matrices[0].setOrtho2D(-ratio, ratio, -1, 1);
+        if(m0) matrices[0].setOrtho2D(0, scene.window.res.x, 0, scene.window.res.y);
         if(m1) matrices[1].setPerspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up);
         if(m2) matrices[2].setOrtho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
 

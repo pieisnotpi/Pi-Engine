@@ -29,7 +29,7 @@ public class PiEngine
     // Shader IDs (initialized in Window)
     public static final int S_TEXTURE_ID = 0, S_COLOR_ID = 1, S_TEXT_ID = 2, S_TEXTURE_C_ID = 3, S_ADS_ID = 4;
     // Rendering to physics coordinate conversion
-    public static final float PIXELS_PER_METER = 0.05f;
+    public static final float PIXELS_PER_METER = 0.1f;
     // Debug mode
     public static boolean debug = false;
     // GL Version

@@ -1,9 +1,10 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
+import com.pieisnotpi.engine.output.Logger;
+
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
@@ -11,7 +12,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class VertexArray
 {
-    public int handle, programHandle;
+    public boolean initialized = false;
+    public int handle = -1;
     public Attribute[] attributes;
 
     public VertexArray(Attribute... attributes)
@@ -19,24 +21,23 @@ public class VertexArray
         this.attributes = attributes;
     }
 
-    public void init(int programHandle)
+    public VertexArray init()
     {
-        this.programHandle = programHandle;
-
-        int[] handles = new int[attributes.length];
-        glGenBuffers(handles);
-
-        for(Attribute a : attributes) a.init(programHandle);
+        for(Attribute a : attributes) a.init();
 
         handle = glGenVertexArrays();
         glBindVertexArray(handle);
 
-        for(Attribute attribute : attributes)
+        for(Attribute a : attributes)
         {
-            glEnableVertexAttribArray(attribute.location);
-            glBindBuffer(GL_ARRAY_BUFFER, attribute.handle);
-            glVertexAttribPointer(attribute.location, attribute.size, GL_FLOAT, false, 0, NULL);
+            glEnableVertexAttribArray(a.location);
+            a.bind();
+            glVertexAttribPointer(a.location, a.size, GL_FLOAT, false, 0, NULL);
         }
+
+        initialized = true;
+
+        return this;
     }
 
     public void bind()
@@ -67,10 +68,27 @@ public class VertexArray
         return temp;
     }
 
+    public void destroy()
+    {
+        initialized = false;
+        glDeleteVertexArrays(handle);
+        for(Attribute a : attributes) a.destroy();
+    }
+
     public void finalize() throws Throwable
     {
         super.finalize();
+        destroy();
+    }
 
-        glDeleteVertexArrays(handle);
+    private void checkError(String phase)
+    {
+        int e = glGetError();
+
+        while(e != GL_NO_ERROR)
+        {
+            Logger.SHADER_PROGRAM.err(String.format("Vertex array error in phase %s: %d", phase, e));
+            e = glGetError();
+        }
     }
 }

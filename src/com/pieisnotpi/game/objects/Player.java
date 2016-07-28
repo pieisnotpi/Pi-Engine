@@ -15,6 +15,7 @@ import com.pieisnotpi.engine.utility.Timer;
 import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.BodyType;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class Player extends PhysicsObject
 
         this.joystick = joystick;
         this.matrixID = PiEngine.C_ORTHO;
-        this.scene = scene;
+        this.scene = (PhysicsTestScene) scene;
 
         s = (PhysicsTestScene) scene;
 
@@ -64,7 +65,7 @@ public class Player extends PhysicsObject
         fixture.setRestitution(0);
         body.setGravityScale(gravity);
 
-        quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
+        quad = new TexQuad(x, y, z, scale, scale, 0, sprite);
 
         Color numColor = new Color(0, 0, 0);
 
@@ -72,7 +73,7 @@ public class Player extends PhysicsObject
         else if(joystick == 1) numColor.set(0, 1, 0);
         else if(joystick == 2) numColor.set(0, 0, 1);
 
-        number = new Text((joystick + 1) + "", 6, x + xOffset, y + yOffset, z, numColor, new Color(0, 0, 0, 0), matrixID, scene);
+        number = new Text((joystick + 1) + "", new Vector3f(x + xOffset, y + yOffset, z), numColor, new Color(0, 0, 0, 0), matrixID, scene);
 
         scene.gameObjects.add(this);
 
@@ -165,7 +166,7 @@ public class Player extends PhysicsObject
     public void destroy()
     {
         super.destroy();
-        quad.unregister();
+        //quad.unregister();
         number.destroy();
         unregisterInputs();
     }

@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.BodyType;
 
@@ -21,7 +22,7 @@ public class Crate extends PhysicsObject
         size.set(scale, scale, 0);
 
         this.matrixID = PiEngine.C_ORTHO;
-        this.scene = scene;
+        this.scene = (PhysicsTestScene) scene;
 
         PolygonShape t = new PolygonShape();
         t.setAsBox(toPhysicsCoord(scale)/2, toPhysicsCoord(scale)/2);
@@ -31,7 +32,7 @@ public class Crate extends PhysicsObject
         fixture.setFriction(1.5f);
         fixture.setRestitution(0);
 
-        quad = new TexQuad(x, y, z, scale, scale, 0, sprite, matrixID, scene);
+        quad = new TexQuad(x, y, z, scale, scale, 0, sprite);
 
         scene.gameObjects.add(this);
         body.setSleepingAllowed(true);
@@ -75,6 +76,5 @@ public class Crate extends PhysicsObject
     public void destroy()
     {
         super.destroy();
-        quad.unregister();
     }
 }

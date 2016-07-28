@@ -14,16 +14,13 @@ public abstract class Circle
     protected Scene scene;
     public List<Triangle> vertices;
 
-    protected Circle(float x, float y, float z, float radius, int sides, Material material, int matrixID, Scene scene)
+    protected Circle(float x, float y, float z, float radius, int sides)
     {
         this.x = x;
         this.y = y;
         this.z = z;
         this.radius = radius;
         this.sides = sides;
-        this.material = material;
-        this.matrixID = matrixID;
-        this.scene = scene;
     }
 
     protected void assemble()

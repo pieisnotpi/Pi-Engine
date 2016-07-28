@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.game.scenes.PhysicsTestScene;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.BodyType;
 
@@ -21,7 +22,7 @@ public class Wheel extends PhysicsObject
         size.set(radius*2, radius*2, 0);
 
         this.matrixID = PiEngine.C_ORTHO;
-        this.scene = scene;
+        this.scene = (PhysicsTestScene) scene;
 
         CircleShape t = new CircleShape();
         t.setRadius(toPhysicsCoord(radius));
@@ -31,7 +32,7 @@ public class Wheel extends PhysicsObject
         fixture.setFriction(2);
         fixture.setRestitution(0);
 
-        quad = new TexQuad(x, y, z, radius*2, radius*2, 0, sprite, matrixID, scene);
+        quad = new TexQuad(x, y, z, radius*2, radius*2, 0, sprite);
 
         scene.gameObjects.add(this);
 
@@ -79,6 +80,5 @@ public class Wheel extends PhysicsObject
     public void destroy()
     {
         super.destroy();
-        quad.unregister();
     }
 }

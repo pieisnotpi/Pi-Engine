@@ -6,16 +6,16 @@ import static org.lwjgl.openal.AL10.*;
 
 public class AudioSource
 {
-    private AudioFile file;
+    private AudioBuffer buffer;
     private Vector3f pos = new Vector3f();
     private boolean relative = false, looping = false;
     public int sourceID;
 
-    public AudioSource(AudioFile file, AudioPlayer player)
+    public AudioSource(AudioBuffer buffer, AudioPlayer player)
     {
-        this.file = file;
+        this.buffer = buffer;
         sourceID = alGenSources();
-        alSourcei(sourceID, AL_BUFFER, file.bufferID);
+        alSourcei(sourceID, AL_BUFFER, buffer.bufferID);
     }
 
     public AudioSource setPosition(float x, float y, float z)

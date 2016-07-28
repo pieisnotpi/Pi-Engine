@@ -12,7 +12,7 @@ public abstract class GameObject
     public enum HAlignment { NONE, LEFT, CENTER, RIGHT }
     public enum VAlignment { NONE, BOTTOM, CENTER, TOP }
 
-    protected final Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
+    protected Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
@@ -110,15 +110,13 @@ public abstract class GameObject
     {
         if(!shouldAlign) return;
 
-        float ratio = (float) res.x/res.y;
-
         if(!hAlign.equals(HAlignment.NONE))
         {
             float nx = pos.x;
 
-            if(hAlign.equals(HAlignment.LEFT)) nx = -ratio + offset.x;
+            if(hAlign.equals(HAlignment.LEFT)) nx = offset.x;
             else if(hAlign.equals(HAlignment.CENTER)) nx = -size.x/2;
-            else if(hAlign.equals(HAlignment.RIGHT)) nx = ratio - size.x + offset.x;
+            else if(hAlign.equals(HAlignment.RIGHT)) nx = res.x - size.x + offset.x;
 
             if(nx != pos.x) setX(nx);
         }
@@ -127,9 +125,9 @@ public abstract class GameObject
         {
             float ny = pos.y;
 
-            if(vAlign.equals(VAlignment.BOTTOM)) ny = -1 + offset.y;
+            if(vAlign.equals(VAlignment.BOTTOM)) ny = offset.y;
             else if(vAlign.equals(VAlignment.CENTER)) ny = -size.y/2;
-            else if(vAlign.equals(VAlignment.TOP)) ny = 1 + offset.y;
+            else if(vAlign.equals(VAlignment.TOP)) ny = res.y + offset.y;
 
             if(ny != pos.y) setY(ny);
         }
@@ -235,12 +233,5 @@ public abstract class GameObject
     public void defaultCenter()
     {
         setCenter(size.x/2, size.y/2, size.z/2);
-    }
-
-    public void finalize() throws Throwable
-    {
-        super.finalize();
-
-        destroy();
     }
 }

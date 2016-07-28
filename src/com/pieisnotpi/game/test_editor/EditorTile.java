@@ -1,6 +1,5 @@
 package com.pieisnotpi.game.test_editor;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
@@ -20,14 +19,13 @@ public class EditorTile extends UiObject
     {
         pos.set(x, y, z);
         size.set(scale, scale, 0);
-        this.scale = scale;
         this.foreSprite = sprite;
         this.backSprite = sprite;
         this.scene = scene;
         this.actualScene = (EditorScene) scene;
 
-        foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor, PiEngine.C_ORTHO2D_ID, scene);
-        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor, PiEngine.C_ORTHO2D_ID, scene);
+        /*foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor, PiEngine.C_ORTHO2D_ID, scene);
+        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor, PiEngine.C_ORTHO2D_ID, scene);*/
 
         scene.gameObjects.add(this);
     }
@@ -36,7 +34,7 @@ public class EditorTile extends UiObject
     {
         if(leftStatus && !placed && mouseHoverStatus)
         {
-            if(!foreground.registered) foreground.register();
+            //if(!foreground.enabled) foreground.register();
 
             foreShowing = true;
 
@@ -50,7 +48,7 @@ public class EditorTile extends UiObject
 
         if(rightStatus && !placed && mouseHoverStatus)
         {
-            if(!background.registered) background.register();
+            //if(!background.enabled) background.register();
 
             backShowing = true;
 
@@ -68,13 +66,13 @@ public class EditorTile extends UiObject
             {
                 if(foreShowing)
                 {
-                    foreground.unregister();
+                    foreground.enabled = false;
                     foreShowing = false;
                     destroyed = true;
                 }
                 else if(backShowing)
                 {
-                    background.unregister();
+                    background.enabled = false;
                     backShowing = false;
                     destroyed = true;
                 }
@@ -120,7 +118,7 @@ public class EditorTile extends UiObject
 
     public void onMouseEntered()
     {
-        if(!foreShowing) foreground.register();
+        //if(!foreShowing) foreground.register();
 
         foreground.setQuadColors(highlightColor);
         foreground.setQuadSprite(actualScene.getCurSprite());
@@ -128,7 +126,7 @@ public class EditorTile extends UiObject
 
     public void onMouseExited()
     {
-        if(!foreShowing) foreground.unregister();
+        //if(!foreShowing) foreground.unregister();
 
         foreground.setQuadSprite(foreSprite);
         foreground.setQuadColors(blankColor);
@@ -136,8 +134,8 @@ public class EditorTile extends UiObject
 
     public void blank()
     {
-        foreground.unregister();
-        background.unregister();
+        //foreground.unregister();
+        //background.unregister();
 
         foreShowing = false;
     }
@@ -145,7 +143,7 @@ public class EditorTile extends UiObject
     public void destroy()
     {
         super.destroy();
-        foreground.unregister();
-        background.unregister();
+        //foreground.unregister();
+        //background.unregister();
     }
 }

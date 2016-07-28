@@ -17,7 +17,7 @@ public class SystemFont extends Font
     {
         final int start = 33, end = 191;
 
-        StringBuilder builder = new StringBuilder(256 - 32);
+        StringBuilder builder = new StringBuilder(end - start);
         for(int i = start; i < end; i++) if(i != 127) builder.append((char) i).append((char) 32);
         sequence = builder.toString();
 
@@ -41,7 +41,6 @@ public class SystemFont extends Font
 
         texture = new Texture(image);
 
-        pixelScale = 0.006f/metrics.charWidth('A');
         spaceCharSpace = metrics.charWidth(' ');
         letterSpace = -spaceCharSpace/3;
         newLineSpace = texture.height;
@@ -78,7 +77,6 @@ public class SystemFont extends Font
 
         texture = new Texture(image);
 
-        pixelScale = 0.006f/metrics.charWidth('A');
         spaceCharSpace = metrics.charWidth(' ');
         this.letterSpace = letterSpace;
         this.newLineSpace = newLineSpace;
