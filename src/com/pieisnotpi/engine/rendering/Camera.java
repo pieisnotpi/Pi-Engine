@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering;
 
+import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.textures.FrameBuffer;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
@@ -11,8 +12,8 @@ import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
-    protected Vector2f viewPos, viewSize;
-    public Matrix4f[] matrices = new Matrix4f[3];
+    public Vector2f viewPos, viewSize;
+    public Matrix4f[] matrices = new Matrix4f[4];
     public FrameBuffer frameBuffer;
 
     protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
@@ -37,10 +38,9 @@ public class Camera extends GameObject
         matrices[0] = new Matrix4f();
         matrices[1] = new Matrix4f();
         matrices[2] = new Matrix4f();
+        matrices[3] = new Matrix4f();
 
         scene.gameObjects.add(this);
-
-        setCenter(0, 0, 0);
     }
 
     public Camera setViewport(Vector2f viewPos, Vector2f viewSize)
@@ -197,17 +197,21 @@ public class Camera extends GameObject
 
     public void drawUpdate()
     {
-        if(scene.window == null) return;
-
         boolean m0 = false, m1 = false, m2 = false;
 
         if(ratioUpdated) m0 = m1 = m2 = true;
         else if(positionUpdated || rotationUpdated) m1 = m2 = true;
         else { if(fovUpdated) m1 = true; if(zoomUpdated) m2 = true; }
 
-        if(m0) matrices[0].setOrtho2D(0, scene.window.res.x, 0, scene.window.res.y);
-        if(m1) matrices[1].setPerspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up);
-        if(m2) matrices[2].setOrtho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
+        Vector2i res = scene.window.getWindowRes();
+
+        if(m0)
+        {
+            matrices[PiEngine.M_ORTHO2D_S_ID].setOrtho2D(-ratio, ratio, -1, 1);
+            matrices[PiEngine.M_ORTHO2D_R_ID].setOrtho2D(0, res.x, 0, res.y);
+        }
+        if(m1) matrices[PiEngine.M_PERSP].setPerspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up);
+        if(m2) matrices[PiEngine.M_ORTHO].setOrtho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
 
         fovUpdated = false;
         ratioUpdated = false;

@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.input.devices;
 
-public class Keyboard
+public final class Keyboard
 {
     /**
      * GLFW keyboard mappings

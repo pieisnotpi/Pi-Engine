@@ -7,12 +7,14 @@ import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.Mousebind;
 import com.pieisnotpi.engine.rendering.Camera;
-import com.pieisnotpi.engine.rendering.Color;
-import com.pieisnotpi.engine.rendering.Mesh;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.rendering.ui.text.Text;
+import com.pieisnotpi.engine.rendering.window.Window;
+import com.pieisnotpi.engine.ui.UiObject;
+import com.pieisnotpi.engine.ui.text.Text;
+import com.pieisnotpi.engine.ui.text.font.PixelFont;
 import com.pieisnotpi.engine.updates.GameUpdate;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -35,33 +37,32 @@ public abstract class Scene
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
-    public List<Mesh> unsortedMeshes = new ArrayList<>(500);
-    //public List<Renderable> unsortedBuffer = new ArrayList<>(100);
-    //public List<Renderable> sortedBuffer = new ArrayList<>(100);
+    public List<Mesh> unsortedMeshes = new ArrayList<>(100);
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
-    public Vector2f lastCursorPos = new Vector2f();
 
     private GameUpdate gameUpdate;
-    protected int physicsPollsPerSecond = 60, updatesPerSecond = 60;
 
-    protected Scene() {}
-
-    public boolean shouldUpdate = true, shouldUpdatePhysics = false;
+    public boolean shouldUpdate = true;
+    protected int updatesPerSecond = 60;
+    private boolean initialized = false;
 
     public void onJoystickConnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickConnect(joystick)); }
     public void onJoystickDisconnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickDisconnect(joystick)); }
     public void onLeftClick() { gameObjects.forEach(GameObject::onLeftClick); }
-    public void onRightClick() { gameObjects.forEach(GameObject::onRightClick); }
+    public void onLeftHold() { gameObjects.forEach(GameObject::onLeftHold); }
     public void onLeftRelease() { gameObjects.forEach(GameObject::onLeftRelease); }
+    public void onRightClick() { gameObjects.forEach(GameObject::onRightClick); }
+    public void onRightHold() { gameObjects.forEach(GameObject::onRightHold); }
     public void onRightRelease() { gameObjects.forEach(GameObject::onRightRelease); }
     public void onMiddleClick() { gameObjects.forEach(GameObject::onMiddleClick); }
+    public void onMiddleHold() { gameObjects.forEach(GameObject::onMiddleHold); }
     public void onMiddleRelease() { gameObjects.forEach(GameObject::onMiddleRelease); }
     public void onKeyPressed(int key, int mods) { gameObjects.forEach(g -> g.onKeyPressed(key, mods)); }
     public void onKeyReleased(int key, int mods) { gameObjects.forEach(g -> g.onKeyReleased(key, mods)); }
     public void onScroll(float xAmount, float yAmount) { gameObjects.forEach(g -> g.onScroll(xAmount, yAmount)); }
-    public void onMouseMovement(Vector2f cursorPos) { gameObjects.forEach(g -> g.onMouseMovement(cursorPos)); lastCursorPos.set(cursorPos); }
+    public void onMouseMovement(Vector2f cursorPos) { gameObjects.forEach(g -> g.onMouseMovement(cursorPos)); }
     public void onMouseMovementUnscaled(Vector2d cursorPos) { gameObjects.forEach(g -> g.onMouseMovementUnscaled(cursorPos)); }
 
     public void onWindowResize(Vector2i res)
@@ -69,17 +70,21 @@ public abstract class Scene
         gameObjects.forEach(gameObject -> gameObject.onWindowResize(res));
     }
 
-    public void init()
+    public Scene init()
     {
-        fps = new Text("", new Vector3f(0, 0, -0.1f), PiEngine.C_ORTHO2D_ID, this);
-        fps.getMesh().scale(1.1f, 1.1f, 1);
+        fps = new Text(PixelFont.getFont(), "", new Vector3f(0, 0, -0.1f), PiEngine.M_ORTHO2D_S_ID, this);
+        fps.transform.setScale(0.01f, 0.01f, 1);
         listener = new AudioListener(this);
 
-        fps.setAlignment(GameObject.HAlignment.LEFT, GameObject.VAlignment.TOP, 10, -40);
+        fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 0.05f, -0.05f);
 
         gameUpdate = new GameUpdate(60, this::update);
 
-        PiEngine.instance.updates.add(gameUpdate);
+        PiEngine.gameInstance.updates.add(gameUpdate);
+
+        initialized = true;
+
+        return this;
     }
 
     public void update()
@@ -107,45 +112,23 @@ public abstract class Scene
         if(window != null)
         {
             onWindowResize(window.getWindowRes());
-            unsortedMeshes.forEach(m ->
-            {
-                m.material.shader = window.shaders.get(m.material.shaderID);
-                m.material.shader.addUnsortedMesh(m);
-            });
-            //sortedBuffer.forEach(r -> r.shader = window.shaders.get(r.getShaderID()));
-        }
-        else
-        {
-            unsortedMeshes.forEach(m -> m.material.shader = null);
-            //sortedBuffer.forEach(m -> m.material.shader = null);
+            unsortedMeshes.forEach(m -> m.material.shader.addUnsortedMesh(m));
         }
     }
 
     public void addMesh(Mesh mesh)
     {
         Material m = mesh.material;
-        if(window != null) m.shader = window.shaders.get(m.shaderID);
-        else m.shader = null;
-
-        //if(renderable.shouldBeSorted)
-        //{
-        //    if(!sortedBuffer.contains(renderable)) sortedBuffer.add(renderable);
-        //}
-        //else if(!unsortedBuffer.contains(renderable))
         {
             unsortedMeshes.add(mesh);
-            if(m.shader != null) m.shader.addUnsortedMesh(mesh);
+            if(window != null) m.shader.addUnsortedMesh(mesh);
         }
     }
 
     public void removeMesh(Mesh mesh)
     {
-        //if(renderable.shouldBeSorted) sortedBuffer.remove(renderable);
-        //else
-        {
-            unsortedMeshes.remove(mesh);
-            if(mesh.material.shader != null) mesh.material.shader.removeUnsortedMesh(mesh);
-        }
+        unsortedMeshes.remove(mesh);
+        if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
     }
 
     public void addKeybind(Keybind keybind)
@@ -207,4 +190,6 @@ public abstract class Scene
         window.inputManager.joybinds.removeAll(joybinds);
         window.inputManager.mousebinds.removeAll(mousebinds);
     }
+
+    public boolean isInitialized() { return initialized; }
 }

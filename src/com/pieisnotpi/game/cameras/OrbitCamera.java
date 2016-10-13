@@ -96,7 +96,7 @@ public class OrbitCamera extends Camera
     {
         if(!isCursorWithinViewport(scene.window.inputManager.cursorPos, scene.window.getWindowRes())) return;
 
-        radius -= yAmount*zoomAmount;
+        radius -= yAmount*zoomAmount*(radius/20);
         if(radius <= 0) radius = 0.1f;
 
         float xr = rot.x, yr = rot.y;

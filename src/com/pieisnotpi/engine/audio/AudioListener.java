@@ -12,7 +12,7 @@ import static org.lwjgl.openal.AL10.*;
 public class AudioListener
 {
     private Vector3f pos = new Vector3f(), rot = new Vector3f();
-    private AudioPlayer player = PiEngine.instance.player;
+    private AudioPlayer player = PiEngine.gameInstance.player;
     private List<AudioSource> sources = new ArrayList<>();
     private Scene scene;
 

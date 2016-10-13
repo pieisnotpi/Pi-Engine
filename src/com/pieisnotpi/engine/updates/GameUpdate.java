@@ -42,16 +42,22 @@ public class GameUpdate
 
     public void update(long time)
     {
-        long temp = System.currentTimeMillis();
+        if(!shouldUpdate(time)) return;
+
         lastUpdateTime = time;
         updateAction.runAction();
+        totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
         updates++;
-        totalTimeTaken += System.currentTimeMillis() - temp;
     }
 
     public void runPerSecondAction()
     {
         if(perSecondAction != null) perSecondAction.runAction();
         totalTimeTaken = 0;
+    }
+
+    public boolean shouldUpdate(long time)
+    {
+        return updates < frequency && lastUpdateTime + period <= time;
     }
 }

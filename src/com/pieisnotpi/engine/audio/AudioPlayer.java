@@ -31,6 +31,7 @@ public class AudioPlayer
         assert caps.OpenALC10 && caps.OpenALC11 && caps.ALC_EXT_EFX;
 
         context = alcCreateContext(deviceID, (IntBuffer) null);
+
         alcMakeContextCurrent(context);
         AL.createCapabilities(caps);
 

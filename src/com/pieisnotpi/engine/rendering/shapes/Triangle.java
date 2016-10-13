@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shapes;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -25,7 +25,7 @@ public class Triangle extends Renderable
 
     public Triangle(Vector3f c0, Vector3f c1, Vector3f c2, Color c0c, Color c1c, Color c2c, Vector2f c0t, Vector2f c1t, Vector2f c2t)
     {
-        setDefaults(3, GL11.GL_TRIANGLES);
+        setDefaults(3);
 
         setPoints(c0, c1, c2);
         setColors(c0c, c1c, c2c);

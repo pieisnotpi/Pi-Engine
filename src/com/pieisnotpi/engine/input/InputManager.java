@@ -1,7 +1,8 @@
 package com.pieisnotpi.engine.input;
 
+import com.pieisnotpi.engine.input.devices.Mouse;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -40,9 +41,9 @@ public class InputManager
             Logger.SYSTEM.log("Joystick '" + joysticks[i].name + "' is connected");
         }
 
-        glfwSetCursorPosCallback(window.windowID, GLFWCursorPosCallback.create((windowID, xPos, yPos) ->
+        glfwSetCursorPosCallback(window.handle, GLFWCursorPosCallback.create((windowID, xPos, yPos) ->
         {
-            if(!window.focused) return;
+            if(!window.focused || window.scene == null) return;
 
             Vector2i res = window.getWindowRes();
 
@@ -54,14 +55,14 @@ public class InputManager
             window.scene.onMouseMovement(localCursorPos);
         }));
 
-        glfwSetScrollCallback(window.windowID, GLFWScrollCallback.create((windowID, xOffset, yOffset) ->
+        glfwSetScrollCallback(window.handle, GLFWScrollCallback.create((windowID, xOffset, yOffset) ->
         {
-            if(window.focused) window.scene.onScroll((float) xOffset, (float) yOffset);
+            if(window.focused && window.scene != null) window.scene.onScroll((float) xOffset, (float) yOffset);
         }));
 
-        glfwSetKeyCallback(window.windowID, GLFWKeyCallback.create((windowID, key, scanCode, action, mods) ->
+        glfwSetKeyCallback(window.handle, GLFWKeyCallback.create((windowID, key, scanCode, action, mods) ->
         {
-            if(!window.focused) return;
+            if(!window.focused || window.scene == null) return;
 
             if(action == GLFW_RELEASE) window.scene.onKeyReleased(key, mods);
             else window.scene.onKeyPressed(key, mods);
@@ -82,16 +83,16 @@ public class InputManager
             }
         }));
 
-        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_1, false, (value) -> window.scene.onLeftClick(), (value) -> window.scene.onLeftRelease()));
-        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_2, false, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightRelease()));
-        mousebinds.add(new Mousebind(GLFW_MOUSE_BUTTON_3, false, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_LEFT, (value) -> window.scene.onLeftClick(), (value) -> window.scene.onLeftHold(), (value) -> window.scene.onLeftRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_RIGHT, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightHold(), (value) -> window.scene.onRightRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_MIDDLE, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleHold(), (value) -> window.scene.onMiddleRelease()));
 
-        keybinds.add(new Keybind(GLFW_KEY_F3, false, (value) -> window.scene.fps.toggle(), null));
+        keybinds.add(new Keybind(GLFW_KEY_F3, (value) -> window.scene.fps.toggle(), null, null));
     }
 
     public void pollInputs()
     {
-        if(!window.focused) return;
+        if(!window.focused || window.scene == null) return;
 
         try
         {
@@ -99,17 +100,13 @@ public class InputManager
             {
                 if(keybind.active)
                 {
-                    int temp = glfwGetKey(window.windowID, keybind.key);
+                    int temp = glfwGetKey(window.handle, keybind.key);
 
-                    if(temp == GLFW_RELEASE)
+                    if(temp == GLFW_RELEASE) keybind.release();
+                    else if(temp == GLFW_PRESS)
                     {
-                        keybind.prevStatus = false;
-                        keybind.release();
-                    }
-                    else if(temp == GLFW_PRESS && (!keybind.prevStatus || keybind.allowHolding))
-                    {
-                        keybind.prevStatus = true;
                         keybind.press();
+                        keybind.hold();
                     }
                 }
             });
@@ -122,17 +119,13 @@ public class InputManager
             {
                 if(mousebind.active)
                 {
-                    int temp = glfwGetMouseButton(window.windowID, mousebind.button);
+                    int temp = glfwGetMouseButton(window.handle, mousebind.button);
 
-                    if(temp == GLFW_RELEASE)
+                    if(temp == GLFW_RELEASE) mousebind.release();
+                    else if(temp == GLFW_PRESS)
                     {
-                        mousebind.prevStatus = false;
-                        mousebind.release();
-                    }
-                    else if(temp == GLFW_PRESS && (!mousebind.prevStatus || mousebind.allowHolding))
-                    {
-                        mousebind.prevStatus = true;
                         mousebind.press();
+                        mousebind.hold();
                     }
                 }
             });
@@ -147,11 +140,11 @@ public class InputManager
             {
                 Joystick joystick = joysticks[joybind.joystick];
 
-                if (joybind.enabled && joystick != null)
+                if(joybind.enabled && joystick != null)
                 {
                     float value;
 
-                    if (!joybind.isButton)
+                    if(!joybind.isButton)
                     {
                         FloatBuffer axis = joystick.getAxis();
 
@@ -164,20 +157,15 @@ public class InputManager
                     {
                         ByteBuffer buttons = joystick.getButtons();
 
-                        if (buttons != null && buttons.limit() > joybind.axis && buttons.get(joybind.axis) == GLFW_TRUE)
-                            value = 1;
+                        if(buttons != null && buttons.limit() > joybind.axis && buttons.get(joybind.axis) == GLFW_TRUE) value = 1;
                         else value = 0;
                     }
 
-                    if (value == 0 && joybind.lastValue != 0)
+                    if(value == 0 && joybind.lastStatus) joybind.release();
+                    else if(value != 0)
                     {
-                        joybind.lastValue = 0;
-                        joybind.release();
-                    }
-                    else if (value != 0 && (joybind.lastValue != value || joybind.allowHolding))
-                    {
-                        joybind.lastValue = value;
-                        joybind.press(value);
+                        joybind.press();
+                        joybind.hold(value);
                     }
                 }
             });

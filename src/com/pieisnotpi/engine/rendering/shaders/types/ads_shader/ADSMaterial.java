@@ -2,14 +2,17 @@ package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.utility.BufferUtility;
 import org.joml.Vector3f;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class ADSMaterial extends Material
 {
@@ -29,12 +32,15 @@ public class ADSMaterial extends Material
     }
 
     @Override
-    public Attribute[] genAttributes()
+    public Attribute[] genAttributes(boolean isStatic)
     {
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0), new Attribute("VertexNormal", 3, 1), new Attribute("VertexTexCoord", 2, 2)};
+        int mode = GL_DYNAMIC_DRAW;
+        if(isStatic) mode = GL_STATIC_DRAW;
+
+        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexNormal", 3, 1, mode, isStatic), new Attribute("VertexTexCoord", 2, 2, mode, isStatic)};
     }
 
-    public void putElements(List<Renderable> renderables, VertexArray a)
+    public void putElements(List<? extends Renderable> renderables, VertexArray a)
     {
         renderables.forEach(r ->
         {

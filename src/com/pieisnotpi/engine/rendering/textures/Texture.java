@@ -1,7 +1,8 @@
 package com.pieisnotpi.engine.rendering.textures;
 
+import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.window.GLInstance;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -9,8 +10,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -18,8 +17,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class Texture
 {
-    public static Map<String, Texture> textures = new HashMap<>();
-    public static String defaultPath = "/assets/textures/";
+    public static String defaultPath = "/assets/textures/", defaultExtension = ".png";
 
     private int texID = -1;
     public int width, height;
@@ -56,11 +54,10 @@ public class Texture
             }
 
             Image image = new Image(file);
+            file.close();
 
             texID = glGenTextures();
             compileTexture(image);
-
-            file.close();
         }
         catch(IOException e)
         {
@@ -71,10 +68,12 @@ public class Texture
 
     public void bind(int sampler)
     {
+        if(PiEngine.glInstance.boundTextures[sampler] == texID) return;
+
         glActiveTexture(GL_TEXTURE0 + sampler);
         glBindTexture(GL_TEXTURE_2D, texID);
 
-        Window.boundTextures[sampler] = texID;
+        PiEngine.glInstance.boundTextures[sampler] = texID;
     }
 
     public void compileTexture(BufferedImage image)
@@ -113,21 +112,24 @@ public class Texture
         glDeleteTextures(texID);
     }
 
-    public static Texture getTexture(String name)
+    public static Texture getTextureFile(String name)
     {
-        Texture t = textures.get(name);
+        GLInstance inst = PiEngine.glInstance;
+
+        Texture t = inst.textures.get(name);
         if(t != null) return t;
 
         try
         {
-            String path = name;
+            String path = name.replaceAll("\\\\", "/");
 
-            if(!path.contains("\\") && !path.contains("/")) path = defaultPath + path;
-            if(!path.contains(".")) path += ".png";
+            if(!path.contains("/")) path = defaultPath + path;
+            if(!path.contains(".")) path = path.concat(defaultExtension);
 
             Texture temp = new Texture(path);
-            Logger.TEXTURES.debug("Found texture '" + path + "'");
-            textures.put(name, temp);
+
+            Logger.TEXTURES.debug("Found texture '" + path + "' in instance " + inst.windowHandle);
+            inst.textures.put(name, temp);
             return temp;
         }
         catch(Exception e)
@@ -135,6 +137,11 @@ public class Texture
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Texture getTextureInternal(String name)
+    {
+        return PiEngine.glInstance.textures.get(name);
     }
 
     public static ByteBuffer getBytes(Image image)

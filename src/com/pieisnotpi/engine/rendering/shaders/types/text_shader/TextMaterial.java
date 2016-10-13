@@ -2,14 +2,17 @@ package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
+import com.pieisnotpi.engine.ui.text.TextRenderable;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class TextMaterial extends Material
 {
@@ -22,13 +25,16 @@ public class TextMaterial extends Material
     }
 
     @Override
-    public Attribute[] genAttributes()
+    public Attribute[] genAttributes(boolean isStatic)
     {
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0), new Attribute("VertexTexCoords", 2, 1), new Attribute("VertexTextColor", 4, 2), new Attribute("VertexOutlineColor", 4, 3)};
+        int mode = GL_DYNAMIC_DRAW;
+        if(isStatic) mode = GL_STATIC_DRAW;
+
+        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexTexCoords", 2, 1, mode, isStatic), new Attribute("VertexTextColor", 4, 2, mode, isStatic), new Attribute("VertexOutlineColor", 4, 3, mode, isStatic)};
     }
 
     @Override
-    public void putElements(List<Renderable> buffer, VertexArray a)
+    public void putElements(List<? extends Renderable> buffer, VertexArray a)
     {
         buffer.forEach(renderable ->
         {

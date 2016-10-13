@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.window.Window;
 
 import java.util.Scanner;
 
@@ -9,49 +9,40 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderFile
 {
-    public int shaderID;
-    public String path;
+    public int handle;
 
     public ShaderFile(String path, int shaderType)
     {
-        this.path = path.replaceAll("\\\\", "/");
+        String name = path.replaceAll("\\\\", "/").substring(path.lastIndexOf('/') + 1);
 
         Scanner scanner = new Scanner(Window.class.getResourceAsStream(path));
-
-        String code = "";
-
-        while(scanner.hasNextLine()) code += scanner.nextLine() + "\n";
+        String code = scanner.useDelimiter("\\A").next();
         scanner.close();
 
-        shaderID = glCreateShader(shaderType);
+        handle = glCreateShader(shaderType);
 
-        glShaderSource(shaderID, code);
-        glCompileShader(shaderID);
+        glShaderSource(handle, code);
+        glCompileShader(handle);
 
-        int status = glGetShaderi(shaderID, GL_COMPILE_STATUS);
+        int status = glGetShaderi(handle, GL_COMPILE_STATUS);
 
         if(status == 0)
         {
-            String log = glGetShaderInfoLog(shaderID).replaceAll("\n", "\n\t");
-            Logger.SHADER_COMPILER.err("Failed shader '" + path.substring(path.lastIndexOf('/') + 1) + "'\n\t" + log);
+            String log = glGetShaderInfoLog(handle).replaceAll("\n", "\n\t");
+            Logger.SHADER_COMPILER.err("Failed shader '" + name + "'\n\t" + log);
         }
-        else Logger.SHADER_COMPILER.debug("Compiled shader '" + path.substring(path.lastIndexOf('/') + 1) + '\'');
+        else Logger.SHADER_COMPILER.debug("Compiled shader '" + name + '\'');
     }
 
     public void attach(int program)
     {
-        glAttachShader(program, shaderID);
-    }
-
-    public String toString()
-    {
-        return path;
+        glAttachShader(program, handle);
     }
 
     public void finalize() throws Throwable
     {
         super.finalize();
 
-        glDeleteShader(shaderID);
+        glDeleteShader(handle);
     }
 }

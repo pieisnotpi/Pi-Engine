@@ -1,10 +1,8 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
-import com.pieisnotpi.engine.output.Logger;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 
-import java.nio.FloatBuffer;
-
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
@@ -19,13 +17,11 @@ public class VertexArray
     public VertexArray(Attribute... attributes)
     {
         this.attributes = attributes;
+        handle = glGenVertexArrays();
     }
 
     public VertexArray init()
     {
-        for(Attribute a : attributes) a.init();
-
-        handle = glGenVertexArrays();
         glBindVertexArray(handle);
 
         for(Attribute a : attributes)
@@ -43,20 +39,6 @@ public class VertexArray
     public void bind()
     {
         glBindVertexArray(handle);
-    }
-
-    public void bindAttribute(String name, FloatBuffer value)
-    {
-        for(Attribute attribute : attributes)
-        {
-            if(attribute.name.equals(name))
-            {
-                attribute.buffer = value;
-                attribute.bindData();
-
-                break;
-            }
-        }
     }
 
     public String toString()
@@ -79,16 +61,5 @@ public class VertexArray
     {
         super.finalize();
         destroy();
-    }
-
-    private void checkError(String phase)
-    {
-        int e = glGetError();
-
-        while(e != GL_NO_ERROR)
-        {
-            Logger.SHADER_PROGRAM.err(String.format("Vertex array error in phase %s: %d", phase, e));
-            e = glGetError();
-        }
     }
 }

@@ -1,19 +1,19 @@
 package com.pieisnotpi.game.test_editor;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.rendering.ui.UiObject;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.engine.ui.UiObject;
+import com.pieisnotpi.engine.utility.Color;
 
 public class EditorTile extends UiObject
 {
     TexCQuad foreground, background;
     Sprite foreSprite, backSprite;
-    boolean foreShowing = true, backShowing = true;
-    private EditorScene actualScene;
+    boolean foreShowing = false, backShowing = false;
+    private EditorScene scene;
     private Color highlightColor = new Color(0.8f, 0.8f, 0.8f), blankColor = new Color(0, 0, 0, 0), backgroundColor = new Color(0.3f, 0.3f, 0.3f);
-    private boolean leftStatus = false, rightStatus = false, middleStatus = false, placed = false, destroyed = false;
+    private boolean placed = false, destroyed = false;
 
     public EditorTile(float x, float y, float z, float scale, Sprite sprite, Scene scene)
     {
@@ -21,112 +21,98 @@ public class EditorTile extends UiObject
         size.set(scale, scale, 0);
         this.foreSprite = sprite;
         this.backSprite = sprite;
-        this.scene = scene;
-        this.actualScene = (EditorScene) scene;
+        this.scene = (EditorScene) scene;
 
-        /*foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor, PiEngine.C_ORTHO2D_ID, scene);
-        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor, PiEngine.C_ORTHO2D_ID, scene);*/
+        foreground = new TexCQuad(x, y, z, scale, scale, 0, sprite, blankColor);
+        foreground.enabled = false;
+        background = new TexCQuad(x, y, z - 0.01f, scale, scale, 0, sprite, backgroundColor);
+        background.enabled = false;
 
         scene.gameObjects.add(this);
     }
 
-    public void update()
+    public void onLeftHold()
     {
-        if(leftStatus && !placed && mouseHoverStatus)
+        if(mouseHoverStatus && !placed)
         {
-            //if(!foreground.enabled) foreground.register();
+            if(!foreground.enabled) registerFore();
 
             foreShowing = true;
 
-            foreSprite = actualScene.getCurSprite();
+            foreSprite = scene.getCurSprite();
 
             foreground.setQuadSprite(foreSprite);
             foreground.setQuadColors(blankColor);
 
             placed = true;
         }
+    }
 
-        if(rightStatus && !placed && mouseHoverStatus)
+    public void onLeftRelease()
+    {
+        placed = false;
+    }
+
+    public void onRightHold()
+    {
+        if(mouseHoverStatus && !placed)
         {
-            //if(!background.enabled) background.register();
+            if(!background.enabled) registerBack();
 
             backShowing = true;
 
-            backSprite = actualScene.getCurSprite();
+            backSprite = scene.getCurSprite();
 
             background.setQuadSprite(backSprite);
             background.setQuadColors(backgroundColor);
 
             placed = true;
         }
-
-        if(middleStatus && !destroyed)
-        {
-            if(mouseHoverStatus)
-            {
-                if(foreShowing)
-                {
-                    foreground.enabled = false;
-                    foreShowing = false;
-                    destroyed = true;
-                }
-                else if(backShowing)
-                {
-                    background.enabled = false;
-                    backShowing = false;
-                    destroyed = true;
-                }
-
-                onMouseEntered();
-            }
-            else destroyed = false;
-        }
-    }
-
-    public void onLeftClick()
-    {
-        leftStatus = true;
-    }
-
-    public void onLeftRelease()
-    {
-        leftStatus = false;
-        placed = false;
-    }
-
-    public void onRightClick()
-    {
-        rightStatus = true;
     }
 
     public void onRightRelease()
     {
-        rightStatus = false;
         placed = false;
     }
 
-    public void onMiddleClick()
+    public void onMiddleHold()
     {
-        middleStatus = true;
+        if(!mouseHoverStatus) destroyed = false;
+        else if(!destroyed)
+        {
+            if(foreShowing)
+            {
+                unregisterFore();
+                foreShowing = false;
+                destroyed = true;
+            }
+            else if(backShowing)
+            {
+                unregisterBack();
+                backShowing = false;
+                destroyed = true;
+            }
+
+            onMouseEntered();
+        }
     }
 
     public void onMiddleRelease()
     {
-        middleStatus = false;
         destroyed = false;
     }
 
     public void onMouseEntered()
     {
-        //if(!foreShowing) foreground.register();
+        if(!foreShowing && !foreground.enabled) registerFore();
 
         foreground.setQuadColors(highlightColor);
-        foreground.setQuadSprite(actualScene.getCurSprite());
+        foreground.setQuadSprite(scene.getCurSprite());
     }
 
     public void onMouseExited()
     {
-        //if(!foreShowing) foreground.unregister();
+        if(!foreShowing) unregisterFore();
 
         foreground.setQuadSprite(foreSprite);
         foreground.setQuadColors(blankColor);
@@ -134,16 +120,34 @@ public class EditorTile extends UiObject
 
     public void blank()
     {
-        //foreground.unregister();
-        //background.unregister();
+        unregisterFore();
+        unregisterBack();
 
         foreShowing = false;
+        backShowing = false;
     }
 
-    public void destroy()
+    private void registerFore()
     {
-        super.destroy();
-        //foreground.unregister();
-        //background.unregister();
+        foreground.enabled = true;
+        scene.mesh.addRenderable(foreground);
+    }
+
+    private void unregisterFore()
+    {
+        foreground.enabled = false;
+        scene.mesh.removeRenderable(foreground);
+    }
+
+    private void registerBack()
+    {
+        background.enabled = true;
+        scene.mesh.addRenderable(background);
+    }
+
+    private void unregisterBack()
+    {
+        background.enabled = false;
+        scene.mesh.removeRenderable(background);
     }
 }

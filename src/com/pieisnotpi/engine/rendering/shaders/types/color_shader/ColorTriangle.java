@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.color_shader;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.shapes.Triangle;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 
 public class ColorTriangle extends Triangle

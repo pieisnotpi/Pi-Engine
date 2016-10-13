@@ -1,12 +1,13 @@
 package com.pieisnotpi.engine.rendering;
 
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.Arrays;
 
-public abstract class Renderable
+public class Renderable
 {
     public Vector3f[] points;
     public Vector2f[] texCoords;
@@ -14,30 +15,9 @@ public abstract class Renderable
     public Color[] colors;
     public boolean enabled = true;
 
-    public float getX() { return 0;}
-    public float getY() { return 0;}
-    public float getZ() { return 0;}
-
-    public float getCenterX()
-    {
-        float cx = 0;
-        for(Vector3f point : points) cx += point.x;
-        return cx/points.length;
-    }
-
-    public float getCenterY()
-    {
-        float cy = 0;
-        for(Vector3f point : points) cy += point.y;
-        return cy/points.length;
-    }
-
-    public float getCenterZ()
-    {
-        float cz = 0;
-        for(Vector3f point : points) cz += point.z;
-        return cz/points.length;
-    }
+    public float getX() { return 0; }
+    public float getY() { return 0; }
+    public float getZ() { return 0; }
 
     public void setX(float x, int index)
     {
@@ -103,7 +83,7 @@ public abstract class Renderable
         if(normals != null) for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
     }
 
-    protected void setDefaults(int vertCount, int drawMode)
+    public void setDefaults(int vertCount)
     {
         points = new Vector3f[vertCount];
         colors = new Color[vertCount];
@@ -114,6 +94,14 @@ public abstract class Renderable
         Arrays.fill(colors, new Color(0, 0, 0));
         Arrays.fill(normals, new Vector3f(0, 0, 0));
         Arrays.fill(texCoords, new Vector2f(0, 0));
+    }
+
+    public void nullify()
+    {
+        points = null;
+        colors = null;
+        normals = null;
+        texCoords = null;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.utility;
 
-import com.pieisnotpi.engine.rendering.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -12,10 +11,10 @@ public class BufferUtility
     {
         for(Color color : colors)
         {
-            buffer.put(color.getRed());
-            buffer.put(color.getGreen());
-            buffer.put(color.getBlue());
-            buffer.put(color.getAlpha());
+            buffer.put(color.red);
+            buffer.put(color.green);
+            buffer.put(color.blue);
+            buffer.put(color.alpha);
         }
     }
 

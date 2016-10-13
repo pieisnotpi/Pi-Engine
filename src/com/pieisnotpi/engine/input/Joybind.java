@@ -3,42 +3,34 @@ package com.pieisnotpi.engine.input;
 public class Joybind
 {
     public int joystick, axis;
-    public boolean isButton, allowHolding, enabled = true;
-    public float lastValue = -100;
-    public Object parent;
-    private InputHandler press, release;
+    public boolean isButton, lastStatus, enabled = true;
+    private InputHandler press, hold, release;
 
-    public Joybind(int joystick, int axis, boolean isButton, boolean allowHolding, InputHandler onPress, InputHandler onRelease)
+    public Joybind(int joystick, int axis, boolean isButton, InputHandler onPress, InputHandler onHold, InputHandler onRelease)
     {
         this.joystick = joystick;
         this.axis = axis;
         this.isButton = isButton;
-        this.allowHolding = allowHolding;
 
-        parent = null;
         press = onPress;
+        hold = onHold;
         release = onRelease;
     }
 
-    public void setPress(InputHandler handler)
+    public void press()
     {
-        press = handler;
+        if(press != null && !lastStatus) press.handle(1);
+        lastStatus = true;
     }
 
-    public void setRelease(InputHandler handler)
+    public void hold(float value)
     {
-        release = handler;
-    }
-
-    public void press(float value)
-    {
-        if(press != null)
-        press.handle(value);
+        if(hold != null) hold.handle(value);
     }
 
     public void release()
     {
-        if(release != null)
-        release.handle(0);
+        if(release != null && lastStatus) release.handle(0);
+        lastStatus = false;
     }
 }

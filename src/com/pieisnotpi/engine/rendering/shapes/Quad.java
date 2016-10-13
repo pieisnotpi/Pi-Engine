@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shapes;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
@@ -15,7 +15,7 @@ public class Quad extends Renderable
 
     public Quad(float x, float y, float z, float width, float height, float depth)
     {
-        setDefaults(4, GL11.GL_TRIANGLE_STRIP);
+        setDefaults(4);
 
         if(height == 0) setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y, z + depth), new Vector3f(x + width, y, z + depth));
         else setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z + depth), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z + depth));
@@ -23,7 +23,7 @@ public class Quad extends Renderable
 
     public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3)
     {
-        setDefaults(4, GL11.GL_TRIANGLE_STRIP);
+        setDefaults(4);
         setPoints(c0, c1, c2, c3);
     }
 

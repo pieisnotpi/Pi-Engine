@@ -2,7 +2,7 @@ package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Camera;
-import com.pieisnotpi.engine.rendering.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import org.joml.Matrix3f;
@@ -33,7 +33,7 @@ public class ADSShader extends ShaderProgram
     public void bindUniforms(Camera camera)
     {
         view.setLookAt(camera.getPos(), camera.getLookAt(), camera.getUp());
-        Matrix4f mvp = camera.getMatrix(PiEngine.C_PERSPECTIVE);
+        Matrix4f mvp = camera.getMatrix(PiEngine.M_PERSP);
 
         for(int i = 0; i < lights.length; i++)
         {
@@ -60,11 +60,12 @@ public class ADSShader extends ShaderProgram
     public void bindPMUniforms(Camera camera, Mesh mesh)
     {
         ADSMaterial m = (ADSMaterial) mesh.material;
-        setUniformMat4("ModelMatrix", mesh.transform);
+        setUniformMat4("ModelMatrix", mesh.getTransform().getBuffer());
         setUniformVec3("m.Ka", m.ka);
         setUniformVec3("m.Kd", m.kd);
         setUniformVec3("m.Ks", m.ks);
         setUniformFloat("m.Shininess", m.s);
+
         for(int i = 0; i < m.textures.length; i++) m.textures[i].bind(i);
     }
 

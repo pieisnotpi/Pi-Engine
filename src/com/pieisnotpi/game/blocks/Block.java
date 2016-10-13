@@ -1,13 +1,13 @@
 package com.pieisnotpi.game.blocks;
 
-import com.pieisnotpi.engine.rendering.Mesh;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.model.Model;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexCube;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.game.blocks.model.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,21 +38,19 @@ public class Block extends GameObject
         return list;
     }
 
-    public void addToRot(float xr, float yr, float zr)
+    /*public void addToRot(float xr, float yr, float zr)
     {
-        float cx = getCx(), cy = getCy(), cz = getCz();
-
         cubes.forEach(texCube ->
         {
             for(Quad quad : texCube.sides)
             {
-                quad.addToXRot(xr, cy, cz);
+                quad.addToXRot(xr, 0, cz);
                 quad.addToYRot(yr, cx, cz);
                 quad.addToZRot(zr, cx, cy);
             }
         });
         super.addToRot(xr, yr, zr);
-    }
+    }*/
 
     public void destroy()
     {

@@ -1,9 +1,9 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
-import com.pieisnotpi.engine.rendering.Color;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.rendering.ui.text.TextRenderable;
-import com.pieisnotpi.engine.rendering.ui.text.font.CharSprite;
+import com.pieisnotpi.engine.ui.text.TextRenderable;
+import com.pieisnotpi.engine.ui.text.font.CharSprite;
+import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -39,9 +39,9 @@ public class TextQuad extends TextRenderable
     {
         setTextColors(c0, c1, c2, c3);
 
-        boolean temp = false;
-        for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
-        if(!temp) for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        /*boolean temp = false;
+        for(Color c : textColors) if(c.alpha < 1 && c.alpha > 0) temp = true;
+        if(!temp) for (Color c : outlineColors) if(c.alpha < 1 && c.alpha > 0) temp = true;*/
     }
 
     public void setQuadOutlineColor(Color color)
@@ -53,9 +53,9 @@ public class TextQuad extends TextRenderable
     {
         setOutlineColors(c0, c1, c2, c3);
 
-        boolean temp = false;
+        /*boolean temp = false;
         for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
-        if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
+        if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;*/
     }
 
     public void setPos(float x, float y, float z)

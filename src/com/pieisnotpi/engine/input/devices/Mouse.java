@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.input.devices;
 
-public class Mouse
+public final class Mouse
 {
     /**
      * GLFW mouse mappings

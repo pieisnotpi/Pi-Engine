@@ -2,8 +2,8 @@ package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.shaders.types.color_shader.ColorQuad;
-import com.pieisnotpi.engine.rendering.ui.text.Text;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.engine.ui.text.Text;
 import com.pieisnotpi.game.cameras.FirstPersonCamera;
 import org.joml.Vector2i;
 
@@ -17,16 +17,18 @@ public abstract class PauseScene extends Scene
     public Text pausedText;
     public boolean paused = false;
 
-    public void init()
+    public PauseScene init()
     {
         super.init();
 
-        /*pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.C_ORTHO2D_ID, this);
+        return this;
+
+        /*pausedText = new Text("PAUSED", 16, 0, 0, 0.8f, new Color(1, 0, 0), new Color(0, 0, 0, 1), PiEngine.M_ORTHO2D_S_ID, this);
         pausedText.setX(pausedText.getX() - pausedText.getWidth()/2);
         pausedText.setY(pausedText.getY() - pausedText.getHeight()/2);
         pausedText.disable();*/
 
-        /*tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.C_ORTHO2D_ID, this);
+        /*tint = new ColorQuad(0, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0.4f), PiEngine.M_ORTHO2D_S_ID, this);
         tint.unregister();*/
     }
 
@@ -58,7 +60,6 @@ public abstract class PauseScene extends Scene
         }
 
         shouldUpdate = !paused;
-        shouldUpdatePhysics = !paused;
 
         if(paused) pausedText.enable();
         else pausedText.disable();

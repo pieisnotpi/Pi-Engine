@@ -1,11 +1,11 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex_shader;
 
 import com.pieisnotpi.engine.rendering.Camera;
-import com.pieisnotpi.engine.rendering.Mesh;
-import com.pieisnotpi.engine.rendering.shaders.Attribute;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
@@ -25,7 +25,6 @@ public class TextureShader extends ShaderProgram
     {
         super.bindPMUniforms(camera, mesh);
         TexMaterial m = (TexMaterial) mesh.material;
-
         for(int i = 0; i < m.textures.length; i++) m.textures[i].bind(i);
     }
 }

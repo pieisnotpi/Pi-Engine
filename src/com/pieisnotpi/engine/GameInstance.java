@@ -3,7 +3,7 @@ package com.pieisnotpi.engine;
 import com.pieisnotpi.engine.audio.AudioPlayer;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
 
 import java.util.ArrayList;
@@ -13,24 +13,20 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 public abstract class GameInstance
 {
-    private boolean isRunning = true;
-    private long startTime;
-
     public List<Window> windows = new ArrayList<>();
     public List<GameUpdate> updates = new ArrayList<>();
     public AudioPlayer player;
 
     public void init()
     {
-        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
         player = new AudioPlayer();
     }
 
     public void start()
     {
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-        while(isRunning)
+        while(true)
         {
             boolean allClosed = true;
 
@@ -38,7 +34,7 @@ public abstract class GameInstance
             {
                 Window window = windows.get(i);
 
-                if(!glfwWindowShouldClose(window.windowID)) allClosed = false;
+                if(!glfwWindowShouldClose(window.handle) && window.isAlive()) allClosed = false;
                 else
                 {
                     Logger.SYSTEM.log("Window '" + window.name + "' has been terminated");
@@ -54,21 +50,16 @@ public abstract class GameInstance
 
             for(GameUpdate update : updates)
             {
-                if(update.updates < update.frequency && update.lastUpdateTime + update.period <= getTime())
-                {
-                    long t = System.currentTimeMillis();
-                    update.update(getTime());
-                    update.lastTimeTaken = System.currentTimeMillis() - t;
-                }
+                update.update(System.currentTimeMillis());
                 if(update.updates != update.frequency) finished = false;
             }
 
-            if(finished || getTime() >= 1000)
+            if(finished || System.currentTimeMillis() - startTime >= 1000)
             {
                 for(GameUpdate update : updates)
                 {
                     update.runPerSecondAction();
-                    update.lastUpdateTime = -100;
+                    update.lastUpdateTime = -update.frequency;
                     update.updates = 0;
                 }
 
@@ -76,11 +67,9 @@ public abstract class GameInstance
             }
             else
             {
-                long sleepTime = Long.MAX_VALUE;
+                long time = System.currentTimeMillis(), sleepTime = Long.MAX_VALUE;
 
-                for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, update.lastUpdateTime + update.period);
-
-                sleepTime -= getTime();
+                for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, (update.lastUpdateTime + update.period) - time);
 
                 if(sleepTime > 0 && sleepTime != Long.MAX_VALUE)
                 try { Thread.sleep(sleepTime); }
@@ -88,7 +77,7 @@ public abstract class GameInstance
                 {
                     e.printStackTrace();
                     windows.forEach(Window::destroy);
-                    isRunning = false;
+                    break;
                 }
             }
         }
@@ -98,18 +87,12 @@ public abstract class GameInstance
 
     public void onMonitorConnect(Monitor monitor)
     {
-        Logger.SYSTEM.debug("Monitor connected with ID " + monitor.monitorID);
+        Logger.SYSTEM.log("Monitor connected with ID " + monitor.monitorID);
     }
 
     public void onMonitorDisconnect(Monitor monitor)
     {
-        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
-        Logger.SYSTEM.debug("Monitor disconnected with ID " + monitor.monitorID);
-    }
-
-    public long getTime()
-    {
-        return System.currentTimeMillis() - startTime;
+        Logger.SYSTEM.log("Monitor disconnected with ID " + monitor.monitorID);
     }
 
     public void process()

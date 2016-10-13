@@ -2,12 +2,15 @@ package com.pieisnotpi.engine.rendering.shaders.types.color_shader;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
-import com.pieisnotpi.engine.rendering.shaders.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class ColorMaterial extends Material
 {
@@ -16,13 +19,16 @@ public class ColorMaterial extends Material
         super(PiEngine.S_COLOR_ID, matrixID);
     }
 
-    public Attribute[] genAttributes()
+    public Attribute[] genAttributes(boolean isStatic)
     {
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0), new Attribute("VertexColor", 4, 1)};
+        int mode = GL_DYNAMIC_DRAW;
+        if(isStatic) mode = GL_STATIC_DRAW;
+
+        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexColor", 4, 1, mode, isStatic)};
     }
 
     @Override
-    public void putElements(List<Renderable> renderables, VertexArray a)
+    public void putElements(List<? extends Renderable> renderables, VertexArray a)
     {
         renderables.forEach(r ->
         {
