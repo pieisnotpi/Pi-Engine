@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 
 public abstract class ShaderProgram
 {
@@ -101,7 +101,7 @@ public abstract class ShaderProgram
             m.indices.bind();
 
             bindPMUniforms(camera, m);
-            glDrawElementsInstanced(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0, 1);
+            glDrawElements(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0);
         });
 
         clearUnsorted();
