@@ -88,11 +88,44 @@ public class Transform
         return scale(a.x/scale.x, a.y/scale.y, a.z/scale.z);
     }
 
+    public Transform scaleCentered(float x, float y, float z)
+    {
+        flagForBuild();
+        localMatrix.scaleAround(x, y, z, center.x, center.y, center.z);
+        scale.mul(x, y, z);
+        return this;
+    }
+
+    public Transform scaleCentered(float a)
+    {
+        return scaleCentered(a, a, a);
+    }
+
+    public Transform scaleCentered(Vector3f a)
+    {
+        return scaleCentered(a.x, a.y, a.z);
+    }
+
+    public Transform setScaleCentered(float x, float y, float z)
+    {
+        return scaleCentered(x/scale.x, y/scale.y, z/scale.z);
+    }
+
+    public Transform setScaleCentered(float a)
+    {
+        return scaleCentered(a/scale.x, a/scale.y, a/scale.z);
+    }
+
+    public Transform setScaleCentered(Vector3f a)
+    {
+        return scaleCentered(a.x/scale.x, a.y/scale.y, a.z/scale.z);
+    }
+
     public Transform translate(float x, float y, float z)
     {
         flagForBuild();
         localMatrix.translate(x, y, z);
-        pos.add(x, y, z);
+        pos.set(localMatrix.m30(), localMatrix.m31(), localMatrix.m32());
 
         return this;
     }
@@ -126,7 +159,7 @@ public class Transform
     {
         flagForBuild();
         localMatrix.translate(x/scale.x, y/scale.y, z/scale.z);
-        pos.add(x, y, z);
+        pos.set(localMatrix.m30(), localMatrix.m31(), localMatrix.m32());
 
         return this;
     }
@@ -221,9 +254,27 @@ public class Transform
         return buffer;
     }
 
+    public Transform getParent()
+    {
+        return parentTransform;
+    }
+
+    public Transform removeChild(Transform child)
+    {
+        children.remove(child);
+        return this;
+    }
+
+    public Transform removeFromParent()
+    {
+        parentTransform.removeChild(this);
+        parentTransform = null;
+        return this;
+    }
+
     private void flagForBuild()
     {
         needsBuilt = true;
-        children.forEach(c -> c.needsBuilt = true);
+        children.forEach(Transform::flagForBuild);
     }
 }

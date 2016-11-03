@@ -5,7 +5,7 @@ import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.devices.DS4;
 import com.pieisnotpi.engine.input.devices.Xbox;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
@@ -47,13 +47,13 @@ public class FirstPersonCamera extends Camera
 
         if(joystick == 0)
         {
-            keybinds.add(new Keybind(GLFW_KEY_W, null, (value) -> moveZ(-moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_S, null, (value) -> moveZ(moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_D, null, (value) -> moveX(moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_A, null, (value) -> moveX(-moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_SPACE, null, (value) -> moveY(moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_LEFT_SHIFT, null, (value) -> moveY(-moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_ESCAPE, (value) ->
+            keybinds.add(new Keybind(GLFW_KEY_W, null, (value, timeStep) -> moveZ(-moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_S, null, (value, timeStep) -> moveZ(moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_D, null, (value, timeStep) -> moveX(moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_A, null, (value, timeStep) -> moveX(-moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_SPACE, null, (value, timeStep) -> moveY(moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_LEFT_SHIFT, null, (value, timeStep) -> moveY(-moveAmount/scene.window.getRefreshRate()), null));
+            keybinds.add(new Keybind(GLFW_KEY_ESCAPE, (value, timeStep) ->
             {
                 ignoreNextMovement = hideCursor = !hideCursor;
                 if(scene.window != null) if(hideCursor)
@@ -87,43 +87,43 @@ public class FirstPersonCamera extends Camera
 
         if(joy.name.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, null, (value) -> addToYRot(joySensitivity/scene.window.getRefreshRate()*value), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, null, (value) -> addToXRot(joySensitivity/scene.window.getRefreshRate()*value), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, null, (value) -> moveX(moveAmount/scene.window.getRefreshRate()*value), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, null, (value) -> moveZ(moveAmount/scene.window.getRefreshRate()*-value), null));
-            joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, null, (value) -> moveY(moveAmount/scene.window.getRefreshRate()), null));
-            joybinds.add(new Joybind(joystick, Xbox.BUTTON_B, true, null, (value) -> moveY(-moveAmount/scene.window.getRefreshRate()), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, null, (value, timeStep) -> addToYRot(joySensitivity*timeStep*value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, null, (value, timeStep) -> addToXRot(joySensitivity*timeStep*value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, null, (value, timeStep) -> moveX(moveAmount*timeStep*value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, null, (value, timeStep) -> moveZ(moveAmount*timeStep*-value), null));
+            joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, null, (value, timeStep) -> moveY(moveAmount*timeStep), null));
+            joybinds.add(new Joybind(joystick, Xbox.BUTTON_B, true, null, (value, timeStep) -> moveY(-moveAmount*timeStep), null));
 
             if(scene.getClass().getSuperclass().equals(PauseScene.class))
             {
                 PauseScene s = (PauseScene) scene;
 
                 pauseSlot = joybinds.size();
-                joybinds.add(new Joybind(joystick, Xbox.BUTTON_START, true, (value) -> s.togglePause(), null, null));
+                joybinds.add(new Joybind(joystick, Xbox.BUTTON_START, true, (value, timeStep) -> s.togglePause(), null, null));
             }
 
             fullscreenSlot = joybinds.size();
-            joybinds.add(new Joybind(joystick, Xbox.BUTTON_BACK, true, (value) -> { if(scene.window != null) scene.window.setFullscreen(!scene.window.isFullscreen());}, null, null));
+            joybinds.add(new Joybind(joystick, Xbox.BUTTON_BACK, true, (value, timeStep) -> { if(scene.window != null) scene.window.setFullscreen(!scene.window.isFullscreen());}, null, null));
         }
         else
         {
-            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_X, false, null, (value) -> addToRot(0, joySensitivity/scene.window.getRefreshRate()*value, 0), null));
-            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_Y, false, null, (value) -> addToRot(-joySensitivity/scene.window.getRefreshRate()*value, 0, 0), null));
-            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_X, false, null, (value) -> moveX(moveAmount/scene.window.getRefreshRate()*value), null));
-            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_Y, false, null, (value) -> moveZ(moveAmount/scene.window.getRefreshRate()*value), null));
-            joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, null, (value) -> moveY(moveAmount/scene.window.getRefreshRate()), null));
-            joybinds.add(new Joybind(joystick, DS4.BUTTON_CIRCLE, true, null, (value) -> moveY(-moveAmount/scene.window.getRefreshRate()), null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_X, false, null, (value, timeStep) -> addToRot(0, joySensitivity*timeStep*value, 0), null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_RSTICK_Y, false, null, (value, timeStep) -> addToRot(-joySensitivity*timeStep*value, 0, 0), null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_X, false, null, (value, timeStep) -> moveX(moveAmount*timeStep*value), null));
+            joybinds.add(new Joybind(joystick, DS4.AXIS_LSTICK_Y, false, null, (value, timeStep) -> moveZ(moveAmount*timeStep*value), null));
+            joybinds.add(new Joybind(joystick, DS4.BUTTON_X, true, null, (value, timeStep) -> moveY(moveAmount*timeStep), null));
+            joybinds.add(new Joybind(joystick, DS4.BUTTON_CIRCLE, true, null, (value, timeStep) -> moveY(-moveAmount*timeStep), null));
 
             if(scene.getClass().getSuperclass().equals(PauseScene.class))
             {
                 PauseScene s = (PauseScene) scene;
 
                 pauseSlot = joybinds.size();
-                joybinds.add(new Joybind(joystick, DS4.BUTTON_OPTIONS, true, (value) -> s.togglePause(), null, null));
+                joybinds.add(new Joybind(joystick, DS4.BUTTON_OPTIONS, true, (value, timeStep) -> s.togglePause(), null, null));
             }
 
             fullscreenSlot = joybinds.size();
-            joybinds.add(new Joybind(joystick, DS4.BUTTON_TOUCHPAD, true, (value) -> { if(scene.window != null) scene.window.setFullscreen(!scene.window.isFullscreen());}, null, null));
+            joybinds.add(new Joybind(joystick, DS4.BUTTON_TOUCHPAD, true, (value, timeStep) -> { if(scene.window != null) scene.window.setFullscreen(!scene.window.isFullscreen());}, null, null));
         }
 
         registerInputs();

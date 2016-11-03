@@ -53,22 +53,24 @@ public class Text extends UiObject
 
         chars = new ArrayList<>(100);
         mesh = new Mesh<>(new TextMaterial(matrixID, font.getTexture()), transform, GL11.GL_TRIANGLE_STRIP, 4, false, scene);
+        mesh.setSorting(font.needsSorted);
         transform.setTranslate(pos.x, pos.y, pos.z);
         chars = mesh.renderables;
 
-        scene.gameObjects.add(this);
-
         setText(text);
+
+        scene.gameObjects.add(this);
+        mesh.register();
     }
 
-    public void update()
+    public void update(float timeStep)
     {
         if(effectsEnabled)
         {
-            effects.forEach(TextEffect::process);
+            effects.forEach(tf -> tf.process(timeStep));
             mesh.flagForBuild();
         }
-        super.update();
+        super.update(timeStep);
     }
 
     public Mesh getMesh()
@@ -117,6 +119,20 @@ public class Text extends UiObject
         super.setZ(value);
     }
 
+    public void setScale(float x, float y, float z)
+    {
+        size.div(transform.scale);
+        transform.setScale(x, y, z);
+        size.mul(transform.scale);
+    }
+
+    public void setTextColor(Color textColor)
+    {
+        this.textColor = textColor;
+        chars.forEach(c -> c.setQuadTextColor(textColor));
+        mesh.flagForBuild();
+    }
+
     public void setText(String value)
     {
         if(value == null || value.equals(text) || value.equals("") || !enabled) return;
@@ -126,7 +142,7 @@ public class Text extends UiObject
         chars.clear();
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
-        unregister();
+        //unregister();
 
         newlineSpace = font.newLineSpace;
         int line = 0;
@@ -163,16 +179,13 @@ public class Text extends UiObject
             chars.add(new TextQuad(x0, y0, 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line));
         }
 
-        size.set(maxX - transform.pos.x, maxY - transform.pos.y, 0).mul(transform.scale);
+        size.set(maxX - transform.pos.x, maxY - transform.pos.y, 0)/*.mul(transform.scale)*/;
         transform.setCenter(size.x/2, size.y/2, 0);
-        /*float mx = size.x/2f, my = size.y/2f;
 
-        chars.forEach(c -> c.setPos(-mx + c.getX(), -my + c.getY(), c.getZ()));*/
+        //register();
 
-        register();
-
-        align();
         mesh.flagForBuild();
+        align();
     }
 
     public void setFont(Font font)
@@ -200,12 +213,14 @@ public class Text extends UiObject
 
     public void register()
     {
-        scene.addMesh(mesh);
+        mesh.register();
+        //if(!scene.gameObjects.contains(this)) scene.gameObjects.add(this);
     }
 
     public void unregister()
     {
-        scene.removeMesh(mesh);
+        mesh.unregister();
+        //scene.gameObjects.remove(this);
     }
 
     public static float approxWidth(String text, float scale, Font font)
@@ -246,6 +261,7 @@ public class Text extends UiObject
     public void destroy()
     {
         super.destroy();
-        unregister();
+        mesh.destroy();
+        scene.gameObjects.remove(this);
     }
 }

@@ -29,7 +29,7 @@ public class SystemFont extends Font
         g.dispose();
 
         int w = 0, h = metrics.getHeight();
-        for(char c : sequence) w += metrics.charWidth(c);
+        for(char c : sequence) w += metrics.charWidth(c) + charShift + uvShift;
 
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         g = image.createGraphics();
@@ -37,13 +37,14 @@ public class SystemFont extends Font
         g.setFont(font);
         g.setPaint(Color.WHITE);
 
-        texture = new Texture(org.lwjgl.opengl.GL11.glGenTextures(), w, h);
+        if(antiAlias) needsSorted = true;
+        texture = new Texture(org.lwjgl.opengl.GL11.glGenTextures(), w, h, antiAlias ? Texture.FILTER_LINEAR : Texture.FILTER_NEAREST);
 
         for(int i = 0, x = 0, cw, ch = metrics.getHeight(); i < sequence.length; i++, x += cw + charShift)
         {
             char c = sequence[i];
             cw = metrics.charWidth(c);
-            g.drawString(sequence[i] + "", x, metrics.getAscent());
+            g.drawString(c + "", x, metrics.getAscent());
             sprites.add(new CharSprite(new Sprite(texture, x, 0, x + cw + uvShift, ch), c, 0, 0));
         }
 
@@ -52,7 +53,7 @@ public class SystemFont extends Font
         texture.compileTexture(image);
 
         spaceCharSpace = metrics.charWidth(' ');
-        letterSpace = -spaceCharSpace/5;
+        letterSpace = -spaceCharSpace/6;
         newLineSpace = texture.height;
         nullChar = new CharSprite(new Sprite(texture, 0, 0, 0, 0), ' ', 0, 0);
 
@@ -73,7 +74,7 @@ public class SystemFont extends Font
 
     public static SystemFont getFont(String family, int size, int style, boolean antiAlias)
     {
-        return getFont(family, size, style, antiAlias, 10, 4);
+        return getFont(family, size, style, antiAlias, 10, 0);
     }
 
     public static SystemFont getFont(String family, int size, int style, boolean antiAlias, int charShift, int uvShift)

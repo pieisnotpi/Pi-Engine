@@ -18,7 +18,7 @@ public class Mesh<R extends Renderable>
     public IndexBuffer indices;
     public Material material;
     public List<R> renderables;
-    protected  Transform transform;
+    protected Transform transform;
 
     public int lastProgram = -1;
     protected int vertCount, drawMode, vpr, primCount;
@@ -80,9 +80,17 @@ public class Mesh<R extends Renderable>
         return this;
     }
 
+    public Mesh<R> bind()
+    {
+        array.bind();
+        indices.bind();
+
+        return this;
+    }
+
     public Mesh<R> build()
     {
-        if(renderables.size() == 0) return this;
+        if(renderables.size() == 0 && array.alive && indices.alive) return this;
 
         primCount = renderables.size();
         vertCount = vpr*primCount;
@@ -142,8 +150,19 @@ public class Mesh<R extends Renderable>
 
     public boolean shouldBuild() { return shouldBuild; }
 
+    public boolean shouldSort() { return shouldSort; }
+
     public void destroy()
     {
-        if(array != null) array.destroy();
+        array.destroy();
+        indices.destroy();
+        transform.removeFromParent();
+
+        renderables = null;
+        array = null;
+        indices = null;
+        transform = null;
+
+        unregister();
     }
 }

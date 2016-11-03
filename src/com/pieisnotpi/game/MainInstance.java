@@ -21,7 +21,7 @@ class MainInstance extends GameInstance
 
         Window w0, w1;
 
-        windows.add(w0 = new Window("Pi Engine", 600, 600, PiEngine.getMonitor(0)).setRefreshRate(60).init());
+        windows.add(w0 = new Window("Pi Engine", 600, 600, PiEngine.getMonitor(0)).setRefreshRate(120).init());
 
         scenes[0][0] = new TestScene().init();
         scenes[1][0] = new TestScene2().init();
@@ -29,10 +29,10 @@ class MainInstance extends GameInstance
 
         w0.setScene(scenes[1][0]);
 
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, (value) -> w0.setScene(scenes[0][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, (value) -> w0.setScene(scenes[1][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, (value) -> w0.setScene(scenes[2][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, (value) -> w0.setFullscreen(!w0.isFullscreen()), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, (value, timeStep) -> w0.setScene(scenes[0][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, (value, timeStep) -> w0.setScene(scenes[1][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, (value, timeStep) -> w0.setScene(scenes[2][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, (value, timeStep) -> w0.setFullscreen(!w0.isFullscreen()), null, null));
 
         /*windows.add(w1 = new Window("Pi Engine 2", 600, 600, PiEngine.getMonitor(1)).setRefreshRate(30).init());
 

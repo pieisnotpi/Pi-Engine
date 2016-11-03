@@ -6,7 +6,7 @@ public class Sprite
     public int x0, x1, y0, y1, texWidth, texHeight;
 
     // Coordinates converted to a 0-1 scale
-    public float uvx0, uvy0, uvx1, uvy1;
+    public float uvx0, uvy0, uvx1, uvy1, xPixelScale, yPixelScale;
 
     public boolean isAnimated = false;
 
@@ -29,7 +29,8 @@ public class Sprite
 
     public Sprite(int texWidth, int texHeight, int x0, int y0, int x1, int y1, boolean flipY)
     {
-        float xMult = 1f/texWidth, yMult = 1f/texHeight;
+        xPixelScale = 1f/texWidth;
+        yPixelScale = 1f/texHeight;
 
         this.x0 = x0;
         this.x1 = x1;
@@ -38,11 +39,13 @@ public class Sprite
         this.texWidth = texWidth;
         this.texHeight = texHeight;
 
-        uvx0 = x0*xMult;
-        uvx1 = x1*xMult;
+        uvx0 = x0*xPixelScale;
+        uvx1 = x1*xPixelScale;
 
-        uvy0 = y0*yMult;
-        uvy1 = y1*yMult;
+        uvy0 = y0*yPixelScale;
+        uvy1 = y1*yPixelScale;
+
+        float shift = 0.01f*xPixelScale;
 
         if(flipY)
         {
@@ -50,13 +53,17 @@ public class Sprite
             uvy0 = uvy1;
             uvy1 = t;
 
-            uvy0 -= 0.0001f;
-            uvy1 += 0.0001f;
+            uvx0 += shift;
+            uvx1 -= shift;
+            uvy0 -= shift;
+            uvy1 += shift;
         }
         else
         {
-            uvy0 += 0.0001f;
-            uvy1 -= 0.0001f;
+            uvx0 += shift;
+            uvx1 -= shift;
+            uvy0 += shift;
+            uvy1 -= shift;
         }
     }
 

@@ -83,14 +83,12 @@ public class InputManager
             }
         }));
 
-        mousebinds.add(new Mousebind(Mouse.BUTTON_LEFT, (value) -> window.scene.onLeftClick(), (value) -> window.scene.onLeftHold(), (value) -> window.scene.onLeftRelease()));
-        mousebinds.add(new Mousebind(Mouse.BUTTON_RIGHT, (value) -> window.scene.onRightClick(), (value) -> window.scene.onRightHold(), (value) -> window.scene.onRightRelease()));
-        mousebinds.add(new Mousebind(Mouse.BUTTON_MIDDLE, (value) -> window.scene.onMiddleClick(), (value) -> window.scene.onMiddleHold(), (value) -> window.scene.onMiddleRelease()));
-
-        keybinds.add(new Keybind(GLFW_KEY_F3, (value) -> window.scene.fps.toggle(), null, null));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_LEFT, (value, timeStep) -> window.scene.onLeftClick(), (value, timeStep) -> window.scene.onLeftHold(), (value, timeStep) -> window.scene.onLeftRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_RIGHT, (value, timeStep) -> window.scene.onRightClick(), (value, timeStep) -> window.scene.onRightHold(), (value, timeStep) -> window.scene.onRightRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_MIDDLE, (value, timeStep) -> window.scene.onMiddleClick(), (value, timeStep) -> window.scene.onMiddleHold(), (value, timeStep) -> window.scene.onMiddleRelease()));
     }
 
-    public void pollInputs()
+    public void pollInputs(float timeStep)
     {
         if(!window.focused || window.scene == null) return;
 
@@ -106,7 +104,7 @@ public class InputManager
                     else if(temp == GLFW_PRESS)
                     {
                         keybind.press();
-                        keybind.hold();
+                        keybind.hold(timeStep);
                     }
                 }
             });
@@ -125,7 +123,7 @@ public class InputManager
                     else if(temp == GLFW_PRESS)
                     {
                         mousebind.press();
-                        mousebind.hold();
+                        mousebind.hold(timeStep);
                     }
                 }
             });
@@ -165,7 +163,7 @@ public class InputManager
                     else if(value != 0)
                     {
                         joybind.press();
-                        joybind.hold(value);
+                        joybind.hold(value, timeStep);
                     }
                 }
             });

@@ -1,6 +1,6 @@
 package com.pieisnotpi.game.scenes;
 
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.shaders.types.color_shader.ColorQuad;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.ui.text.Text;

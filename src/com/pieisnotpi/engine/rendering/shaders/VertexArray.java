@@ -10,7 +10,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class VertexArray
 {
-    public boolean initialized = false;
+    public boolean alive = false;
     public int handle = -1;
     public Attribute[] attributes;
 
@@ -31,7 +31,7 @@ public class VertexArray
             glVertexAttribPointer(a.location, a.size, GL_FLOAT, false, 0, NULL);
         }
 
-        initialized = true;
+        alive = true;
 
         return this;
     }
@@ -52,9 +52,9 @@ public class VertexArray
 
     public void destroy()
     {
-        initialized = false;
-        glDeleteVertexArrays(handle);
+        alive = false;
         for(Attribute a : attributes) a.destroy();
+        glDeleteVertexArrays(handle);
     }
 
     public void finalize() throws Throwable

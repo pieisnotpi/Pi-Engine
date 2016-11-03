@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL15.*;
 public abstract class GLBuffer<E extends Buffer>
 {
     protected int bufferID, bufferType, usage;
-    public boolean clearMemory;
+    public boolean clearMemory, alive;
     public E buffer;
 
     protected GLBuffer(int bufferType, int usage, boolean clearMemory)
@@ -18,6 +18,8 @@ public abstract class GLBuffer<E extends Buffer>
 
         bufferID = glGenBuffers();
         createBuffer(0);
+
+        alive = true;
     }
 
     public abstract GLBuffer bufferDataCall();
@@ -55,5 +57,6 @@ public abstract class GLBuffer<E extends Buffer>
     public void destroy()
     {
         glDeleteBuffers(bufferID);
+        alive = false;
     }
 }

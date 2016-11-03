@@ -50,6 +50,7 @@ public abstract class GameInstance
 
             for(GameUpdate update : updates)
             {
+                if(update.lastUpdateTime <= 0) update.lastUpdateTime = System.currentTimeMillis() - update.frequency - 1;
                 update.update(System.currentTimeMillis());
                 if(update.updates != update.frequency) finished = false;
             }
@@ -59,7 +60,6 @@ public abstract class GameInstance
                 for(GameUpdate update : updates)
                 {
                     update.runPerSecondAction();
-                    update.lastUpdateTime = -update.frequency;
                     update.updates = 0;
                 }
 
@@ -93,10 +93,5 @@ public abstract class GameInstance
     public void onMonitorDisconnect(Monitor monitor)
     {
         Logger.SYSTEM.log("Monitor disconnected with ID " + monitor.monitorID);
-    }
-
-    public void process()
-    {
-        for(Window window : windows) window.scene.update();
     }
 }

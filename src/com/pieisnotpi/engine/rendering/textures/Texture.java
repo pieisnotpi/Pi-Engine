@@ -18,31 +18,58 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 public class Texture
 {
     public static String defaultPath = "/assets/textures/", defaultExtension = ".png";
+    public static final int FILTER_NEAREST = GL_NEAREST, FILTER_LINEAR = GL_LINEAR;
 
     private int texID = -1;
     public int width, height;
+    public int texFilter;
 
     public Texture(Image image)
     {
+        this(image, FILTER_NEAREST);
+    }
+
+    public Texture(Image image, int texFilter)
+    {
         texID = glGenTextures();
         compileTexture(image);
+        this.texFilter = texFilter;
     }
 
     public Texture(BufferedImage image)
     {
+        this(image, FILTER_NEAREST);
+    }
+
+    public Texture(BufferedImage image, int texFilter)
+    {
         texID = glGenTextures();
         compileTexture(image);
+        this.texFilter = texFilter;
     }
 
     public Texture(int texID, int width, int height)
     {
+        this(texID, width, height, FILTER_NEAREST);
+    }
+
+    public Texture(int texID, int width, int height, int texFilter)
+    {
         this.texID = texID;
         this.width = width;
         this.height = height;
+        this.texFilter = texFilter;
     }
 
     public Texture(String path)
     {
+        this(path, FILTER_NEAREST);
+    }
+
+    public Texture(String path, int texFilter)
+    {
+        this.texFilter = texFilter;
+
         try
         {
             InputStream file = Texture.class.getResourceAsStream(path);
@@ -84,8 +111,8 @@ public class Texture
         bind(0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texFilter);
     }
 
     public void compileTexture(Image image)
@@ -96,8 +123,8 @@ public class Texture
         bind(0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texFilter);
     }
 
     public int getTexID()
@@ -114,6 +141,11 @@ public class Texture
 
     public static Texture getTextureFile(String name)
     {
+        return getTextureFile(name, FILTER_NEAREST);
+    }
+
+    public static Texture getTextureFile(String name, int texFilter)
+    {
         GLInstance inst = PiEngine.glInstance;
 
         Texture t = inst.textures.get(name);
@@ -126,7 +158,7 @@ public class Texture
             if(!path.contains("/")) path = defaultPath + path;
             if(!path.contains(".")) path = path.concat(defaultExtension);
 
-            Texture temp = new Texture(path);
+            Texture temp = new Texture(path, texFilter);
 
             Logger.TEXTURES.debug("Found texture '" + path + "' in instance " + inst.windowHandle);
             inst.textures.put(name, temp);

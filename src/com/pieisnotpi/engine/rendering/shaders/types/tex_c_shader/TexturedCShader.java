@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;

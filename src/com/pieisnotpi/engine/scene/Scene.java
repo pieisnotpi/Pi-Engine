@@ -6,7 +6,7 @@ import com.pieisnotpi.engine.input.Joybind;
 import com.pieisnotpi.engine.input.Joystick;
 import com.pieisnotpi.engine.input.Keybind;
 import com.pieisnotpi.engine.input.Mousebind;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.window.Window;
@@ -37,7 +37,7 @@ public abstract class Scene
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
-    public List<Mesh> unsortedMeshes = new ArrayList<>(100);
+    public List<Mesh> unsortedMeshes = new ArrayList<>(100), sortedMeshes = new ArrayList<>(10);
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
@@ -87,18 +87,18 @@ public abstract class Scene
         return this;
     }
 
-    public void update()
+    public void update(float timeStep)
     {
         if(!shouldUpdate || window == null) return;
 
-        gameObjects.forEach(GameObject::update);
+        gameObjects.forEach(go -> go.update(timeStep));
     }
 
-    public void drawUpdate()
+    public void drawUpdate(float timeStep)
     {
         if(window == null) return;
 
-        gameObjects.forEach(GameObject::drawUpdate);
+        gameObjects.forEach(go -> go.drawUpdate(timeStep));
     }
 
     public void setWindow(Window window)
@@ -119,16 +119,22 @@ public abstract class Scene
     public void addMesh(Mesh mesh)
     {
         Material m = mesh.material;
+        if(!mesh.shouldSort())
         {
             unsortedMeshes.add(mesh);
             if(window != null) m.shader.addUnsortedMesh(mesh);
         }
+        else sortedMeshes.add(mesh);
     }
 
     public void removeMesh(Mesh mesh)
     {
-        unsortedMeshes.remove(mesh);
-        if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
+        if(!mesh.shouldSort())
+        {
+            unsortedMeshes.remove(mesh);
+            if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
+        }
+        else sortedMeshes.remove(mesh);
     }
 
     public void addKeybind(Keybind keybind)

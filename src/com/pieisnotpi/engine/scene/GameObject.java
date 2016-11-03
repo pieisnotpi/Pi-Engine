@@ -15,15 +15,15 @@ public abstract class GameObject
 {
     protected List<GameObject> children = new ArrayList<>();
     protected Transform transform = new Transform();
-    protected Vector3f pos = new Vector3f(), rot = new Vector3f(), size = new Vector3f();
+    protected Vector3f pos = new Vector3f(), rot = new Vector3f();
+    public Vector3f size = new Vector3f();
     protected Scene scene;
     protected int matrixID;
     protected boolean enabled = true;
-    private final Vector3f c = new Vector3f();
 
-    public void update() {}
-    public void drawUpdate() {}
-    public void physicsUpdate() {}
+    public void update(float timeStep) {}
+    public void drawUpdate(float timeStep) {}
+    public void physicsUpdate(float timeStep) {}
     public void enable() { enabled = true; }
     public void disable() { enabled = false; }
 
@@ -75,9 +75,9 @@ public abstract class GameObject
     public float getX() { return pos.x; }
     public float getY() { return pos.y; }
     public float getZ() { return pos.z; }
-    public float getWidth() { return size.x; }
-    public float getHeight() { return size.y; }
-    public float getDepth() { return size.z; }
+    public float getWidth() { return size.x*transform.scale.x; }
+    public float getHeight() { return size.y*transform.scale.y; }
+    public float getDepth() { return size.z*transform.scale.z; }
     public float getXRot() { return rot.x; }
     public float getYRot() { return rot.y; }
     public float getZRot() { return rot.z; }

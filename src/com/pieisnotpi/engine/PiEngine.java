@@ -64,6 +64,11 @@ public class PiEngine
 
         monitorPointers = glfwGetMonitors();
 
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, PiEngine.glMajor);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, PiEngine.glMinor);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         for(int i = 0; i < monitorPointers.limit(); i++)
         {
             long l = monitorPointers.get(i);

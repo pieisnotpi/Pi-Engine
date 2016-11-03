@@ -19,18 +19,18 @@ public class Joybind
 
     public void press()
     {
-        if(press != null && !lastStatus) press.handle(1);
+        if(press != null && !lastStatus) press.handle(1, 1);
         lastStatus = true;
     }
 
-    public void hold(float value)
+    public void hold(float value, float timeStep)
     {
-        if(hold != null) hold.handle(value);
+        if(hold != null) hold.handle(value, timeStep);
     }
 
     public void release()
     {
-        if(release != null && lastStatus) release.handle(0);
+        if(release != null && lastStatus) release.handle(0, 1);
         lastStatus = false;
     }
 }

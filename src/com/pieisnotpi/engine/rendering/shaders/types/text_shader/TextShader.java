@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -15,11 +15,17 @@ public class TextShader extends ShaderProgram
         super(new ShaderFile("/assets/shaders/text.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/text.frag", GL_FRAGMENT_SHADER));
     }
 
+    @Override
+    public void bindUniforms(Camera camera)
+    {
+
+    }
+
     public void bindPMUniforms(Camera camera, Mesh mesh)
     {
-        super.bindPMUniforms(camera, mesh);
-
         TextMaterial m = (TextMaterial) mesh.material;
+        setUniformMat4("transform", mesh.getTransform().getBuffer());
+        if(lastMatrix != m.matrixID) setUniformMat4("camera", camera.getMatrix(m.matrixID).getBuffer());
         for(int i = 0; i < m.textures.length; i++) m.textures[i].bind(i);
     }
 }

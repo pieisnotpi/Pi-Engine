@@ -44,15 +44,15 @@ public class GameUpdate
     {
         if(!shouldUpdate(time)) return;
 
+        updateAction.runAction((time - lastUpdateTime)/1000f);
         lastUpdateTime = time;
-        updateAction.runAction();
         totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
         updates++;
     }
 
     public void runPerSecondAction()
     {
-        if(perSecondAction != null) perSecondAction.runAction();
+        if(perSecondAction != null) perSecondAction.runAction(1);
         totalTimeTaken = 0;
     }
 

@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
-import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.rendering.camera.CameraMatrix;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -33,7 +33,6 @@ public class ADSShader extends ShaderProgram
     public void bindUniforms(Camera camera)
     {
         view.setLookAt(camera.getPos(), camera.getLookAt(), camera.getUp());
-        Matrix4f mvp = camera.getMatrix(PiEngine.M_PERSP);
 
         for(int i = 0; i < lights.length; i++)
         {
@@ -49,17 +48,19 @@ public class ADSShader extends ShaderProgram
             setUniformVec3(String.format("lights[%d].Intensity", i), l.intensity);
         }
 
-        mvp.normal(normal);
-
-        setUniformMat4("MVP", mvp);
         setUniformMat4("ViewMatrix", view);
-        setUniformMat3("NormalMatrix", normal);
     }
 
     @Override
     public void bindPMUniforms(Camera camera, Mesh mesh)
     {
         ADSMaterial m = (ADSMaterial) mesh.material;
+
+        CameraMatrix mvp = camera.getMatrix(m.matrixID);
+        mvp.getMatrix().normal(normal);
+
+        setUniformMat4("MVP", mvp.getBuffer());
+        setUniformMat3("NormalMatrix", normal);
         setUniformMat4("ModelMatrix", mesh.getTransform().getBuffer());
         setUniformVec3("m.Ka", m.ka);
         setUniformVec3("m.Kd", m.kd);

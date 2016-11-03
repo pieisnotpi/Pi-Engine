@@ -4,6 +4,17 @@ public class Color
 {
     public float red, green, blue, alpha;
 
+    public Color(String hexadecimal)
+    {
+        int offset = 0;
+        if(hexadecimal.charAt(0) == '#') offset = 1;
+
+        red = Integer.valueOf(hexadecimal.substring(offset, offset + 2), 16)/255f;
+        green = Integer.valueOf(hexadecimal.substring(offset + 2, offset + 4), 16)/255f;
+        blue = Integer.valueOf(hexadecimal.substring(offset + 4, offset + 6), 16)/255f;
+        alpha = 1;
+    }
+
     public Color(float red, float green, float blue)
     {
         this.red = red;

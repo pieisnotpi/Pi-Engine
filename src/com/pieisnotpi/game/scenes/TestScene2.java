@@ -1,7 +1,7 @@
 package com.pieisnotpi.game.scenes;
 
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.types.ads_shader.ADSMaterial;
@@ -82,10 +82,10 @@ public class TestScene2 extends PauseScene
         String t3dt = "This is a reaaaaalllly long line of text. It's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
         SystemFont font = SystemFont.getFont("Arial", 48, SystemFont.PLAIN, true);
 
-        Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.M_PERSP, this, new RainbowEffect(0.01f));
+        Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), new Color(1, 0, 0), new Color(0, 0, 0), PiEngine.M_PERSP, this, new RainbowEffect(0.6f));
         text3D.getTransform().setParent(blocksMesh.getTransform()).setTranslate(-4, 2, 0).setScale(0.01f, 0.01f, 0.01f);
 
-        Text text3D2 = new Text(PixelFont.getFont(), t3d2t, new Vector3f(0, 1.5f, 0.025f), new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.M_PERSP, this, new WaveEffect(4, 8, 5));
+        Text text3D2 = new Text(PixelFont.getFont(), t3d2t, new Vector3f(0, 1.5f, 0.025f), new Color(0, 1, 0), new Color(0, 0, 0), PiEngine.M_PERSP, this, new WaveEffect(4, 0.1f, 5));
         text3D2.getTransform().setParent(blocksMesh.getTransform()).setTranslate(0, -2, 0).setScale(0.05f, 0.05f, 0.05f);
 
         return this;

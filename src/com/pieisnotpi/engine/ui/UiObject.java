@@ -41,24 +41,26 @@ public abstract class UiObject extends GameObject
     {
         if(!shouldAlign) return;
 
+        float ratio = (float) res.x/res.y;
+
         if(!hAlign.equals(HAlignment.NONE))
         {
             float nx = pos.x, start = 0, end = 0;
 
             if(matrixID == PiEngine.M_ORTHO2D_S_ID)
             {
-                start = -scene.window.ratio;
-                end = scene.window.ratio;
+                start = -ratio;
+                end = ratio;
             }
             else if(matrixID == PiEngine.M_ORTHO2D_R_ID)
             {
                 start = 0;
-                end = scene.window.getWindowRes().x;
+                end = res.x;
             }
 
             if(hAlign.equals(HAlignment.LEFT)) nx = start + offset.x;
-            else if(hAlign.equals(HAlignment.CENTER)) nx = -size.x/2;
-            else if(hAlign.equals(HAlignment.RIGHT)) nx = end - size.x + offset.x;
+            else if(hAlign.equals(HAlignment.CENTER)) nx = -getWidth()/2 + offset.x;
+            else if(hAlign.equals(HAlignment.RIGHT)) nx = end - getWidth() + offset.x;
 
             if(nx != pos.x) setX(nx);
         }
@@ -74,12 +76,12 @@ public abstract class UiObject extends GameObject
             else if(matrixID == PiEngine.M_ORTHO2D_R_ID)
             {
                 start = 0;
-                end = scene.window.getWindowRes().y;
+                end = res.y;
             }
 
             if(vAlign.equals(VAlignment.BOTTOM)) ny = start + offset.y;
-            else if(vAlign.equals(VAlignment.CENTER)) ny = -size.y/2;
-            else if(vAlign.equals(VAlignment.TOP)) ny = end - size.y + offset.y;
+            else if(vAlign.equals(VAlignment.CENTER)) ny = -getHeight()/2 + offset.y;
+            else if(vAlign.equals(VAlignment.TOP)) ny = end - getHeight() + offset.y;
 
             if(ny != pos.y) setY(ny);
         }

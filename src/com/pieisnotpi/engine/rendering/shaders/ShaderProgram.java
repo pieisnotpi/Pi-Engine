@@ -2,7 +2,7 @@ package com.pieisnotpi.engine.rendering.shaders;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -29,9 +29,10 @@ public abstract class ShaderProgram
     protected ShaderFile[] shaderFiles;
     protected String perspName = "cameras", transformName = "transform", mIDName = "mID", samplerName = "sampler";
     private Map<String, Integer> uniformLocations = new HashMap<>();
+    private Camera lastCamera;
 
     protected int handle;
-    protected int index = 0, vertCount = 0, lastMatrix = -1, lastSampler = -1;
+    protected int index = 0, vertCount = 0, lastMatrix = -1;
 
     public ShaderProgram(ShaderFile... shaderFiles)
     {
@@ -67,10 +68,7 @@ public abstract class ShaderProgram
      * @param camera The camera being drawn
      */
 
-    public void bindUniforms(Camera camera)
-    {
-        for(int i = 0; i < camera.matrices.length; i++) setUniformMat4(String.format("%s[%d]", perspName, i), camera.matrices[i]);
-    }
+    public void bindUniforms(Camera camera) {}
 
     /**
      * Binds uniforms that are dependent on the current mesh
@@ -81,8 +79,8 @@ public abstract class ShaderProgram
 
     public void bindPMUniforms(Camera camera, Mesh mesh)
     {
-        if(mesh.material.matrixID != lastMatrix) setUniformInt(mIDName, mesh.material.matrixID);
         setUniformMat4("transform", mesh.getTransform().getBuffer());
+        if(lastMatrix != mesh.material.matrixID) setUniformMat4("camera", camera.getMatrix(mesh.material.matrixID).getBuffer());
     }
 
     public void drawUnsorted(Camera camera)
@@ -97,14 +95,32 @@ public abstract class ShaderProgram
         {
             if(m.shouldBuild()) m.build();
 
-            m.array.bind();
-            m.indices.bind();
+            m.bind();
 
             bindPMUniforms(camera, m);
             glDrawElements(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0);
         });
 
         clearUnsorted();
+    }
+
+    public void drawSorted(Mesh mesh, Camera camera)
+    {
+        use();
+
+        if(!camera.equals(lastCamera))
+        {
+            lastCamera = camera;
+            bindUniforms(camera);
+        }
+
+        if(mesh.shouldBuild()) mesh.build();
+        mesh.bind();
+
+        bindPMUniforms(camera, mesh);
+        glDrawElements(mesh.getDrawMode(), mesh.indices.count, GL_UNSIGNED_INT, 0);
+
+        lastMatrix = -1;
     }
 
     public void use()
@@ -213,5 +229,11 @@ public abstract class ShaderProgram
     public void clearUnsorted()
     {
         lastMatrix = -1;
+    }
+
+    public void clearSorted()
+    {
+        lastMatrix = -1;
+        lastCamera = null;
     }
 }

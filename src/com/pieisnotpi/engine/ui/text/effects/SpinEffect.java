@@ -21,8 +21,9 @@ public class SpinEffect implements TextEffect
     }
 
     @Override
-    public void process()
+    public void process(float timeStep)
     {
-        text.getTransform().rotateDegrees(speed.x += acceleration.x, speed.y += acceleration.y, speed.z += acceleration.z);
+        speed.add(acceleration.x*timeStep, speed.y*timeStep, speed.z*timeStep);
+        text.getTransform().rotateDegrees(speed.x*timeStep, speed.y*timeStep, speed.z*timeStep);
     }
 }

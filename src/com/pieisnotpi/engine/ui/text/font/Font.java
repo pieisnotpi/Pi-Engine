@@ -11,6 +11,7 @@ public abstract class Font
     protected List<CharSprite> sprites = new ArrayList<>();
     protected Texture texture;
 
+    public boolean needsSorted = false;
     public float letterSpace, spaceCharSpace, newLineSpace;
     public CharSprite nullChar;
 

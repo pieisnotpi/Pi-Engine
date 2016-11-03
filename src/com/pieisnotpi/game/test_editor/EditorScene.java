@@ -2,7 +2,7 @@ package com.pieisnotpi.game.test_editor;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.devices.Keyboard;
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCMaterial;
@@ -97,9 +97,9 @@ public class EditorScene extends Scene
     }
 
     @Override
-    public void drawUpdate()
+    public void drawUpdate(float timeStep)
     {
-        super.drawUpdate();
+        super.drawUpdate(timeStep);
         mesh.flagForBuild();
     }
 

@@ -3,13 +3,14 @@ package com.pieisnotpi.engine.rendering.window;
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Camera;
 import com.pieisnotpi.engine.rendering.Monitor;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import com.pieisnotpi.engine.utility.GLDebugUtility;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -42,7 +43,7 @@ public class Window
     public Monitor monitor;
     public GLInstance glInstance;
     public InputManager inputManager;
-    protected Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i();
+    protected Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i(), bufferRes = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -74,7 +75,7 @@ public class Window
         handle = glfwCreateWindow(width, height, name, NULL, NULL);
         if(handle == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
-        glInstance = new GLInstance(handle).initShaders(new ShaderInitializer(){});
+        glInstance = new GLInstance(handle).initShaders(shaderInitializer);
 
         glfwSwapInterval(0);
 
@@ -85,7 +86,7 @@ public class Window
         inputManager = new InputManager(this);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
 
-        drawUpdate = new GameUpdate(refreshRate, this::draw, () ->
+        drawUpdate = new GameUpdate(refreshRate, this::draw, timeStep ->
         {
             if(scene == null) return;
 
@@ -95,7 +96,7 @@ public class Window
             this.time = 0;
         });
 
-        inputUpdate = new GameUpdate(60, () -> inputManager.pollInputs());
+        inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep));
     }
 
     public Window init()
@@ -108,6 +109,8 @@ public class Window
             middle.set(pos.x + width/2, pos.y + height/2);
             if(scene != null) scene.onWindowResize(getWindowRes());
         });
+
+        glfwSetFramebufferSizeCallback(handle, (windowID, width, height) -> bufferRes.set(width, height));
 
         glfwSetWindowPosCallback(handle, (windowID, xPos, yPos) ->
         {
@@ -147,7 +150,7 @@ public class Window
         return this;
     }
 
-    public void draw()
+    public void draw(float timeStep)
     {
         if(scene == null) return;
 
@@ -161,7 +164,7 @@ public class Window
         glClearColor(scene.clearColor.red, scene.clearColor.green, scene.clearColor.blue, scene.clearColor.alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene.drawUpdate();
+        scene.drawUpdate(timeStep);
 
         for(Camera camera : scene.cameras)
         {
@@ -174,14 +177,38 @@ public class Window
                 glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
                 glInstance.shaders.forEach((i, s) -> s.drawUnsorted(camera));
 
+                scene.sortedMeshes.sort((o1, o2) ->
+                {
+                    Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
+
+                    if(p1.z > p2.z) return 1;
+                    else if(p2.z > p1.z) return -1;
+                    else return 0;
+                });
+
+                scene.sortedMeshes.forEach(m -> m.material.shader.drawSorted(m, camera));
+                glInstance.shaders.forEach((i, s) -> s.clearSorted());
+
                 camera.frameBuffer.unbind();
             }
 
             if(camera.shouldDrawView())
             {
-                glViewport((int) (res.x*camera.viewPos.x), (int) (res.y*camera.viewPos.y), (int) (res.x*camera.viewSize.x), (int) (res.y*camera.viewSize.y));
+                glViewport((int) (bufferRes.x*camera.viewPos.x), (int) (bufferRes.y*camera.viewPos.y), (int) (bufferRes.x*camera.viewSize.x), (int) (bufferRes.y*camera.viewSize.y));
 
                 glInstance.shaders.forEach((i, s) -> s.drawUnsorted(camera));
+
+                scene.sortedMeshes.sort((o1, o2) ->
+                {
+                    Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
+
+                    if(p1.z > p2.z) return 1;
+                    else if(p2.z > p1.z) return -1;
+                    else return 0;
+                });
+
+                scene.sortedMeshes.forEach(m -> m.material.shader.drawSorted(m, camera));
+                glInstance.shaders.forEach((i, s) -> s.clearSorted());
             }
         }
 

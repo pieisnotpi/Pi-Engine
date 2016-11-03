@@ -1,11 +1,10 @@
-package com.pieisnotpi.engine.rendering;
+package com.pieisnotpi.engine.rendering.camera;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.textures.FrameBuffer;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.MathUtility;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -13,7 +12,7 @@ import org.joml.Vector3f;
 public class Camera extends GameObject
 {
     public Vector2f viewPos, viewSize;
-    public Matrix4f[] matrices = new Matrix4f[4];
+    public CameraMatrix[] matrices = new CameraMatrix[4];
     public FrameBuffer frameBuffer;
 
     protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
@@ -35,10 +34,10 @@ public class Camera extends GameObject
 
         lookAt.sub(position, lookAtDist);
 
-        matrices[0] = new Matrix4f();
-        matrices[1] = new Matrix4f();
-        matrices[2] = new Matrix4f();
-        matrices[3] = new Matrix4f();
+        matrices[0] = new CameraMatrix();
+        matrices[1] = new CameraMatrix();
+        matrices[2] = new CameraMatrix();
+        matrices[3] = new CameraMatrix();
 
         scene.gameObjects.add(this);
     }
@@ -96,7 +95,7 @@ public class Camera extends GameObject
         return viewSize;
     }
 
-    public Matrix4f getMatrix(int matrixID)
+    public CameraMatrix getMatrix(int matrixID)
     {
         if(matrixID > -1 && matrixID < matrices.length) return matrices[matrixID];
         else return null;
@@ -195,7 +194,7 @@ public class Camera extends GameObject
         positionUpdated = true;
     }
 
-    public void drawUpdate()
+    public void drawUpdate(float timeStep)
     {
         boolean m0 = false, m1 = false, m2 = false;
 
@@ -207,11 +206,11 @@ public class Camera extends GameObject
 
         if(m0)
         {
-            matrices[PiEngine.M_ORTHO2D_S_ID].setOrtho2D(-ratio, ratio, -1, 1);
-            matrices[PiEngine.M_ORTHO2D_R_ID].setOrtho2D(0, res.x, 0, res.y);
+            matrices[PiEngine.M_ORTHO2D_S_ID].start().ortho2D(-ratio, ratio, -1, 1).end();
+            matrices[PiEngine.M_ORTHO2D_R_ID].start().ortho2D(0, res.x, 0, res.y).end();
         }
-        if(m1) matrices[PiEngine.M_PERSP].setPerspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up);
-        if(m2) matrices[PiEngine.M_ORTHO].setOrtho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up);
+        if(m1) matrices[PiEngine.M_PERSP].start().perspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up).end();
+        if(m2) matrices[PiEngine.M_ORTHO].start().ortho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up).end();
 
         fovUpdated = false;
         ratioUpdated = false;

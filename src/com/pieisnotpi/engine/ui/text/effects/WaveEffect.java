@@ -7,8 +7,7 @@ import java.util.List;
 
 public class WaveEffect implements TextEffect
 {
-    private int x;
-    private float speed, heightDif, scale;
+    private float x, speed, heightDif, scale;
     private Text text;
 
     public WaveEffect(float speed, float heightDif, float scale)
@@ -23,24 +22,16 @@ public class WaveEffect implements TextEffect
         this.text = text;
     }
 
-    public void process()
+    public void process(float timeStep)
     {
         List<TextQuad> chars = text.chars;
 
-        int prevLine = 0, t = 0;
-
         for(TextQuad c : chars)
         {
-            if (c.line != prevLine) t = 0;
-
-            float offset = -text.newlineSpace * c.line + c.cSprite.offsetY, sine = (float) (scale*Math.sin(Math.toRadians((x + heightDif * t) * speed)));
-
+            float offset = -text.newlineSpace*c.line + c.cSprite.offsetY, sine = (float) Math.sin(x + c.getX()*heightDif)*scale;
             c.setY(offset + text.getY() + sine);
-
-            prevLine = c.line;
-            t++;
         }
 
-        x++;
+        x += speed*timeStep;
     }
 }

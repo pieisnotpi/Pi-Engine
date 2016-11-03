@@ -17,7 +17,7 @@ public class Game
             }
         }
 
-        System.setProperty("org.lwjgl.librarypath", "natives");
+        if(System.getProperty("org.lwjgl.librarypath") == null) System.setProperty("org.lwjgl.librarypath", "natives");
 
         PiEngine.start(new MainInstance());
 

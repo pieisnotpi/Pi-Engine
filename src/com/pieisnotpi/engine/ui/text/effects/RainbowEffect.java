@@ -19,11 +19,11 @@ public class RainbowEffect implements TextEffect
         this.text = text;
     }
 
-    public void process()
+    public void process(float timeStep)
     {
         float difference = 3f/text.chars.size();
 
-        x -= speed;
+        x -= speed*timeStep;
         if(x < 0) x = 3;
 
         for(int i = 0; i < text.chars.size(); i++)

@@ -1,6 +1,6 @@
 package com.pieisnotpi.game.cameras;
 
-import com.pieisnotpi.engine.rendering.Camera;
+import com.pieisnotpi.engine.rendering.camera.Camera;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -156,7 +156,7 @@ public class TransitionCamera extends Camera
         setFov(fov + dif);
     }
 
-    public void drawUpdate()
+    public void drawUpdate(float timeStep)
     {
         if(tFov != fov) transitionFov(tFov);
         if(moveX != pos.x) transitionX(moveX);
@@ -167,6 +167,6 @@ public class TransitionCamera extends Camera
         if(rotZ != rot.z) transitionZRot(rotZ);
         if(tZoom != orthoZoom) transitionOrthoZoom(tZoom);
 
-        super.drawUpdate();
+        super.drawUpdate(timeStep);
     }
 }
