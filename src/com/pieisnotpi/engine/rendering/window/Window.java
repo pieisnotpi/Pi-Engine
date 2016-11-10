@@ -141,6 +141,7 @@ public class Window
         {
             glEnable(GL_DEBUG_OUTPUT);
             glDebugMessageCallback(GLDebugUtility.createCallback(), 0);
+            //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, (int[]) null, false);
         }
 
         center();

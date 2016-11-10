@@ -10,8 +10,6 @@ public class GLDebugUtility
 {
     public static GLDebugMessageCallbackI createCallback()
     {
-        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DEBUG_SEVERITY_NOTIFICATION, (int[]) null, false);
-
         return (source, type, id, severity, length, message, userParam) ->
                 Logger.OPENGL.log(String.format("OpenGL Debug Output\n\tSource: %s\n\tType: %s\n\tID: %d\n\tSeverity: %s\n\tMessage: %s",
                     getDebugSource(source),

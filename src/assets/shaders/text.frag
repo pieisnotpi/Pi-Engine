@@ -14,8 +14,8 @@ void main()
 
     if(texColor.w == 0) discard;
 
-    if(texColor.x < 0.1f && texColor.y < 0.1f && texColor.z < 0.1f && texColor.w > 0) texColor = vec4(OutlineColor.x, OutlineColor.y, OutlineColor.z, OutlineColor.w*texColor.w);
-    else if(texColor.w > 0) texColor = vec4(TextColor.x, TextColor.y, TextColor.z, TextColor.w*texColor.w);
+    if(texColor.x < 0.1 && texColor.y < 0.1 && texColor.z < 0.1 && texColor.w > 0) texColor *= OutlineColor;
+    else if(texColor.w > 0) texColor *= TextColor;
 
     FragColor = texColor;
 }

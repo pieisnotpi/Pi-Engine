@@ -37,7 +37,7 @@ public class ADSMaterial extends Material
         int mode = GL_DYNAMIC_DRAW;
         if(isStatic) mode = GL_STATIC_DRAW;
 
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexNormal", 3, 1, mode, isStatic), new Attribute("VertexTexCoord", 2, 2, mode, isStatic)};
+        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexNormal", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic)};
     }
 
     public void putElements(List<? extends Renderable> renderables, VertexArray a)

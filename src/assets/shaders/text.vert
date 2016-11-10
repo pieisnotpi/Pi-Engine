@@ -1,10 +1,10 @@
 #version 130
 
-uniform mat4 transform;
 uniform mat4 camera;
+uniform mat4 transform;
 
 in vec3 VertexPosition;
-in vec2 VertexTexCoords;
+in vec2 VertexTexCoord;
 in vec4 VertexTextColor;
 in vec4 VertexOutlineColor;
 
@@ -14,8 +14,8 @@ out vec4 OutlineColor;
 
 void main()
 {
-    TexCoord = VertexTexCoords;
+    TexCoord = VertexTexCoord;
     TextColor = VertexTextColor;
     OutlineColor = VertexOutlineColor;
-    gl_Position = camera*transform*vec4(VertexPosition, 1.0f);
+    gl_Position = camera*transform*vec4(VertexPosition, 1);
 }

@@ -30,7 +30,7 @@ public class TextMaterial extends Material
         int mode = GL_DYNAMIC_DRAW;
         if(isStatic) mode = GL_STATIC_DRAW;
 
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexTexCoords", 2, 1, mode, isStatic), new Attribute("VertexTextColor", 4, 2, mode, isStatic), new Attribute("VertexOutlineColor", 4, 3, mode, isStatic)};
+        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic), new Attribute("VertexTextColor", shader, 4, mode, isStatic), new Attribute("VertexOutlineColor", shader, 4, mode, isStatic)};
     }
 
     @Override

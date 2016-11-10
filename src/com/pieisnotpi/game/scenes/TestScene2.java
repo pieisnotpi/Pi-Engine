@@ -78,6 +78,7 @@ public class TestScene2 extends PauseScene
 
         TexQuad texQuad = new TexQuad(-0.4445f, 1, 0.2f, 0.889f, 0.5f, 0, new Sprite(-1, -1, 0f, 0f, 1f, 1f, false));
         Mesh fbMesh = new Mesh<TexQuad>(new TexMaterial(PiEngine.M_PERSP, c.frameBuffer.texture), new Transform(), GL11.GL_TRIANGLE_STRIP, 4, true, this).addRenderable(texQuad).build().register();
+        PiEngine.glInstance.textures.put(c.toString(), c.frameBuffer.texture);
 
         String t3dt = "This is a reaaaaalllly long line of text. It's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
         SystemFont font = SystemFont.getFont("Arial", 48, SystemFont.PLAIN, true);

@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.buffers;
 
+import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -12,13 +13,13 @@ public class Attribute extends GLBuffer<FloatBuffer>
     public String name;
     public int location = -1, size;
 
-    public Attribute(String name, int size, int location, int usage, boolean clearMemory)
+    public Attribute(String name, ShaderProgram shader, int size, int usage, boolean clearMemory)
     {
         super(GL_ARRAY_BUFFER, usage, clearMemory);
 
         this.name = name;
         this.size = size;
-        this.location = location;
+        this.location = shader.getAttribLocation(name);
         this.clearMemory = clearMemory;
     }
 

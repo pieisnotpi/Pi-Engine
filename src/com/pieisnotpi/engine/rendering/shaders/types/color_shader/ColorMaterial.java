@@ -24,7 +24,7 @@ public class ColorMaterial extends Material
         int mode = GL_DYNAMIC_DRAW;
         if(isStatic) mode = GL_STATIC_DRAW;
 
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexColor", 4, 1, mode, isStatic)};
+        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexColor", shader, 4, mode, isStatic)};
     }
 
     @Override

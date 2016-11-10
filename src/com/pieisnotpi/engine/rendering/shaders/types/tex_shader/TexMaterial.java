@@ -27,7 +27,7 @@ public class TexMaterial extends Material
     public Attribute[] genAttributes(boolean isStatic)
     {
         int mode = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-        return new Attribute[]{new Attribute("VertexPosition", 3, 0, mode, isStatic), new Attribute("VertexTexCoords", 2, 1, mode, isStatic)};
+        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic)};
     }
 
     @Override

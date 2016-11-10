@@ -11,10 +11,10 @@ public interface ShaderInitializer
 {
     default void init(GLInstance inst)
     {
-        inst.shaders.put(PiEngine.S_TEXTURE_ID, new TextureShader().init());
+        inst.shaders.put(PiEngine.S_ADS_ID, new ADSShader().init());
         inst.shaders.put(PiEngine.S_COLOR_ID, new ColorShader().init());
         inst.shaders.put(PiEngine.S_TEXT_ID, new TextShader().init());
         inst.shaders.put(PiEngine.S_TEXTURE_C_ID, new TexturedCShader().init());
-        inst.shaders.put(PiEngine.S_ADS_ID, new ADSShader().init());
+        inst.shaders.put(PiEngine.S_TEXTURE_ID, new TextureShader().init());
     }
 }

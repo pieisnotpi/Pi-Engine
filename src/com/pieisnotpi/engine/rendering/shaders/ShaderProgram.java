@@ -27,12 +27,10 @@ public abstract class ShaderProgram
 
     public List<Mesh> unsortedMeshes;
     protected ShaderFile[] shaderFiles;
-    protected String perspName = "cameras", transformName = "transform", mIDName = "mID", samplerName = "sampler";
-    private Map<String, Integer> uniformLocations = new HashMap<>();
+    private Map<String, Integer> uniformLocations = new HashMap<>(), attribLocations = new HashMap<>();
     private Camera lastCamera;
 
-    protected int handle;
-    protected int index = 0, vertCount = 0, lastMatrix = -1;
+    protected int handle, lastMatrix = -1;
 
     public ShaderProgram(ShaderFile... shaderFiles)
     {
@@ -192,7 +190,12 @@ public abstract class ShaderProgram
         if(location > -1) glUniform1f(location, value);
     }
 
-    private int getUniformLocation(String name)
+    public int getHandle()
+    {
+        return handle;
+    }
+
+    public int getUniformLocation(String name)
     {
         Integer t = uniformLocations.get(name);
         if(t == null)
@@ -200,6 +203,18 @@ public abstract class ShaderProgram
             t = glGetUniformLocation(handle, name);
             if(t != -1) uniformLocations.put(name, t);
             else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to find non-existent uniform '" + name + '\'');
+        }
+        return t;
+    }
+
+    public int getAttribLocation(String name)
+    {
+        Integer t = attribLocations.get(name);
+        if(t == null)
+        {
+            t = glGetAttribLocation(handle, name);
+            if(t != -1) attribLocations.put(name, t);
+            else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to find non-existent attribute '" + name + '\'');
         }
         return t;
     }

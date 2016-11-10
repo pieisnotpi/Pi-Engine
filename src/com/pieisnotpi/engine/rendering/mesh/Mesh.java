@@ -20,7 +20,6 @@ public class Mesh<R extends Renderable>
     public List<R> renderables;
     protected Transform transform;
 
-    public int lastProgram = -1;
     protected int vertCount, drawMode, vpr, primCount;
     protected boolean shouldSort = false, isStatic, shouldBuild = true;
 

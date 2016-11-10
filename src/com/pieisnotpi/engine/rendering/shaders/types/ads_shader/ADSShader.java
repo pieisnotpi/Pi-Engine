@@ -42,7 +42,6 @@ public class ADSShader extends ShaderProgram
 
             lp.set(l.pos.x, -l.pos.y, l.pos.z, 1);
             lp.mul(view);
-            String n = "lights[" + i + "].";
 
             setUniformVec4(String.format("lights[%d].Position", i), lp);
             setUniformVec3(String.format("lights[%d].Intensity", i), l.intensity);
