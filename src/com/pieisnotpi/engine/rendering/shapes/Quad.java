@@ -3,7 +3,6 @@ package com.pieisnotpi.engine.rendering.shapes;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 
 import static com.pieisnotpi.engine.utility.MathUtility.*;
 

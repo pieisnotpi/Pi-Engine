@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -19,7 +18,7 @@ public class TexMaterial extends Material
 
     public TexMaterial(int matrixID, Texture... textures)
     {
-        super(PiEngine.S_TEXTURE_ID, matrixID);
+        super(TexShader.ID, matrixID);
         this.textures = textures;
     }
 

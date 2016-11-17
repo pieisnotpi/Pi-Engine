@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -20,7 +19,7 @@ public class TextMaterial extends Material
 
     public TextMaterial(int matrixID, Texture... textures)
     {
-        super(PiEngine.S_TEXT_ID, matrixID);
+        super(TextShader.ID, matrixID);
         this.textures = textures;
     }
 

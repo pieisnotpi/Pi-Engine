@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.input.devices;
+package com.pieisnotpi.engine.input.joystick;
 
 /**
  * Controller axis/button maps for the Dualshock 4 controller.

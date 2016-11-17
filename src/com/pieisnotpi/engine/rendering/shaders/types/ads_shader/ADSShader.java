@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
-import com.pieisnotpi.engine.rendering.camera.Camera;
-import com.pieisnotpi.engine.rendering.camera.CameraMatrix;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
+import com.pieisnotpi.engine.rendering.cameras.CameraMatrix;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
@@ -15,6 +15,8 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 public class ADSShader extends ShaderProgram
 {
+    public static final int ID = 62345;
+
     private Light[] lights = new Light[4];
     private Matrix4f view = new Matrix4f();
     private Matrix3f normal = new Matrix3f();

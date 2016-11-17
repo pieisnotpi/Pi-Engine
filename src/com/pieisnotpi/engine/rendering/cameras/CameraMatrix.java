@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.camera;
+package com.pieisnotpi.engine.rendering.cameras;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

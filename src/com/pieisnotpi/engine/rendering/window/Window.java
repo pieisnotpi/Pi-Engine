@@ -4,7 +4,7 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
-import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;

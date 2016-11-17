@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.input.devices;
+package com.pieisnotpi.engine.input.mouse;
 
 public final class Mouse
 {

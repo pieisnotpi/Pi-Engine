@@ -1,6 +1,5 @@
-package com.pieisnotpi.engine.rendering.camera;
+package com.pieisnotpi.engine.rendering.cameras;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.textures.FrameBuffer;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
@@ -11,6 +10,8 @@ import org.joml.Vector3f;
 
 public class Camera extends GameObject
 {
+    public static final int ORTHO2D_S = 0, ORTHO2D_R = 1, PERSP = 2, ORTHO = 3;
+
     public Vector2f viewPos, viewSize;
     public CameraMatrix[] matrices = new CameraMatrix[4];
     public FrameBuffer frameBuffer;
@@ -206,11 +207,11 @@ public class Camera extends GameObject
 
         if(m0)
         {
-            matrices[PiEngine.M_ORTHO2D_S_ID].start().ortho2D(-ratio, ratio, -1, 1).end();
-            matrices[PiEngine.M_ORTHO2D_R_ID].start().ortho2D(0, res.x, 0, res.y).end();
+            matrices[ORTHO2D_S].start().ortho2D(-ratio, ratio, -1, 1).end();
+            matrices[ORTHO2D_R].start().ortho2D(0, res.x, 0, res.y).end();
         }
-        if(m1) matrices[PiEngine.M_PERSP].start().perspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up).end();
-        if(m2) matrices[PiEngine.M_ORTHO].start().ortho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up).end();
+        if(m1) matrices[PERSP].start().perspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up).end();
+        if(m2) matrices[ORTHO].start().ortho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up).end();
 
         fovUpdated = false;
         ratioUpdated = false;

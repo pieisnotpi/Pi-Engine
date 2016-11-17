@@ -1,8 +1,7 @@
 package com.pieisnotpi.game.test_editor;
 
-import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.input.devices.Keyboard;
-import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.input.keyboard.Keyboard;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCMaterial;
@@ -35,7 +34,7 @@ public class EditorScene extends Scene
         assert tex != null;
         int tw = tex.width, th = tex.height;
 
-        mesh = new Mesh<>(new TexCMaterial(PiEngine.M_ORTHO2D_S_ID, tex), new Transform(), GL11.GL_TRIANGLE_STRIP, 4, false, this);
+        mesh = new Mesh<>(new TexCMaterial(Camera.ORTHO2D_S, tex), new Transform(), GL11.GL_TRIANGLE_STRIP, 4, false, this);
 
         cameras.add(new Camera(90, this).setViewport(new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.6f, 0.6f, 0.6f);

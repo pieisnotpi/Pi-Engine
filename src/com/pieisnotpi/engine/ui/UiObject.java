@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.ui;
 
-import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.scene.GameObject;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -47,12 +47,12 @@ public abstract class UiObject extends GameObject
         {
             float nx = pos.x, start = 0, end = 0;
 
-            if(matrixID == PiEngine.M_ORTHO2D_S_ID)
+            if(matrixID == Camera.ORTHO2D_S)
             {
                 start = -ratio;
                 end = ratio;
             }
-            else if(matrixID == PiEngine.M_ORTHO2D_R_ID)
+            else if(matrixID == Camera.ORTHO2D_R)
             {
                 start = 0;
                 end = res.x;
@@ -68,12 +68,12 @@ public abstract class UiObject extends GameObject
         if(!vAlign.equals(VAlignment.NONE))
         {
             float ny = pos.y, start = 0, end = 0;
-            if(matrixID == PiEngine.M_ORTHO2D_S_ID)
+            if(matrixID == Camera.ORTHO2D_S)
             {
                 start = -1;
                 end = 1;
             }
-            else if(matrixID == PiEngine.M_ORTHO2D_R_ID)
+            else if(matrixID == Camera.ORTHO2D_R)
             {
                 start = 0;
                 end = res.y;

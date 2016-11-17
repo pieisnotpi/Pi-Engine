@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders.types.color_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -16,7 +15,7 @@ public class ColorMaterial extends Material
 {
     public ColorMaterial(int matrixID)
     {
-        super(PiEngine.S_COLOR_ID, matrixID);
+        super(ColorShader.ID, matrixID);
     }
 
     public Attribute[] genAttributes(boolean isStatic)

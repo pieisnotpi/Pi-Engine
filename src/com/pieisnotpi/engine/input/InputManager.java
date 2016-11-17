@@ -1,6 +1,10 @@
 package com.pieisnotpi.engine.input;
 
-import com.pieisnotpi.engine.input.devices.Mouse;
+import com.pieisnotpi.engine.input.joystick.Joybind;
+import com.pieisnotpi.engine.input.joystick.Joystick;
+import com.pieisnotpi.engine.input.keyboard.Keybind;
+import com.pieisnotpi.engine.input.mouse.Mouse;
+import com.pieisnotpi.engine.input.mouse.Mousebind;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Vector2d;
@@ -72,20 +76,20 @@ public class InputManager
         {
             if(event == GLFW_CONNECTED)
             {
-                window.scene.onJoystickConnect(joysticks[joy] = new Joystick(joy));
+                if(window.scene != null) window.scene.onJoystickConnect(joysticks[joy] = new Joystick(joy));
                 Logger.SYSTEM.log("Joystick '" + joysticks[joy].name + "' has been connected");
             }
             else
             {
-                window.scene.onJoystickDisconnect(joysticks[joy]);
+                if(window.scene != null) window.scene.onJoystickDisconnect(joysticks[joy]);
                 Logger.SYSTEM.log("Joystick '" + joysticks[joy].name + "' has been disconnected");
                 joysticks[joy] = null;
             }
         }));
 
-        mousebinds.add(new Mousebind(Mouse.BUTTON_LEFT, (value, timeStep) -> window.scene.onLeftClick(), (value, timeStep) -> window.scene.onLeftHold(), (value, timeStep) -> window.scene.onLeftRelease()));
-        mousebinds.add(new Mousebind(Mouse.BUTTON_RIGHT, (value, timeStep) -> window.scene.onRightClick(), (value, timeStep) -> window.scene.onRightHold(), (value, timeStep) -> window.scene.onRightRelease()));
-        mousebinds.add(new Mousebind(Mouse.BUTTON_MIDDLE, (value, timeStep) -> window.scene.onMiddleClick(), (value, timeStep) -> window.scene.onMiddleHold(), (value, timeStep) -> window.scene.onMiddleRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_LEFT, (xPos, yPos) -> window.scene.onLeftClick(), (xPos, yPos, timeStep) -> window.scene.onLeftHold(), (xPos, yPos) -> window.scene.onLeftRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_RIGHT, (xPos, yPos) -> window.scene.onRightClick(), (xPos, yPos, timeStep) -> window.scene.onRightHold(), (xPos, yPos) -> window.scene.onRightRelease()));
+        mousebinds.add(new Mousebind(Mouse.BUTTON_MIDDLE, (xPos, yPos) -> window.scene.onMiddleClick(), (xPos, yPos, timeStep) -> window.scene.onMiddleHold(), (xPos, yPos) -> window.scene.onMiddleRelease()));
     }
 
     public void pollInputs(float timeStep)
@@ -119,11 +123,11 @@ public class InputManager
                 {
                     int temp = glfwGetMouseButton(window.handle, mousebind.button);
 
-                    if(temp == GLFW_RELEASE) mousebind.release();
+                    if(temp == GLFW_RELEASE) mousebind.release((int) cursorPos.x, (int) cursorPos.y);
                     else if(temp == GLFW_PRESS)
                     {
-                        mousebind.press();
-                        mousebind.hold(timeStep);
+                        mousebind.press((int) cursorPos.x, (int) cursorPos.y);
+                        mousebind.hold((int) cursorPos.x, (int) cursorPos.y, timeStep);
                     }
                 }
             });

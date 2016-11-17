@@ -2,11 +2,11 @@ package com.pieisnotpi.engine.scene;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.audio.AudioListener;
-import com.pieisnotpi.engine.input.Joybind;
-import com.pieisnotpi.engine.input.Joystick;
-import com.pieisnotpi.engine.input.Keybind;
-import com.pieisnotpi.engine.input.Mousebind;
-import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.input.joystick.Joybind;
+import com.pieisnotpi.engine.input.joystick.Joystick;
+import com.pieisnotpi.engine.input.keyboard.Keybind;
+import com.pieisnotpi.engine.input.mouse.Mousebind;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.window.Window;
@@ -72,7 +72,7 @@ public abstract class Scene
 
     public Scene init()
     {
-        fps = new Text(PixelFont.getFont(), "", new Vector3f(0, 0, -0.1f), PiEngine.M_ORTHO2D_S_ID, this);
+        fps = new Text(PixelFont.getFont(), "", new Vector3f(0, 0, -0.1f), Camera.ORTHO2D_S, this);
         fps.transform.setScale(0.01f, 0.01f, 1);
         listener = new AudioListener(this);
 

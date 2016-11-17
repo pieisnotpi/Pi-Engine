@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.scene;
 
-import com.pieisnotpi.engine.input.Joystick;
+import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Vector2d;

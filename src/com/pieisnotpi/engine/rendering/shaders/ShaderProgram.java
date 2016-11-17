@@ -2,7 +2,7 @@ package com.pieisnotpi.engine.rendering.shaders;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

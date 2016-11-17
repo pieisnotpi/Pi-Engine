@@ -1,6 +1,6 @@
 package com.pieisnotpi.game.scenes;
 
-import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexMaterial;
@@ -32,7 +32,7 @@ public class TestScene extends PauseScene
 
         Grass[][] blocks = new Grass[w][h];
 
-        TexMaterial blocksMaterial = new TexMaterial(PiEngine.M_PERSP, Texture.getTextureFile("grass"));
+        TexMaterial blocksMaterial = new TexMaterial(Camera.PERSP, Texture.getTextureFile("grass"));
         blocksMesh = new Mesh<Quad>(blocksMaterial, new Transform(), GL11.GL_TRIANGLE_STRIP, 4, true, this).setRenderables(new ArrayList<>(w*h*4));
 
         for(int x = 0; x < w; x++)

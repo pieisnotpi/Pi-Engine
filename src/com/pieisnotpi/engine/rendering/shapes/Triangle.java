@@ -4,7 +4,6 @@ import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 
 public class Triangle extends Renderable
 {

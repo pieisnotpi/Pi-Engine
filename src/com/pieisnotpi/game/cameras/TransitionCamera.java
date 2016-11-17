@@ -1,6 +1,6 @@
 package com.pieisnotpi.game.cameras;
 
-import com.pieisnotpi.engine.rendering.camera.Camera;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector2i;

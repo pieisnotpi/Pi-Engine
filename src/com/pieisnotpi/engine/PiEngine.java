@@ -26,10 +26,6 @@ public class PiEngine
     public static Map<Long, Monitor> monitorMap = new HashMap<>();
     // Current game instance
     public static GameInstance gameInstance;
-    // Matrix IDs
-    public static final int M_ORTHO2D_S_ID = 0, M_ORTHO2D_R_ID = 1, M_PERSP = 2, M_ORTHO = 3;
-    // Shader IDs
-    public static final int S_TEXTURE_ID = 4, S_COLOR_ID = 1, S_TEXT_ID = 2, S_TEXTURE_C_ID = 3, S_ADS_ID = 0;
     // Debug mode
     public static boolean debug = false, lwjgl_debug = false, gl_debug = false;
     // GL Version

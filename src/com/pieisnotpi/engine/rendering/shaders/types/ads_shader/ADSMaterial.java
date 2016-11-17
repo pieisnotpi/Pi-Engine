@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -22,7 +21,7 @@ public class ADSMaterial extends Material
 
     public ADSMaterial(Vector3f ambient, Vector3f diffuse, Vector3f specular, float shininess, int matrixID, Texture... textures)
     {
-        super(PiEngine.S_ADS_ID, matrixID);
+        super(ADSShader.ID, matrixID);
         this.textures = textures;
 
         ka = ambient;

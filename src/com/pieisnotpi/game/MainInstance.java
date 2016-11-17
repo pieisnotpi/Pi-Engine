@@ -2,8 +2,8 @@ package com.pieisnotpi.game;
 
 import com.pieisnotpi.engine.GameInstance;
 import com.pieisnotpi.engine.PiEngine;
-import com.pieisnotpi.engine.input.Keybind;
-import com.pieisnotpi.engine.input.devices.Keyboard;
+import com.pieisnotpi.engine.input.keyboard.Keybind;
+import com.pieisnotpi.engine.input.keyboard.Keyboard;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.scene.Scene;
@@ -29,10 +29,10 @@ class MainInstance extends GameInstance
 
         w0.setScene(scenes[1][0]);
 
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, (value, timeStep) -> w0.setScene(scenes[0][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, (value, timeStep) -> w0.setScene(scenes[1][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, (value, timeStep) -> w0.setScene(scenes[2][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, (value, timeStep) -> w0.setFullscreen(!w0.isFullscreen()), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, () -> w0.setScene(scenes[0][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w0.setScene(scenes[1][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, () -> w0.setFullscreen(!w0.isFullscreen()), null, null));
 
         /*windows.add(w1 = new Window("Pi Engine 2", 600, 600, PiEngine.getMonitor(0)).init());
 
