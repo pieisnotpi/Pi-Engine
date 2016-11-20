@@ -20,6 +20,7 @@ public class Mesh<R extends Renderable>
     public Material material;
     public List<R> renderables;
     protected Transform transform;
+    protected List<Mesh> copies;
 
     protected int vertCount, drawMode, vpr, primCount;
     protected boolean shouldSort = false, isStatic, shouldBuild = true;
@@ -43,6 +44,8 @@ public class Mesh<R extends Renderable>
         this.original = original;
         this.transform = transform;
         this.scene = scene;
+
+        original.registerCopy(this);
 
         material = original.material;
         array = original.array;
@@ -120,7 +123,7 @@ public class Mesh<R extends Renderable>
             return this;
         }
 
-        if(renderables == null || renderables.size() == 0 && array.alive && indices.alive) return this;
+        if(renderables == null || renderables.size() == 0 || !array.alive || !indices.alive) return this;
 
         primCount = renderables.size();
         vertCount = vpr*primCount;
@@ -168,6 +171,17 @@ public class Mesh<R extends Renderable>
         return this;
     }
 
+    protected void registerCopy(Mesh copy)
+    {
+        if(copies == null) copies = new ArrayList<>();
+        copies.add(copy);
+    }
+
+    protected void unregisterCopy(Mesh copy)
+    {
+        if(copies != null) copies.remove(copy);
+    }
+
     public Transform getTransform() { return transform; }
 
     public int getVertCount() { return vertCount; }
@@ -189,6 +203,9 @@ public class Mesh<R extends Renderable>
             array.destroy();
             indices.destroy();
         }
+        else original.unregisterCopy(this);
+
+        if(copies != null) while(copies.size() > 0) copies.get(0).destroy();
 
         transform.removeFromParent();
 

@@ -1,5 +1,7 @@
 package com.pieisnotpi.engine.updates;
 
+import com.pieisnotpi.engine.output.Logger;
+
 public class GameUpdate
 {
     /**
@@ -9,6 +11,8 @@ public class GameUpdate
      * @value abbreviation: The abbreviation of this GameUpdate's name, used for debug
      * @value action: The action this GameUpdate runs
      */
+
+    public String name = "GAME";
     public long lastUpdateTime = 0, lastTimeTaken = 0, totalTimeTaken = 0;
     public int updates, period, frequency;
     private GameUpdateAction updateAction;
@@ -34,10 +38,18 @@ public class GameUpdate
         period = 1000/frequency;
     }
 
-    public void setFrequency(int frequency)
+    public GameUpdate setName(String name)
+    {
+        this.name = name;
+        return this;
+    }
+
+    public GameUpdate setFrequency(int frequency)
     {
         this.frequency = frequency;
         period = 1000/frequency;
+
+        return this;
     }
 
     public void update(long time)
@@ -47,6 +59,7 @@ public class GameUpdate
         updateAction.runAction((time - lastUpdateTime)/1000f);
         lastUpdateTime = time;
         totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
+        if(lastTimeTaken > 20) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run, this might be bad", name, lastTimeTaken));
         updates++;
     }
 

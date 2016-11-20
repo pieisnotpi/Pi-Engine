@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders.buffers;
 
-import com.pieisnotpi.engine.PiEngine;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
@@ -14,15 +13,6 @@ public class IndexBuffer extends GLBuffer<IntBuffer>
     public IndexBuffer(boolean clearMemory)
     {
         super(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, clearMemory);
-    }
-
-    @Override
-    public IndexBuffer bind()
-    {
-        if(PiEngine.glInstance.boundIndices != handle) super.bind();
-        PiEngine.glInstance.boundIndices = handle;
-
-        return this;
     }
 
     @Override

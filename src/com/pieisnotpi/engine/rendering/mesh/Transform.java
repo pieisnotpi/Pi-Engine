@@ -50,6 +50,7 @@ public class Transform
 
     public Transform setParent(Transform parent)
     {
+        if(parent == null) return this;
         parent.addChild(this);
         return this;
     }
@@ -267,6 +268,7 @@ public class Transform
 
     public Transform removeFromParent()
     {
+        if(parentTransform == null) return this;
         parentTransform.removeChild(this);
         parentTransform = null;
         return this;

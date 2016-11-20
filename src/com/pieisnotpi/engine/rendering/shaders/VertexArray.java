@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
-import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -39,8 +38,7 @@ public class VertexArray
 
     public void bind()
     {
-        if(PiEngine.glInstance.boundArray != handle) glBindVertexArray(handle);
-        PiEngine.glInstance.boundArray = handle;
+        glBindVertexArray(handle);
     }
 
     public String toString()

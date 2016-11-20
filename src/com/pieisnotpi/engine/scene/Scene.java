@@ -78,7 +78,7 @@ public abstract class Scene
 
         fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 0.05f, -0.05f);
 
-        gameUpdate = new GameUpdate(60, this::update);
+        gameUpdate = new GameUpdate(60, this::update).setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
 
         PiEngine.gameInstance.updates.add(gameUpdate);
 

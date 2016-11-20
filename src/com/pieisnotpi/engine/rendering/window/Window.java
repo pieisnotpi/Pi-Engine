@@ -93,9 +93,9 @@ public class Window
             scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
 
             this.time = 0;
-        });
+        }).setName("DRAW");
 
-        inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep));
+        inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
     }
 
     public Window init()

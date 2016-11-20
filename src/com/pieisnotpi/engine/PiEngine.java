@@ -42,6 +42,9 @@ public class PiEngine
     {
         assert inst != null;
 
+        if(debug) setDebug(true);
+        if(lwjgl_debug) setLwjglDebug(true);
+
         glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
         if(!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
@@ -94,8 +97,6 @@ public class PiEngine
 
         glfwDestroyWindow(window);
 
-        if(debug) setDebug(true);
-        if(lwjgl_debug) setLwjglDebug(true);
         if(gl_debug) setGlDebug(true);
 
         gameInstance = inst;
