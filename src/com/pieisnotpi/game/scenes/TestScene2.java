@@ -76,6 +76,9 @@ public class TestScene2 extends PauseScene
 
         blocksMesh.build().register();
 
+        Mesh<Quad> blocksMesh2 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(90, 0, 0), this).register();
+        Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();
+
         TexQuad texQuad = new TexQuad(-0.4445f, 1, 0.2f, 0.889f, 0.5f, 0, new Sprite(-1, -1, 0f, 0f, 1f, 1f, false));
         Mesh fbMesh = new Mesh<TexQuad>(new TexMaterial(Camera.PERSP, c.frameBuffer.texture), new Transform(), GL11.GL_TRIANGLE_STRIP, 4, true, this).addRenderable(texQuad).build().register();
         PiEngine.glInstance.textures.put(c.toString(), c.frameBuffer.texture);

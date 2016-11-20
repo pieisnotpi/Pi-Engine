@@ -19,7 +19,7 @@ public class GLInstance
     public Map<String, Font> fonts = new HashMap<>();
     public GLCapabilities capabilities;
     public int[] boundTextures = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-    public String[] boundStrings = {""};
+    public int boundArray, boundIndices;
     public long windowHandle;
     public int lastShaderID = -1;
 

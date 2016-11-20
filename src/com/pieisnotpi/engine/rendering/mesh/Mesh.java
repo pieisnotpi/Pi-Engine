@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Mesh<R extends Renderable>
 {
+    public Mesh original;
     public Scene scene;
     public VertexArray array;
     public IndexBuffer indices;
@@ -35,6 +36,24 @@ public class Mesh<R extends Renderable>
         renderables = new ArrayList<>();
         array = new VertexArray(material.genAttributes(isStatic)).init();
         indices = new IndexBuffer(isStatic);
+    }
+
+    public Mesh(Mesh original, Transform transform, Scene scene)
+    {
+        this.original = original;
+        this.transform = transform;
+        this.scene = scene;
+
+        material = original.material;
+        array = original.array;
+        indices = original.indices;
+        vertCount = original.vertCount;
+        drawMode = original.drawMode;
+        vpr = original.vpr;
+        primCount = original.primCount;
+        shouldSort = original.shouldSort;
+        isStatic = original.isStatic;
+        shouldBuild = original.shouldBuild;
     }
 
     public Mesh<R> setTransform(Transform transform)
@@ -89,7 +108,19 @@ public class Mesh<R extends Renderable>
 
     public Mesh<R> build()
     {
-        if(renderables.size() == 0 && array.alive && indices.alive) return this;
+        if(original != null)
+        {
+            original.build();
+
+            vertCount = original.vertCount;
+            drawMode = original.drawMode;
+            primCount = original.primCount;
+            shouldSort = original.shouldSort;
+
+            return this;
+        }
+
+        if(renderables == null || renderables.size() == 0 && array.alive && indices.alive) return this;
 
         primCount = renderables.size();
         vertCount = vpr*primCount;
@@ -153,8 +184,12 @@ public class Mesh<R extends Renderable>
 
     public void destroy()
     {
-        array.destroy();
-        indices.destroy();
+        if(original == null)
+        {
+            array.destroy();
+            indices.destroy();
+        }
+
         transform.removeFromParent();
 
         renderables = null;
