@@ -1,11 +1,14 @@
 package com.pieisnotpi.engine.ui;
 
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.scene.GameObject;
+import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
-public abstract class UiObject extends GameObject
+public abstract class UiObject<m extends Renderable> extends GameObject<m>
 {
     public enum HAlignment { NONE, LEFT, CENTER, RIGHT }
     public enum VAlignment { NONE, BOTTOM, CENTER, TOP }
@@ -15,7 +18,19 @@ public abstract class UiObject extends GameObject
     private Vector2f offset = new Vector2f();
     private boolean shouldAlign = false;
 
-    public boolean mouseHoverStatus = false;
+    protected boolean mouseHoverStatus = false;
+    protected int matrixID;
+
+    protected UiObject() {}
+    
+    public UiObject(Mesh<m> mesh, int matrixID)
+    {
+        super(mesh);
+        this.matrixID = matrixID;
+    }
+    
+    public void setMatrixID(int matrixID) { this.matrixID = matrixID; }
+    public int getMatrixID() { return matrixID; }
 
     public final void setHAlignment(HAlignment align, float offset) { setAlignment(align, vAlign, offset, this.offset.y); }
     public final void setVAlignment(VAlignment align, float offset) { setAlignment(hAlign, align, this.offset.x, offset); }
@@ -32,12 +47,12 @@ public abstract class UiObject extends GameObject
         align();
     }
 
-    protected void align()
+    public void align()
     {
-        if(scene.window != null) align(scene.window.getWindowRes());
+        if(scene != null && scene.window != null) align(scene.window.getWindowRes());
     }
 
-    protected void align(Vector2i res)
+    public void align(Vector2i res)
     {
         if(!shouldAlign) return;
 
@@ -45,7 +60,7 @@ public abstract class UiObject extends GameObject
 
         if(!hAlign.equals(HAlignment.NONE))
         {
-            float nx = pos.x, start = 0, end = 0;
+            float nx, start = 0, mid = 0, end = 0;
 
             if(matrixID == Camera.ORTHO2D_S)
             {
@@ -56,18 +71,19 @@ public abstract class UiObject extends GameObject
             {
                 start = 0;
                 end = res.x;
+                mid = res.x/2f;
             }
 
             if(hAlign.equals(HAlignment.LEFT)) nx = start + offset.x;
-            else if(hAlign.equals(HAlignment.CENTER)) nx = -getWidth()/2 + offset.x;
-            else if(hAlign.equals(HAlignment.RIGHT)) nx = end - getWidth() + offset.x;
+            else if(hAlign.equals(HAlignment.CENTER)) nx = mid + -getWidth()/2 + offset.x;
+            else nx = end - getWidth() + offset.x;
 
-            if(nx != pos.x) setX(nx);
+            transform.translateAbs(nx - transform.pos.x, 0, 0);
         }
 
         if(!vAlign.equals(VAlignment.NONE))
         {
-            float ny = pos.y, start = 0, end = 0;
+            float ny, start = 0, mid = 0, end = 0;
             if(matrixID == Camera.ORTHO2D_S)
             {
                 start = -1;
@@ -77,13 +93,14 @@ public abstract class UiObject extends GameObject
             {
                 start = 0;
                 end = res.y;
+                mid = res.y/2f;
             }
 
             if(vAlign.equals(VAlignment.BOTTOM)) ny = start + offset.y;
-            else if(vAlign.equals(VAlignment.CENTER)) ny = -getHeight()/2 + offset.y;
-            else if(vAlign.equals(VAlignment.TOP)) ny = end - getHeight() + offset.y;
+            else if(vAlign.equals(VAlignment.CENTER)) ny = mid + -getHeight()/2 + offset.y;
+            else ny = end - getHeight() + offset.y;
 
-            if(ny != pos.y) setY(ny);
+            transform.translateAbs(0, ny - transform.pos.y, 0);
         }
     }
 
@@ -91,9 +108,9 @@ public abstract class UiObject extends GameObject
     public void onWindowResize(Vector2i res) { align(res); }
 
     @Override
-    public void onMouseMovement(Vector2f cursorPos)
+    public void onMouseMovement(Vector2f scaled, Vector2i unscaled)
     {
-        if(isPointInsideObject(cursorPos))
+        if(isPointInsideObject(scaled))
         {
             if(!mouseHoverStatus) onMouseEntered();
 
@@ -107,9 +124,15 @@ public abstract class UiObject extends GameObject
         }
     }
 
-    @Override
-    public boolean isPointInsideObject(Vector2f point)
+    public boolean isMouseOver()
     {
-        return (point.x >= pos.x && point.x <= pos.x + size.x && point.y >= pos.y && point.y <= pos.y + size.y);
+        return mouseHoverStatus;
+    }
+    
+    @Override
+    public void onRegister(Scene scene)
+    {
+        super.onRegister(scene);
+        align();
     }
 }

@@ -16,10 +16,12 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 public class TextMaterial extends Material
 {
     public Texture[] textures;
+    public int outlineSize = 0;
 
-    public TextMaterial(int matrixID, Texture... textures)
+    public TextMaterial(int outlineSize, int matrixID, Texture... textures)
     {
         super(TextShader.ID, matrixID);
+        this.outlineSize = outlineSize;
         this.textures = textures;
     }
 

@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering.mesh;
 
+import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -16,32 +17,33 @@ public class Transform
 {
     private Quaternionf quaternion = new Quaternionf();
     private List<Transform> children = new ArrayList<>();
-    private Matrix4f localMatrix, outputMatrix;
-    private Transform parentTransform = null;
+    private Matrix4f lm, om;
+    private Transform parent = null;
     private FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
     private boolean needsBuilt = true;
 
+    public AxisAngle4f angle = new AxisAngle4f();
     public Vector3f pos = new Vector3f(0), scale = new Vector3f(1), rotDeg = new Vector3f(0), rotRad = new Vector3f(0), center = new Vector3f(0);
 
     public Transform()
     {
-        localMatrix = new Matrix4f();
-        outputMatrix = new Matrix4f();
+        lm = new Matrix4f();
+        om = new Matrix4f();
 
         flagForBuild();
     }
 
     public Transform(Transform parent)
     {
-        localMatrix = new Matrix4f();
-        outputMatrix = new Matrix4f();
+        lm = new Matrix4f();
+        om = new Matrix4f();
 
         setParent(parent);
     }
 
     public Transform addChild(Transform child)
     {
-        child.parentTransform = this;
+        child.parent = this;
         child.flagForBuild();
         children.add(child);
 
@@ -58,7 +60,7 @@ public class Transform
     public Transform scale(float x, float y, float z)
     {
         flagForBuild();
-        localMatrix.scale(x, y, z);
+        lm.scale(x, y, z);
         scale.mul(x, y, z);
 
         return this;
@@ -92,7 +94,7 @@ public class Transform
     public Transform scaleCentered(float x, float y, float z)
     {
         flagForBuild();
-        localMatrix.scaleAround(x, y, z, center.x, center.y, center.z);
+        lm.scaleAround(x, y, z, center.x, center.y, center.z);
         scale.mul(x, y, z);
         return this;
     }
@@ -125,8 +127,8 @@ public class Transform
     public Transform translate(float x, float y, float z)
     {
         flagForBuild();
-        localMatrix.translate(x, y, z);
-        pos.set(localMatrix.m30(), localMatrix.m31(), localMatrix.m32());
+        lm.translate(x, y, z);
+        pos.set(lm.m30(), lm.m31(), lm.m32());
 
         return this;
     }
@@ -158,9 +160,13 @@ public class Transform
 
     public Transform translateAbs(float x, float y, float z)
     {
+        if(x == 0 && y == 0 && z == 0) return this;
         flagForBuild();
-        localMatrix.translate(x/scale.x, y/scale.y, z/scale.z);
-        pos.set(localMatrix.m30(), localMatrix.m31(), localMatrix.m32());
+
+        float tx = x/scale.x, ty = y/scale.y, tz = z/scale.z;
+
+        lm.translateLocal(x, y, z);
+        pos.set(lm.m30(), lm.m31(), lm.m32());
 
         return this;
     }
@@ -192,40 +198,107 @@ public class Transform
 
     public Transform rotateDegrees(float x, float y, float z)
     {
+        if(x == 0 && y == 0 && z == 0) return this;
         flagForBuild();
 
-        rotDeg.add(x, y, z);
-        rotRad.add(x = x*toRads, y = y*toRads, z = z*toRads);
-
-        quaternion.set(0, 0, 0, 1).rotate(x, y, z);
-
-        localMatrix.rotateAround(quaternion, center.x, center.y, center.z);
+        lm.rotateZYX(z*toRads, y*toRads, x*toRads);
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
 
         return this;
     }
 
     public Transform setRotateDegrees(float x, float y, float z)
     {
-        return rotateDegrees(x - rotDeg.x, y - rotDeg.y, z - rotDeg.z);
+        if(x == rotDeg.x && y == rotDeg.y && z == rotDeg.z) return this;
+        flagForBuild();
+        
+        lm.setRotationZYX(z*toRads, y*toRads, x*toRads);
+    
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
+        
+        return this;
     }
 
     public Transform rotateRadians(float x, float y, float z)
     {
+        if(x == 0 && y == 0 && z == 0) return this;
         flagForBuild();
 
-        rotRad.add(x, y, z);
-        rotDeg.add(x*toDegs, y*toDegs, z*toDegs);
-
-        quaternion.set(0, 0, 0, 1).rotate(x, y, z);
-
-        localMatrix.rotateAround(quaternion, center.x, center.y, center.z);
+        lm.rotateXYZ(x, y, z);
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
 
         return this;
     }
 
     public Transform setRotateRadians(float x, float y, float z)
     {
-        return rotateRadians(x - rotRad.x, y - rotRad.y, z - rotRad.z);
+        if(x == rotRad.x && y == rotRad.y && z == rotRad.z) return this;
+        flagForBuild();
+    
+        lm.setRotationXYZ(x, y, z);
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
+    
+        return this;
+    }
+    
+    public Transform rotateDegreesCentered(float x, float y, float z)
+    {
+        if(x == 0 && y == 0 && z == 0) return this;
+        flagForBuild();
+
+        quaternion.set(0, 0, 0, 1).rotate(x, y, z);
+    
+        lm.rotateAround(quaternion, center.x, center.y, center.z);
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
+
+        return this;
+    }
+
+    public Transform setRotateDegreesCentered(float x, float y, float z)
+    {
+        return rotateDegreesCentered(x - rotDeg.x, y - rotDeg.y, z - rotDeg.z);
+    }
+
+    public Transform rotateRadiansCentered(float x, float y, float z)
+    {
+        if(x == 0 && y == 0 && z == 0) return this;
+        flagForBuild();
+        
+        quaternion.set(0, 0, 0, 1).rotate(x, y, z);
+    
+        lm.rotateAround(quaternion, center.x, center.y, center.z);
+        lm.getEulerAnglesZYX(rotRad).mul(toDegs, rotDeg);
+        lm.getTranslation(pos);
+        lm.getScale(scale);
+        rotDeg.y = -rotDeg.y;
+        rotRad.y = -rotRad.y;
+
+        return this;
+    }
+
+    public Transform setRotateRadiansCentered(float x, float y, float z)
+    {
+        return rotateRadiansCentered(x - rotRad.x, y - rotRad.y, z - rotRad.z);
     }
 
     public Transform setCenter(float x, float y, float z)
@@ -237,15 +310,14 @@ public class Transform
 
     public Matrix4f getLocalMatrix()
     {
-        return localMatrix;
+        return lm;
     }
 
     public Matrix4f getRealMatrix()
     {
-        if(parentTransform == null) return localMatrix;
-        if(needsBuilt) return parentTransform.getRealMatrix().mul(localMatrix, outputMatrix);
-
-        else return outputMatrix;
+        if(parent == null) return getLocalMatrix();
+        if(needsBuilt) return parent.getRealMatrix().mul(getLocalMatrix(), om);
+        else return om;
     }
 
     public FloatBuffer getBuffer()
@@ -257,7 +329,7 @@ public class Transform
 
     public Transform getParent()
     {
-        return parentTransform;
+        return parent;
     }
 
     public Transform removeChild(Transform child)
@@ -268,15 +340,25 @@ public class Transform
 
     public Transform removeFromParent()
     {
-        if(parentTransform == null) return this;
-        parentTransform.removeChild(this);
-        parentTransform = null;
+        if(parent == null) return this;
+        parent.removeChild(this);
+        parent = null;
         return this;
     }
 
+    public boolean needsBuilt()
+    {
+        return needsBuilt;
+    }
+    
     private void flagForBuild()
     {
         needsBuilt = true;
         children.forEach(Transform::flagForBuild);
+    }
+    
+    public void reset()
+    {
+        lm.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }
 }

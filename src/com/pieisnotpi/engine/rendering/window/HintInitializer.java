@@ -1,7 +1,5 @@
 package com.pieisnotpi.engine.rendering.window;
 
-import com.pieisnotpi.engine.PiEngine;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 public interface HintInitializer
@@ -26,10 +24,6 @@ public interface HintInitializer
         hint(RESIZABLE, TRUE);
         hint(AUTO_ICONIFY, FALSE);
         hint(SAMPLES, 8);
-        hint(GLFW_CONTEXT_VERSION_MAJOR, PiEngine.glMajor);
-        hint(GLFW_CONTEXT_VERSION_MINOR, PiEngine.glMinor);
-        hint(GLFW_OPENGL_FORWARD_COMPAT, TRUE);
-        hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
 
     default void hint(int hint, int value)

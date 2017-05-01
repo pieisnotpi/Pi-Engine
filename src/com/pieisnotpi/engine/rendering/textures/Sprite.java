@@ -14,12 +14,12 @@ public class Sprite
 
     public Sprite(Texture texture, int x0, int y0, int x1, int y1)
     {
-        this(texture.width, texture.height, x0, y0, x1, y1, true);
+        this(texture.image.width, texture.image.height, x0, y0, x1, y1, true);
     }
 
     public Sprite(Texture texture, int x0, int y0, int x1, int y1, boolean flipY)
     {
-        this(texture.width, texture.height, x0, y0, x1, y1, flipY);
+        this(texture.image.width, texture.image.height, x0, y0, x1, y1, flipY);
     }
 
     public Sprite(int texWidth, int texHeight, int x0, int y0, int x1, int y1)
@@ -67,36 +67,17 @@ public class Sprite
         }
     }
 
-    public Sprite(Texture texture, float x0, float y0, float x1, float y1)
+    public Sprite(float x0, float y0, float x1, float y1)
     {
-        this(texture.width, texture.height, x0, y0, x1, y1, true);
+        this(x0, y0, x1, y1, true);
     }
 
-    public Sprite(Texture texture, float x0, float y0, float x1, float y1, boolean flipY)
+    public Sprite(float uvx0, float uvy0, float uvx1, float uvy1, boolean flipY)
     {
-        this(texture.width, texture.height, x0, y0, x1, y1, flipY);
-    }
-
-    public Sprite(int texWidth, int texHeight, float x0, float y0, float x1, float y1)
-    {
-        this(texWidth, texHeight, x0, y0, x1, y1, true);
-    }
-
-    public Sprite(int texWidth, int texHeight, float uvx0, float uvy0, float uvx1, float uvy1, boolean flipY)
-    {
-        float xMult = (float) 1/texWidth, yMult = (float) 1/texHeight;
-
-        x0 = (int) (uvx0/xMult);
-        x1 = (int) (uvx1/xMult);
-        y0 = (int) (uvy0/yMult);
-        y1 = (int) (uvy1/yMult);
-
         this.uvx0 = uvx0;
         this.uvx1 = uvx1;
         this.uvy0 = uvy0;
         this.uvy1 = uvy1;
-        this.texWidth = texWidth;
-        this.texHeight = texHeight;
 
         if(flipY)
         {

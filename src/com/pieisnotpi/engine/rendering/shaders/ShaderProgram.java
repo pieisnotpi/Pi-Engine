@@ -4,6 +4,7 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -29,11 +30,13 @@ public abstract class ShaderProgram
     protected ShaderFile[] shaderFiles;
     private Map<String, Integer> uniformLocations = new HashMap<>(), attribLocations = new HashMap<>();
     private Camera lastCamera;
+    protected Window window;
 
     protected int handle, lastMatrix = -1;
 
-    public ShaderProgram(ShaderFile... shaderFiles)
+    public ShaderProgram(Window window, ShaderFile... shaderFiles)
     {
+        this.window = window;
         this.shaderFiles = shaderFiles;
 
         handle = glCreateProgram();
@@ -98,11 +101,9 @@ public abstract class ShaderProgram
             bindPMUniforms(camera, m);
             glDrawElements(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0);
         });
-
-        clearUnsorted();
     }
 
-    public void drawSorted(Mesh mesh, Camera camera)
+    public void draw(Mesh mesh, Camera camera)
     {
         use();
 
@@ -117,13 +118,16 @@ public abstract class ShaderProgram
 
         bindPMUniforms(camera, mesh);
         glDrawElements(mesh.getDrawMode(), mesh.indices.count, GL_UNSIGNED_INT, 0);
-
-        lastMatrix = -1;
     }
 
     public void use()
     {
-        if(PiEngine.glInstance.lastShaderID != handle) glUseProgram(PiEngine.glInstance.lastShaderID = handle);
+        if(PiEngine.glInstance.lastShaderID != handle)
+        {
+            glUseProgram(PiEngine.glInstance.lastShaderID = handle);
+            lastMatrix = -1;
+            lastCamera = null;
+        }
     }
 
     public void setUniformMat3(String name, Matrix3f mat3)
@@ -132,7 +136,7 @@ public abstract class ShaderProgram
         mat3.get(mat3b);
 
         if(location > -1) glUniformMatrix3fv(location, false, mat3b);
-        else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
+        else Logger.OPENGL.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
     }
 
     public void setUniformMat3(String name, FloatBuffer buffer)
@@ -140,7 +144,7 @@ public abstract class ShaderProgram
         int location = getUniformLocation(name);
 
         if(location > -1) glUniformMatrix3fv(location, false, buffer);
-        else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
+        else Logger.OPENGL.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
     }
 
     public void setUniformMat4(String name, Matrix4f mat4)
@@ -149,7 +153,7 @@ public abstract class ShaderProgram
         mat4.get(mat4b);
 
         if(location > -1) glUniformMatrix4fv(location, false, mat4b);
-        else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
+        else Logger.OPENGL.err("Program " + handle + " attempted to set non-existent uniform '" + name + '\'');
     }
 
     public void setUniformMat4(String name, FloatBuffer buffer)
@@ -202,7 +206,7 @@ public abstract class ShaderProgram
         {
             t = glGetUniformLocation(handle, name);
             if(t != -1) uniformLocations.put(name, t);
-            else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to find non-existent uniform '" + name + '\'');
+            else Logger.OPENGL.err("Program " + handle + " attempted to find non-existent uniform '" + name + '\'');
         }
         return t;
     }
@@ -214,7 +218,7 @@ public abstract class ShaderProgram
         {
             t = glGetAttribLocation(handle, name);
             if(t != -1) attribLocations.put(name, t);
-            else Logger.SHADER_PROGRAM.err("Program " + handle + " attempted to find non-existent attribute '" + name + '\'');
+            else Logger.OPENGL.err("Program " + handle + " attempted to find non-existent attribute '" + name + '\'');
         }
         return t;
     }
@@ -232,23 +236,5 @@ public abstract class ShaderProgram
         }
 
         return temp.toString();
-    }
-
-    public void finalize() throws Throwable
-    {
-        super.finalize();
-
-        glDeleteProgram(handle);
-    }
-
-    public void clearUnsorted()
-    {
-        lastMatrix = -1;
-    }
-
-    public void clearSorted()
-    {
-        lastMatrix = -1;
-        lastCamera = null;
     }
 }

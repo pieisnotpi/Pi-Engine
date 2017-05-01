@@ -55,4 +55,14 @@ public class Color
     {
         return "r: " + red + ", g: " + green + ", b: " + blue;
     }
+    
+    public static byte valueToByte(float value)
+    {
+        return (byte) ((int) (value*255) & 0xff);
+    }
+    
+    public static float byteToValue(byte value)
+    {
+        return Byte.toUnsignedInt(value)/255f;
+    }
 }

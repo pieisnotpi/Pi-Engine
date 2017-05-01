@@ -6,7 +6,7 @@ struct LightInfo
     vec3 Intensity;
 };
 
-uniform LightInfo lights[4];
+uniform LightInfo lights[16];
 
 struct Material
 {
@@ -27,24 +27,20 @@ out vec4 FragColor;
 
 vec3 ads(int index)
 {
-    vec3 d = vec3(lights[index].Position) - Position;
-    vec3 i = lights[index].Intensity;
+    LightInfo l = lights[index];
 
-    float ds = sqrt(d.x*d.x + d.y*d.y + d.z*d.z)/10;
-    if(ds < 0.75) ds = 0.75;
+    vec3 s = normalize(vec3(l.Position) - Position);
+    vec3 v = normalize(vec3(-Position));
+    vec3 h = normalize(v + s);
 
-    vec3 n = normalize(Normal);
-    vec3 s = normalize(d);
-    vec3 h = normalize(normalize(-Position) + s);
-
-    return i*(m.Ka + m.Kd*max(dot(s, Normal), 0.0) + m.Ks*pow(max(dot(h, n), 0.0), m.Shininess))/ds;
+    return l.Intensity*(m.Ka + m.Kd*max(dot(s, Normal), 0.0 ) + m.Ks*pow(max(dot(h, Normal), 0.0), m.Shininess));
 }
 
 void main()
 {
     vec3 Color = vec3(0);
 
-    for(int i = 0; i < 4; i++) Color += ads(i);
+    for(int i = 0; i < 16; i++) Color += ads(i);
 
     vec4 t = texture(sampler, TexCoord);
     if(t.w == 0) discard;

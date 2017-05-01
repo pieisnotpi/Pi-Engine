@@ -1,12 +1,12 @@
 package com.pieisnotpi.engine.rendering.mesh;
 
 import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
-import com.pieisnotpi.engine.scene.Scene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,36 +14,34 @@ import java.util.List;
 public class Mesh<R extends Renderable>
 {
     public Mesh original;
-    public Scene scene;
     public VertexArray array;
     public IndexBuffer indices;
     public Material material;
     public List<R> renderables;
+    
     protected Transform transform;
     protected List<Mesh> copies;
+    protected MeshConfig config;
+    protected int vertCount, primCount;
+    protected boolean shouldSort = false, shouldBuild = true;
+    
+    private boolean destroyed = false;
 
-    protected int vertCount, drawMode, vpr, primCount;
-    protected boolean shouldSort = false, isStatic, shouldBuild = true;
-
-    public Mesh(Material material, Transform transform, int drawMode, int vertsPerRenderable, boolean isStatic, Scene scene)
+    public Mesh(Material material, Transform transform, MeshConfig config)
     {
         this.material = material;
         this.transform = transform;
-        this.scene = scene;
-        this.drawMode = drawMode;
-        this.vpr = vertsPerRenderable;
-        this.isStatic = isStatic;
+        this.config = config;
 
         renderables = new ArrayList<>();
-        array = new VertexArray(material.genAttributes(isStatic)).init();
-        indices = new IndexBuffer(isStatic);
+        array = new VertexArray(material.genAttributes(config.isStatic)).init();
+        indices = new IndexBuffer(config.isStatic);
     }
 
-    public Mesh(Mesh original, Transform transform, Scene scene)
+    public Mesh(Mesh original, Transform transform)
     {
         this.original = original;
         this.transform = transform;
-        this.scene = scene;
 
         original.registerCopy(this);
 
@@ -51,11 +49,9 @@ public class Mesh<R extends Renderable>
         array = original.array;
         indices = original.indices;
         vertCount = original.vertCount;
-        drawMode = original.drawMode;
-        vpr = original.vpr;
+        config = original.config;
         primCount = original.primCount;
         shouldSort = original.shouldSort;
-        isStatic = original.isStatic;
         shouldBuild = original.shouldBuild;
     }
 
@@ -116,7 +112,6 @@ public class Mesh<R extends Renderable>
             original.build();
 
             vertCount = original.vertCount;
-            drawMode = original.drawMode;
             primCount = original.primCount;
             shouldSort = original.shouldSort;
 
@@ -126,12 +121,12 @@ public class Mesh<R extends Renderable>
         if(renderables == null || renderables.size() == 0 || !array.alive || !indices.alive) return this;
 
         primCount = renderables.size();
-        vertCount = vpr*primCount;
+        vertCount = config.vpr*primCount;
 
         for(Attribute attribute : array.attributes) attribute.setBufferSize(attribute.size*vertCount);
 
         material.putElements(renderables, array);
-        if(isStatic)
+        if(config.isStatic)
         {
             renderables.forEach(Renderable::nullify);
             renderables = null;
@@ -148,7 +143,7 @@ public class Mesh<R extends Renderable>
         for(int i = 0; i < vertCount; i++)
         {
             indices.buffer.put(i);
-            if(i != 0 && i != vertCount - 1 && (i + 1) % vpr == 0) indices.buffer.put(ShaderProgram.primitiveRestart);
+            if(i != 0 && i != vertCount - 1 && (i + 1) % config.vpr == 0) indices.buffer.put(ShaderProgram.primitiveRestart);
         }
 
         indices.buffer.flip();
@@ -158,17 +153,10 @@ public class Mesh<R extends Renderable>
 
         return this;
     }
-
-    public Mesh<R> register()
+    
+    public void draw(Camera camera)
     {
-        scene.addMesh(this);
-        return this;
-    }
-
-    public Mesh<R> unregister()
-    {
-        scene.removeMesh(this);
-        return this;
+        material.shader.draw(this, camera);
     }
 
     protected void registerCopy(Mesh copy)
@@ -186,15 +174,17 @@ public class Mesh<R extends Renderable>
 
     public int getVertCount() { return vertCount; }
 
-    public int getVpr() { return vpr; }
+    public int getVpr() { return config.vpr; }
 
-    public int getDrawMode() { return drawMode; }
+    public int getDrawMode() { return config.drawMode; }
 
     public int getPrimCount() { return primCount; }
 
     public boolean shouldBuild() { return shouldBuild; }
 
     public boolean shouldSort() { return shouldSort; }
+    
+    public boolean isDestroyed() { return destroyed; }
 
     public void destroy()
     {
@@ -213,7 +203,5 @@ public class Mesh<R extends Renderable>
         array = null;
         indices = null;
         transform = null;
-
-        unregister();
     }
 }

@@ -1,6 +1,7 @@
 package com.pieisnotpi.engine.rendering.window;
 
 import com.pieisnotpi.engine.PiEngine;
+import com.pieisnotpi.engine.image.Image;
 import com.pieisnotpi.engine.input.InputManager;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
@@ -10,7 +11,7 @@ import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import com.pieisnotpi.engine.utility.GLDebugUtility;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFWImage;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -74,7 +75,7 @@ public class Window
         handle = glfwCreateWindow(width, height, name, NULL, NULL);
         if(handle == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
-        glInstance = new GLInstance(handle).initShaders(shaderInitializer);
+        glInstance = new GLInstance(this).initShaders(shaderInitializer);
 
         glfwSwapInterval(0);
 
@@ -89,8 +90,8 @@ public class Window
         {
             if(scene == null) return;
 
-            String time = "" + (float) this.time/drawUpdate.updates;
-            scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
+            String time = Float.toString((float) this.time/drawUpdate.updates);
+            if(scene.fps != null) scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
 
             this.time = 0;
         }).setName("DRAW");
@@ -166,56 +167,17 @@ public class Window
 
         scene.drawUpdate(timeStep);
 
-        for(Camera camera : scene.cameras)
-        {
-            if(!camera.shouldDrawView() && !camera.shouldDrawFbo()) return;
+        for(Camera camera : scene.cameras) camera.drawToBuffer();
 
-            if(camera.shouldDrawFbo())
-            {
-                camera.frameBuffer.bind();
-                glViewport(0, 0, camera.frameBuffer.res.x, camera.frameBuffer.res.y);
-                glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-                glInstance.shaders.forEach((i, s) -> s.drawUnsorted(camera));
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-                scene.sortedMeshes.sort((o1, o2) ->
-                {
-                    Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
-
-                    if(p1.z > p2.z) return 1;
-                    else if(p2.z > p1.z) return -1;
-                    else return 0;
-                });
-
-                scene.sortedMeshes.forEach(m -> m.material.shader.drawSorted(m, camera));
-                glInstance.shaders.forEach((i, s) -> s.clearSorted());
-
-                camera.frameBuffer.unbind();
-            }
-
-            if(camera.shouldDrawView())
-            {
-                glViewport((int) (bufferRes.x*camera.viewPos.x), (int) (bufferRes.y*camera.viewPos.y), (int) (bufferRes.x*camera.viewSize.x), (int) (bufferRes.y*camera.viewSize.y));
-
-                glInstance.shaders.forEach((i, s) -> s.drawUnsorted(camera));
-
-                scene.sortedMeshes.sort((o1, o2) ->
-                {
-                    Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
-
-                    if(p1.z > p2.z) return 1;
-                    else if(p2.z > p1.z) return -1;
-                    else return 0;
-                });
-
-                scene.sortedMeshes.forEach(m -> m.material.shader.drawSorted(m, camera));
-                glInstance.shaders.forEach((i, s) -> s.clearSorted());
-            }
-        }
-
-        time += System.currentTimeMillis() - t;
+        for(Camera camera : scene.cameras) camera.drawView(bufferRes);
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
+
+        time += System.currentTimeMillis() - t;
     }
 
     public String getName() { return name; }
@@ -234,7 +196,7 @@ public class Window
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
 
-        glInstance.shaders.forEach((i, s) -> s.unsortedMeshes.clear());
+        glInstance.getShaders().forEach((i, s) -> s.unsortedMeshes.clear());
 
         if(!scene.isInitialized()) scene.init();
 
@@ -249,8 +211,8 @@ public class Window
 
         glfwShowWindow(handle);
 
-        PiEngine.gameInstance.updates.add(inputUpdate);
-        PiEngine.gameInstance.updates.add(drawUpdate);
+        PiEngine.gameInstance.registerUpdate(inputUpdate);
+        PiEngine.gameInstance.registerUpdate(drawUpdate);
 
         return this;
     }
@@ -261,8 +223,8 @@ public class Window
 
         glfwHideWindow(handle);
 
-        PiEngine.gameInstance.updates.remove(inputUpdate);
-        PiEngine.gameInstance.updates.remove(drawUpdate);
+        PiEngine.gameInstance.unregisterUpdate(inputUpdate);
+        PiEngine.gameInstance.unregisterUpdate(drawUpdate);
 
         return this;
     }
@@ -386,6 +348,20 @@ public class Window
 
         return this;
     }
+    
+    public Window setAttribute(int attribute, int value)
+    {
+        glfwSetWindowAttrib(handle, attribute, value);
+        return this;
+    }
+    
+    public Window setIcon(Image image_16, Image image_32)
+    {
+        GLFWImage.Buffer buffer = Image.getGLFWImage(image_16, image_32);
+        glfwSetWindowIcon(handle, buffer);
+        buffer.clear();
+        return this;
+    }
 
     /**
      * Destroys the window, making it unusable
@@ -397,8 +373,8 @@ public class Window
         {
             alive = false;
 
-            PiEngine.gameInstance.updates.remove(drawUpdate);
-            PiEngine.gameInstance.updates.remove(inputUpdate);
+            PiEngine.gameInstance.unregisterUpdate(drawUpdate);
+            PiEngine.gameInstance.unregisterUpdate(inputUpdate);
 
             glfwFreeCallbacks(handle);
             glfwDestroyWindow(handle);

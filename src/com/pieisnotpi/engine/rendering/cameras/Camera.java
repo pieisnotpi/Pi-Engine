@@ -1,89 +1,106 @@
 package com.pieisnotpi.engine.rendering.cameras;
 
-import com.pieisnotpi.engine.rendering.textures.FrameBuffer;
+import com.pieisnotpi.engine.rendering.buffers.FrameBuffer;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
+import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
+import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.scene.GameObject;
-import com.pieisnotpi.engine.scene.Scene;
-import com.pieisnotpi.engine.utility.MathUtility;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
+import com.pieisnotpi.engine.scene.IgnoreMeshWarning;
+import org.joml.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.pieisnotpi.engine.PiEngine.glInstance;
+import static com.pieisnotpi.engine.utility.MathUtility.toRads;
+import static org.lwjgl.opengl.GL11.*;
+
+@IgnoreMeshWarning
 public class Camera extends GameObject
 {
-    public static final int ORTHO2D_S = 0, ORTHO2D_R = 1, PERSP = 2, ORTHO = 3;
+    public static final int CQ = 0, ORTHO2D_S = 1, ORTHO2D_R = 2, PERSP = 3, ORTHO = 4;
+    public static final Sprite sprite = new Sprite(0f, 0f, 1f, 1f, false);
 
     public Vector2f viewPos, viewSize;
-    public CameraMatrix[] matrices = new CameraMatrix[4];
     public FrameBuffer frameBuffer;
+    public TexQuad quad;
+    public Mesh<TexQuad> mesh;
+    public List<ShaderProgram> shaders = new ArrayList<>();
+    
+    private Map<Integer, CameraMatrix> matrices = new HashMap<>();
+    
+    protected Quaternionf quaternion = new Quaternionf();
 
     protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
-    protected float orthoZoom = 1;
-    protected Vector3f lookAt, lookAtDist = new Vector3f(), up = new Vector3f(0, 1, 0);
-    protected boolean ratioUpdated = false, positionUpdated = false, rotationUpdated = false, zoomUpdated = false, fovUpdated = false, drawFbo = false, drawView = false;
+    protected float zoom = 1;
+    protected boolean ratioUpdated = false, zoomUpdated = false, fovUpdated = false;
 
-    public Camera(float fov, Scene scene)
+    private Matrix4f mView = new Matrix4f();
+
+    public Camera(float fov, Vector2i res)
     {
-        this(new Vector3f(), new Vector3f(0, 0, -10), fov, scene);
+        this(new Vector3f(), fov, res);
     }
 
-    public Camera(Vector3f position, Vector3f lookAt, float fov, Scene scene)
+    public Camera(float fov, Vector2f viewPos, Vector2f viewSize)
     {
-        this.pos.set(position);
-        this.lookAt = lookAt;
+        this(new Vector3f(), fov, viewPos, viewSize);
+    }
+    
+    public Camera(Vector3f position, float fov, Vector2i res)
+    {
         this.fov = fov;
-        this.scene = scene;
 
-        lookAt.sub(position, lookAtDist);
+        transform = new Transform();
+        transform.setTranslate(position);
 
-        matrices[0] = new CameraMatrix();
-        matrices[1] = new CameraMatrix();
-        matrices[2] = new CameraMatrix();
-        matrices[3] = new CameraMatrix();
+        matrices.put(CQ, new CameraMatrix(null));
+        matrices.put(ORTHO2D_S, new CameraMatrix(null));
+        matrices.put(ORTHO2D_R, new CameraMatrix(null));
+        matrices.put(PERSP, new CameraMatrix(mView));
+        matrices.put(ORTHO, new CameraMatrix(mView));
 
-        scene.gameObjects.add(this);
+        matrices.get(CQ).ortho2D(0, 1, 0, 1);
+        
+        frameBuffer = new FrameBuffer(res);
+        ratio = (float) res.x/res.y;
+        
+        quad = new TexQuad(0, 0, -0.1f, ratio, 1, 0, sprite);
+        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, frameBuffer.texture), transform, MeshConfig.QUAD).addRenderable(quad).build();
     }
 
-    public Camera setViewport(Vector2f viewPos, Vector2f viewSize)
+    public Camera(Vector3f position, float fov, Vector2f viewPos, Vector2f viewSize)
     {
-        drawView = true;
+        this.fov = fov;
         this.viewPos = viewPos;
         this.viewSize = viewSize;
-        if(frameBuffer != null) frameBuffer.resLocked = false;
-        return this;
+
+        transform = new Transform();
+        transform.setTranslate(position);
+
+        matrices.put(CQ, new CameraMatrix(null));
+        matrices.put(ORTHO2D_S, new CameraMatrix(null));
+        matrices.put(ORTHO2D_R, new CameraMatrix(null));
+        matrices.put(PERSP, new CameraMatrix(mView));
+        matrices.put(ORTHO, new CameraMatrix(mView));
+
+        matrices.get(CQ).ortho2D(0, 1, 0, 1);
+        
+        frameBuffer = new FrameBuffer(new Vector2i(300, 300));
+        //quad = new TexQuad(0, 0, -0.1f, viewSize.x, viewSize.y, 0, sprite);
+        quad = new TexQuad(0, 0, -0.1f, 1, 1, 0, sprite);
+        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, /*Texture.getTextureFile("crate")*/frameBuffer.texture), new Transform(), MeshConfig.QUAD).addRenderable(quad).build();
     }
 
-    public Camera setFramebufferRes(Vector2i res)
+    public float getZoom()
     {
-        drawFbo = true;
-        if(frameBuffer == null) frameBuffer = new FrameBuffer(res, !drawView);
-        else { frameBuffer.setRes(res.x, res.y); frameBuffer.resLocked = !drawView; }
-        if(!drawView) { ratio = (float) res.x/res.y; ratioUpdated = true; }
-        return this;
-    }
-
-    public void disableViewDrawing()
-    {
-        drawView = false;
-    }
-
-    public void disableFboDrawing()
-    {
-        drawFbo = false;
-    }
-
-    public float getOrthoZoom()
-    {
-        return orthoZoom;
-    }
-
-    public Vector3f getLookAt()
-    {
-        return lookAt;
-    }
-
-    public Vector3f getUp()
-    {
-        return up;
+        return zoom;
     }
 
     public Vector2f getViewPos()
@@ -96,64 +113,51 @@ public class Camera extends GameObject
         return viewSize;
     }
 
-    public CameraMatrix getMatrix(int matrixID)
-    {
-        if(matrixID > -1 && matrixID < matrices.length) return matrices[matrixID];
-        else return null;
-    }
+    public CameraMatrix getMatrix(int matrixID) { return matrices.get(matrixID); }
 
     public float getFov() { return fov; }
 
     public float getZNear() { return zNear; }
 
     public float getZFar() { return zFar; }
-
-    public boolean shouldDrawFbo() { return drawFbo; }
-
-    public boolean shouldDrawView() { return drawView; }
+    
+    public Matrix4f getView()
+    {
+        return mView;
+    }
 
     public void onWindowResize(Vector2i res)
     {
         super.onWindowResize(res);
 
-        if(drawView) this.ratio = (res.x*viewSize.x)/(res.y*viewSize.y);
-        if(drawFbo && !frameBuffer.resLocked) frameBuffer.setRes((int) (res.x*viewSize.x), (int) (res.y*viewSize.y));
+        if(viewSize != null)
+        {
+            frameBuffer.setRes((int) (res.x*viewSize.x), (int) (res.y*viewSize.y));
+            ratio = (res.x*viewSize.x)/(res.y*viewSize.y);
+        }
 
         ratioUpdated = true;
     }
 
-    public void setX(float nx)
+    public void setViewport(Vector2f viewPos, Vector2f viewSize)
     {
-        lookAt.x += nx - pos.x;
-        pos.x = nx;
-        positionUpdated = true;
+        this.viewPos = viewPos;
+        this.viewSize = viewSize;
+
+        if(scene != null && scene.window != null)
+        {
+            Vector2i res = scene.window.getWindowRes();
+            ratio = (viewSize.x*res.x)/(viewSize.y*res.y);
+            frameBuffer.setRes((int) (res.x*viewSize.x), (int) (res.y*viewSize.y));
+
+            if(quad == null) quad = new TexQuad(0, 0, -0.1f, 1, 1, 0, sprite);
+        }
     }
 
-    public void setY(float ny)
-    {
-        lookAt.y += ny - pos.y;
-        pos.y = ny;
-        positionUpdated = true;
-    }
-
-    public void setZ(float nz)
-    {
-        lookAt.z += nz - pos.z;
-        pos.z = nz;
-        positionUpdated = true;
-    }
-
-    /*public void setLookAt(Vector3f lookAt)
-    {
-        this.lookAt = lookAt;
-        lookAt.sub(pos, lookAtDist);
-        positionUpdated = true;
-    }*/
-
-    public void setOrthoZoom(float zoom)
+    public void setZoom(float zoom)
     {
         if(zoom == 0) zoom = 0.0001f;
-        this.orthoZoom = zoom;
+        this.zoom = zoom;
         zoomUpdated = true;
     }
 
@@ -163,78 +167,64 @@ public class Camera extends GameObject
         fovUpdated = true;
     }
 
-    public void moveX(float a)
-    {
-        double r = Math.toRadians(rot.y), xc = a*Math.cos(r), zc = a*Math.sin(r);
-
-        pos.x += xc;
-        pos.z += zc;
-        lookAt.x += xc;
-        lookAt.z += zc;
-
-        positionUpdated = true;
-    }
-
-    public void moveY(float a)
-    {
-        pos.y += a;
-        lookAt.y += a;
-
-        positionUpdated = true;
-    }
-
-    public void moveZ(float a)
-    {
-        double r = Math.toRadians(rot.y + 180), xc = a*Math.sin(r), zc = -a*Math.cos(r);
-
-        pos.x += xc;
-        pos.z += zc;
-        lookAt.x += xc;
-        lookAt.z += zc;
-
-        positionUpdated = true;
-    }
-
     public void drawUpdate(float timeStep)
     {
         boolean m0 = false, m1 = false, m2 = false;
 
         if(ratioUpdated) m0 = m1 = m2 = true;
-        else if(positionUpdated || rotationUpdated) m1 = m2 = true;
-        else { if(fovUpdated) m1 = true; if(zoomUpdated) m2 = true; }
+        else if(transform.needsBuilt()) m1 = m2 = true;
+        else if(fovUpdated) m1 = true;
+        else if(zoomUpdated) m2 = true;
 
         Vector2i res = scene.window.getWindowRes();
 
+        if(transform.needsBuilt()) transform.getRealMatrix().invert(mView);
+        
         if(m0)
         {
-            matrices[ORTHO2D_S].start().ortho2D(-ratio, ratio, -1, 1).end();
-            matrices[ORTHO2D_R].start().ortho2D(0, res.x, 0, res.y).end();
+            matrices.get(ORTHO2D_S).ortho2D(-ratio, ratio, -1, 1);
+            matrices.get(ORTHO2D_R).ortho2D(0, res.x*viewSize.x, 0, res.y*viewSize.y);
         }
-        if(m1) matrices[PERSP].start().perspective((float) Math.toRadians(fov), ratio, zNear, zFar).lookAt(pos, lookAt, up).end();
-        if(m2) matrices[ORTHO].start().ortho(-ratio/orthoZoom, ratio/orthoZoom, -1/orthoZoom, 1/orthoZoom, zNear, zFar).lookAt(pos, lookAt, up).end();
+        if(m1) matrices.get(PERSP).perspective(fov*toRads, ratio, zNear, zFar);
+        if(m2) matrices.get(ORTHO).ortho(-ratio/ zoom, ratio/ zoom, -1/ zoom, 1/ zoom, zNear, zFar);
+        
+        matrices.forEach((i, m) -> m.compile());
 
         fovUpdated = false;
         ratioUpdated = false;
-        positionUpdated = false;
-        rotationUpdated = false;
         zoomUpdated = false;
     }
 
-    public void addToRot(float xr, float yr, float zr)
+    public void drawToBuffer()
     {
-        if(xr == 0 && yr == 0 && zr == 0) return;
+        frameBuffer.bind();
+        glViewport(0, 0, frameBuffer.res.x, frameBuffer.res.y);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glInstance.getShaders().forEach((i, s) -> s.drawUnsorted(this));
 
-        pos.add(lookAtDist, lookAt);
+        scene.sortedMeshes.sort((o1, o2) ->
+        {
+            Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
 
-        if(xr + rot.x >= 90) xr = 89.9f - rot.x;
-        else if(xr + rot.x <= -90) xr = -89.9f - rot.x;
+            if(p1.z > p2.z) return 1;
+            else if(p2.z > p1.z) return -1;
+            else return 0;
+        });
 
-        MathUtility.rotateAxisX(xr + rot.x, pos.y, pos.z, lookAt);
-        MathUtility.rotateAxisY(yr + rot.y, pos.x, pos.z, lookAt);
-        MathUtility.rotateAxisZ(zr + rot.z, 0, 0, up);
+        scene.sortedMeshes.forEach(m -> m.material.shader.draw(m, this));
 
-        rotationUpdated = true;
+        shaders.forEach(s ->
+        {
+            glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+            s.draw(mesh, this);
+        });
 
-        super.addToRot(xr, yr, zr);
+        frameBuffer.unbind();
+    }
+
+    public void drawView(Vector2i res)
+    {
+        glViewport((int) (viewPos.x*res.x), (int) (viewPos.y*res.y), (int) (viewSize.x*res.x), (int) (viewSize.y*res.y));
+        mesh.draw(this);
     }
 }

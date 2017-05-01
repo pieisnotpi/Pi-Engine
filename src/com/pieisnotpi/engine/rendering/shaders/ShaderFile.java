@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.window.Window;
 
 import java.util.Scanner;
 
@@ -15,7 +14,7 @@ public class ShaderFile
     {
         String name = path.replaceAll("\\\\", "/").substring(path.lastIndexOf('/') + 1);
 
-        Scanner scanner = new Scanner(Window.class.getResourceAsStream(path));
+        Scanner scanner = new Scanner(ShaderFile.class.getResourceAsStream(path));
         String code = scanner.useDelimiter("\\A").next();
         scanner.close();
 
@@ -29,20 +28,13 @@ public class ShaderFile
         if(status == 0)
         {
             String log = glGetShaderInfoLog(handle).replaceAll("\n", "\n\t");
-            Logger.SHADER_COMPILER.err("Failed shader '" + name + "'\n\t" + log);
+            Logger.OPENGL.err("Failed shader '" + name + "'\n\t" + log);
         }
-        else Logger.SHADER_COMPILER.debug("Compiled shader '" + name + '\'');
+        else Logger.OPENGL.debug("Compiled shader '" + name + '\'');
     }
 
     public void attach(int program)
     {
         glAttachShader(program, handle);
-    }
-
-    public void finalize() throws Throwable
-    {
-        super.finalize();
-
-        glDeleteShader(handle);
     }
 }

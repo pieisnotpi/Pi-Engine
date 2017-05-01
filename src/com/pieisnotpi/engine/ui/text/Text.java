@@ -1,22 +1,21 @@
 package com.pieisnotpi.engine.ui.text;
 
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextMaterial;
 import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextQuad;
-import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.ui.text.effects.TextEffect;
 import com.pieisnotpi.engine.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.ui.text.font.Font;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Text extends UiObject
+public class Text extends UiObject<TextQuad>
 {
     public String text;
     public List<TextQuad> chars;
@@ -27,19 +26,17 @@ public class Text extends UiObject
 
     private Color textColor, outlineColor;
     private Font font;
-    private Mesh<TextQuad> mesh;
+    private TextMaterial material;
 
-    public Text(Font font, String text, Vector3f pos, int matrixID, Scene scene, TextEffect... effects)
+    public Text(Font font, String text, Vector3f pos, int matrixID, TextEffect... effects)
     {
-        this(font, text, pos, new Color(1, 1, 1), new Color(0, 0, 0), matrixID, scene, effects);
+        this(font, text, pos, new Color(1, 1, 1), new Color(0, 0, 0), matrixID, effects);
     }
 
-    public Text(Font font, String text, Vector3f pos, Color textColor, Color outlineColor, int matrixID, Scene scene, TextEffect... effects)
+    public Text(Font font, String text, Vector3f pos, Color textColor, Color outlineColor, int matrixID, TextEffect... effects)
     {
-        this.pos = pos;
         this.matrixID = matrixID;
         this.font = font;
-        this.scene = scene;
         this.textColor = textColor;
         this.outlineColor = outlineColor;
 
@@ -52,15 +49,12 @@ public class Text extends UiObject
         }
 
         chars = new ArrayList<>(100);
-        mesh = new Mesh<>(new TextMaterial(matrixID, font.getTexture()), transform, GL11.GL_TRIANGLE_STRIP, 4, false, scene);
+        mesh = new Mesh<>(material = new TextMaterial(1, matrixID, font.getTexture()), transform, MeshConfig.QUAD);
         mesh.setSorting(font.needsSorted);
         transform.setTranslate(pos.x, pos.y, pos.z);
         chars = mesh.renderables;
 
         setText(text);
-
-        scene.gameObjects.add(this);
-        mesh.register();
     }
 
     public void update(float timeStep)
@@ -73,9 +67,24 @@ public class Text extends UiObject
         super.update(timeStep);
     }
 
-    public Mesh getMesh()
+    public Color getTextColor()
     {
-        return mesh;
+        return textColor;
+    }
+    
+    public Color getOutlineColor()
+    {
+        return outlineColor;
+    }
+    
+    public int getOutlineSize()
+    {
+        return material.outlineSize;
+    }
+    
+    public String getText()
+    {
+        return text;
     }
 
     public Font getFont()
@@ -88,49 +97,24 @@ public class Text extends UiObject
         return chars;
     }
 
-    public void setX(float value)
-    {
-        if(transform.pos.x == value) return;
-
-        float dif = value - transform.pos.x;
-
-        if(dif != 0) transform.translateAbs(dif, 0, 0);
-
-        super.setX(value);
-    }
-
-    public void setY(float value)
-    {
-        if(transform.pos.y == value) return;
-
-        float dif = value - transform.pos.y;
-        if(dif != 0) transform.translateAbs(0, dif, 0);
-
-        super.setY(value);
-    }
-
-    public void setZ(float value)
-    {
-        if(transform.pos.z == value) return;
-
-        float dif = value - transform.pos.z;
-        if(dif != 0) transform.translateAbs(0, 0, dif);
-
-        super.setZ(value);
-    }
-
-    public void setScale(float x, float y, float z)
-    {
-        size.div(transform.scale);
-        transform.setScale(x, y, z);
-        size.mul(transform.scale);
-    }
-
     public void setTextColor(Color textColor)
     {
         this.textColor = textColor;
         chars.forEach(c -> c.setQuadTextColor(textColor));
         mesh.flagForBuild();
+    }
+    
+    public void setOutlineColor(Color outlineColor)
+    {
+        this.outlineColor = outlineColor;
+        chars.forEach(c -> c.setQuadOutlineColor(textColor));
+        mesh.flagForBuild();
+    }
+    
+    public void setOutlineSize(int size)
+    {
+        if(size < 0) size = 0;
+        material.outlineSize = size;
     }
 
     public void setText(String value)
@@ -139,10 +123,10 @@ public class Text extends UiObject
         size.set(0);
 
         text = value;
+        chars.forEach(TextRenderable::nullify);
         chars.clear();
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
-        //unregister();
 
         newlineSpace = font.newLineSpace;
         int line = 0;
@@ -179,10 +163,8 @@ public class Text extends UiObject
             chars.add(new TextQuad(x0, y0, 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line));
         }
 
-        size.set(maxX - transform.pos.x, maxY - transform.pos.y, 0)/*.mul(transform.scale)*/;
+        size.set(maxX, maxY, 0);
         transform.setCenter(size.x/2, size.y/2, 0);
-
-        //register();
 
         mesh.flagForBuild();
         align();
@@ -197,33 +179,7 @@ public class Text extends UiObject
         setText(t);
     }
 
-    public void enable()
-    {
-        super.enable();
-
-        register();
-    }
-
-    public void disable()
-    {
-        super.disable();
-
-        unregister();
-    }
-
-    public void register()
-    {
-        mesh.register();
-        //if(!scene.gameObjects.contains(this)) scene.gameObjects.add(this);
-    }
-
-    public void unregister()
-    {
-        mesh.unregister();
-        //scene.gameObjects.remove(this);
-    }
-
-    public static float approxWidth(String text, float scale, Font font)
+    public static float approxWidth(String text, Font font)
     {
         float x = 0, maxX = Float.MIN_VALUE;
 
@@ -233,7 +189,7 @@ public class Text extends UiObject
 
             if(c == ' ' && i != text.length() - 1)
             {
-                x += font.spaceCharSpace*scale;
+                x += font.spaceCharSpace;
                 continue;
             }
             if(c == '\n' && i != text.length() - 1)
@@ -246,22 +202,16 @@ public class Text extends UiObject
 
             if(sprite == font.nullChar) continue;
 
-            x += (sprite.sizeX - 1)*scale;
+            x += (sprite.sizeX - 1);
             maxX = Float.max(maxX, x);
         }
 
         return maxX;
     }
 
-    public void build()
-    {
-        mesh.build();
-    }
-
     public void destroy()
     {
         super.destroy();
         mesh.destroy();
-        scene.gameObjects.remove(this);
     }
 }

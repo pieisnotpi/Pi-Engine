@@ -4,17 +4,11 @@ import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 
-import static com.pieisnotpi.engine.utility.MathUtility.*;
-
 public class Quad extends Renderable
 {
-    public float xRot = 0, yRot = 0, zRot = 0;
-
-    protected Quad() {}
-
     public Quad(float x, float y, float z, float width, float height, float depth)
     {
-        setDefaults(4);
+        super(4);
 
         if(height == 0) setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y, z + depth), new Vector3f(x + width, y, z + depth));
         else setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z + depth), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z + depth));
@@ -22,7 +16,7 @@ public class Quad extends Renderable
 
     public Quad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3)
     {
-        setDefaults(4);
+        super(4);
         setPoints(c0, c1, c2, c3);
     }
 
@@ -34,6 +28,14 @@ public class Quad extends Renderable
         points[1].add(xDif, yDif, zDif);
         points[2].add(xDif, yDif, zDif);
         points[3].add(xDif, yDif, zDif);
+    }
+    
+    public void setSize(float w, float h, float d)
+    {
+        points[1].x = points[0].x + w;
+        points[2].y = points[0].y + h;
+        points[3].x = points[1].x;
+        points[3].y = points[2].y;
     }
 
     public float getX()
@@ -89,36 +91,6 @@ public class Quad extends Renderable
         points[1].z += dif;
         points[2].z += dif;
         points[3].z += dif;
-    }
-
-    public void setXRot(float amount) { addToXRot(amount - zRot, points[0].y, points[0].z); }
-    public void setXRot(float amount, float pointY, float pointZ) { addToXRot(amount - zRot, pointY, pointZ); }
-    public void addToXRot(float amount) { addToXRot(amount, points[0].y, points[0].z); }
-    public void addToXRot(float amount, float pointY, float pointZ)
-    {
-        zRot += amount;
-
-        rotateAxisX(amount, pointY, pointZ, points);
-    }
-
-    public void setYRot(float amount) { addToYRot(amount - zRot, points[0].x, points[0].z); }
-    public void setYRot(float amount, float pointX, float pointZ) { addToYRot(amount - zRot, pointX, pointZ); }
-    public void addToYRot(float amount) { addToYRot(amount, points[0].x, points[0].z); }
-    public void addToYRot(float amount, float pointX, float pointZ)
-    {
-        yRot += amount;
-
-        rotateAxisY(amount, pointX, pointZ, points);
-    }
-
-    public void setZRot(float amount) { addToZRot(amount - zRot, points[0].x, points[0].y); }
-    public void setZRot(float amount, float pointX, float pointY) { addToZRot(amount - zRot, pointX, pointY); }
-    public void addToZRot(float amount) { addToZRot(amount, points[0].x, points[0].y); }
-    public void addToZRot(float amount, float pointX, float pointY)
-    {
-        zRot += amount;
-
-        rotateAxisZ(amount, pointX, pointY, points);
     }
 
     public void setQuadColors(Color color)

@@ -24,7 +24,7 @@ public class Triangle extends Renderable
 
     public Triangle(Vector3f c0, Vector3f c1, Vector3f c2, Color c0c, Color c1c, Color c2c, Vector2f c0t, Vector2f c1t, Vector2f c2t)
     {
-        setDefaults(3);
+        super(3);
 
         setPoints(c0, c1, c2);
         setColors(c0c, c1c, c2c);

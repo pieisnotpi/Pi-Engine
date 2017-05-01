@@ -56,10 +56,4 @@ public class VertexArray
         for(Attribute a : attributes) a.destroy();
         glDeleteVertexArrays(handle);
     }
-
-    public void finalize() throws Throwable
-    {
-        super.finalize();
-        destroy();
-    }
 }

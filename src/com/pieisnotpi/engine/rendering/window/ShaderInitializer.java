@@ -10,10 +10,10 @@ public interface ShaderInitializer
 {
     default void init(GLInstance inst)
     {
-        inst.shaders.put(ADSShader.ID, new ADSShader().init());
-        inst.shaders.put(ColorShader.ID, new ColorShader().init());
-        inst.shaders.put(TextShader.ID, new TextShader().init());
-        inst.shaders.put(TexCShader.ID, new TexCShader().init());
-        inst.shaders.put(TexShader.ID, new TexShader().init());
+        inst.registerShader(ADSShader.ID, new ADSShader(inst.window).init());
+        inst.registerShader(ColorShader.ID, new ColorShader(inst.window).init());
+        inst.registerShader(TextShader.ID, new TextShader(inst.window).init());
+        inst.registerShader(TexCShader.ID, new TexCShader(inst.window).init());
+        inst.registerShader(TexShader.ID, new TexShader(inst.window).init());
     }
 }

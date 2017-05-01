@@ -5,16 +5,17 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
+import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class GameInstance
 {
     public List<Window> windows = new ArrayList<>();
-    public List<GameUpdate> updates = new ArrayList<>();
+    private List<GameUpdate> updates = new ArrayList<>();
     public AudioPlayer player;
 
     public void init()
@@ -76,13 +77,22 @@ public abstract class GameInstance
                 catch(InterruptedException e)
                 {
                     e.printStackTrace();
-                    windows.forEach(Window::destroy);
                     break;
                 }
             }
         }
 
-        player.destroy();
+    }
+    
+    public void registerUpdate(GameUpdate update)
+    {
+        updates.add(update);
+        update.lastUpdateTime = System.currentTimeMillis();
+    }
+    
+    public void unregisterUpdate(GameUpdate update)
+    {
+        updates.remove(update);
     }
 
     public void onMonitorConnect(Monitor monitor)
@@ -93,5 +103,16 @@ public abstract class GameInstance
     public void onMonitorDisconnect(Monitor monitor)
     {
         Logger.SYSTEM.log("Monitor disconnected with ID " + monitor.monitorID);
+    }
+    
+    public void onClose()
+    {
+        if(player != null) player.destroy();
+        windows.forEach(Window::destroy);
+        
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    
+        GL.destroy();
     }
 }

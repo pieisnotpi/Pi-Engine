@@ -6,16 +6,17 @@ import com.pieisnotpi.engine.input.joystick.Joybind;
 import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.mouse.Mousebind;
+import com.pieisnotpi.engine.rendering.Light;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.ui.text.Text;
-import com.pieisnotpi.engine.ui.text.font.PixelFont;
+import com.pieisnotpi.engine.ui.text.font.SystemFont;
 import com.pieisnotpi.engine.updates.GameUpdate;
 import com.pieisnotpi.engine.utility.Color;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -41,11 +42,12 @@ public abstract class Scene
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
+    public List<Light> lights = new ArrayList<>();
+    public Mesh<TexQuad> viewMesh;
 
     private GameUpdate gameUpdate;
 
     public boolean shouldUpdate = true;
-    protected int updatesPerSecond = 60;
     private boolean initialized = false;
 
     public void onJoystickConnect(Joystick joystick) { gameObjects.forEach(g -> g.onJoystickConnect(joystick)); }
@@ -62,8 +64,7 @@ public abstract class Scene
     public void onKeyPressed(int key, int mods) { gameObjects.forEach(g -> g.onKeyPressed(key, mods)); }
     public void onKeyReleased(int key, int mods) { gameObjects.forEach(g -> g.onKeyReleased(key, mods)); }
     public void onScroll(float xAmount, float yAmount) { gameObjects.forEach(g -> g.onScroll(xAmount, yAmount)); }
-    public void onMouseMovement(Vector2f cursorPos) { gameObjects.forEach(g -> g.onMouseMovement(cursorPos)); }
-    public void onMouseMovementUnscaled(Vector2d cursorPos) { gameObjects.forEach(g -> g.onMouseMovementUnscaled(cursorPos)); }
+    public void onMouseMovement(Vector2f scaled, Vector2i unscaled) { gameObjects.forEach(g -> g.onMouseMovement(scaled, unscaled)); }
 
     public void onWindowResize(Vector2i res)
     {
@@ -72,15 +73,20 @@ public abstract class Scene
 
     public Scene init()
     {
-        fps = new Text(PixelFont.getFont(), "", new Vector3f(0, 0, -0.1f), Camera.ORTHO2D_S, this);
-        fps.transform.setScale(0.01f, 0.01f, 1);
-        listener = new AudioListener(this);
+        if(PiEngine.debug)
+        {
+            fps = new Text(SystemFont.getFont("Arial", 28, SystemFont.PLAIN, false), "", new Vector3f(0, 0, -0.1f), Camera.ORTHO2D_R);
+            //fps.transform.setScale(0.01f, 0.01f, 0.01f);
+            //fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 32, -32);
+            fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 8, -8);
+            addGameObject(fps);
+        }
 
-        fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 0.05f, -0.05f);
+        //listener = new AudioListener(this);
 
         gameUpdate = new GameUpdate(60, this::update).setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
 
-        PiEngine.gameInstance.updates.add(gameUpdate);
+        PiEngine.gameInstance.registerUpdate(gameUpdate);
 
         initialized = true;
 
@@ -116,25 +122,31 @@ public abstract class Scene
         }
     }
 
-    public void addMesh(Mesh mesh)
+    public void addCamera(Camera camera)
     {
-        Material m = mesh.material;
-        if(!mesh.shouldSort())
-        {
-            unsortedMeshes.add(mesh);
-            if(window != null) m.shader.addUnsortedMesh(mesh);
-        }
-        else sortedMeshes.add(mesh);
+        cameras.add(camera);
+        addGameObject(camera);
     }
 
-    public void removeMesh(Mesh mesh)
+    public void removeCamera(Camera camera)
     {
-        if(!mesh.shouldSort())
+        cameras.remove(camera);
+        removeGameObject(camera);
+    }
+
+    public void addGameObject(GameObject object)
+    {
+        if(!gameObjects.contains(object))
         {
-            unsortedMeshes.remove(mesh);
-            if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
+            gameObjects.add(object);
+            object.onRegister(this);
         }
-        else sortedMeshes.remove(mesh);
+    }
+    
+    public void removeGameObject(GameObject object)
+    {
+        gameObjects.remove(object);
+        object.onUnregister();
     }
 
     public void addKeybind(Keybind keybind)
@@ -175,7 +187,6 @@ public abstract class Scene
 
     public void setUpdatesPerSecond(int ups)
     {
-        updatesPerSecond = ups;
         gameUpdate.setFrequency(ups);
     }
 
@@ -195,6 +206,41 @@ public abstract class Scene
         window.inputManager.keybinds.removeAll(keybinds);
         window.inputManager.joybinds.removeAll(joybinds);
         window.inputManager.mousebinds.removeAll(mousebinds);
+    }
+    
+    /**
+     * This should not be used without the context of a GameObject.
+     * All meshes should be registered through an associated GameObject
+     *
+     * @param mesh Mesh to be registered.
+     */
+    
+    public void addMesh(Mesh mesh)
+    {
+        Material m = mesh.material;
+        if(!mesh.shouldSort())
+        {
+            unsortedMeshes.add(mesh);
+            if(window != null) m.shader.addUnsortedMesh(mesh);
+        }
+        else sortedMeshes.add(mesh);
+    }
+    
+    /**
+     * This should not be used without the context of a GameObject.
+     * All meshes should be registered through an associated GameObject
+     *
+     * @param mesh Mesh to be unregistered.
+     */
+    
+    public void removeMesh(Mesh mesh)
+    {
+        if(!mesh.shouldSort())
+        {
+            unsortedMeshes.remove(mesh);
+            if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
+        }
+        else sortedMeshes.remove(mesh);
     }
 
     public boolean isInitialized() { return initialized; }

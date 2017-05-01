@@ -74,9 +74,7 @@ public abstract class Circle
     public void setY(float y)
     {
         float dif = this.y - y;
-
-        System.out.println(dif);
-
+        
         this.y = y;
 
         for(Triangle triangle : vertices) triangle.setY(triangle.getY() + dif, 1);

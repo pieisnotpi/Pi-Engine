@@ -18,7 +18,7 @@ public class TextQuad extends TextRenderable
 
     public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line)
     {
-        setDefaults(4);
+        super();
 
         this.line = line;
         this.cSprite = cSprite;

@@ -24,7 +24,7 @@ public abstract class Font
         this.spaceCharSpace = spaceCharSpace;
         this.newLineSpace = newLineSpace;
 
-        nullChar = new CharSprite(new Sprite(texture.width, texture.height, 0, 0, 0, 0), ' ', 0, 0, 0, 0);
+        nullChar = new CharSprite(new Sprite(texture.image.width, texture.image.height, 0, 0, 0, 0), ' ', 0, 0, 0, 0);
     }
 
     public CharSprite getCharSprite(char c)
