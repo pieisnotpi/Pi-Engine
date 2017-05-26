@@ -10,10 +10,10 @@ public interface ShaderInitializer
 {
     default void init(GLInstance inst)
     {
-        inst.registerShader(ADSShader.ID, new ADSShader(inst.window).init());
-        inst.registerShader(ColorShader.ID, new ColorShader(inst.window).init());
-        inst.registerShader(TextShader.ID, new TextShader(inst.window).init());
-        inst.registerShader(TexCShader.ID, new TexCShader(inst.window).init());
-        inst.registerShader(TexShader.ID, new TexShader(inst.window).init());
+        inst.registerShaderProgram(ADSShader.ID, new ADSShader(inst.window).init());
+        inst.registerShaderProgram(ColorShader.ID, new ColorShader(inst.window).init());
+        inst.registerShaderProgram(TextShader.ID, new TextShader(inst.window).init());
+        inst.registerShaderProgram(TexCShader.ID, new TexCShader(inst.window).init());
+        inst.registerShaderProgram(TexShader.ID, new TexShader(inst.window).init());
     }
 }

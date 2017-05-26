@@ -15,7 +15,7 @@ public abstract class Material
     {
         this.shaderID = shaderID;
         this.matrixID = matrixID;
-        this.shader = PiEngine.glInstance.getShader(shaderID);
+        this.shader = PiEngine.glInstance.getShaderProgram(shaderID);
     }
 
     public abstract Attribute[] genAttributes(boolean isStatic);

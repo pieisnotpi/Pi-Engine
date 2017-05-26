@@ -2,6 +2,7 @@ package com.pieisnotpi.engine.rendering.window;
 
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
+import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.ui.text.font.Font;
@@ -20,9 +21,10 @@ import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
 
 public class GLInstance
 {
-    private Map<Integer, ShaderProgram> shaders = new HashMap<>();
+    private Map<Integer, ShaderProgram> shaderPrograms = new HashMap<>();
     private Map<String, Texture> textures = new HashMap<>();
     private Map<String, Font> fonts = new HashMap<>();
+    private Map<String, ShaderFile> shaderFiles = new HashMap<>();
     public GLCapabilities capabilities;
     public Window window;
     public int lastShaderID = -1;
@@ -63,21 +65,20 @@ public class GLInstance
         glBindTexture(target, textureID);
     }
     
-    public Map<Integer, ShaderProgram> getShaders()
+    public Map<Integer, ShaderProgram> getShaderPrograms()
     {
-        return shaders;
+        return shaderPrograms;
     }
     
-    public ShaderProgram getShader(int ID)
+    public ShaderProgram getShaderProgram(int ID)
     {
-        return shaders.get(ID);
+        return shaderPrograms.get(ID);
     }
     
-    public void registerShader(int ID, ShaderProgram shader)
+    public void registerShaderProgram(int ID, ShaderProgram shader)
     {
-        if(shader == null) { Logger.OPENGL.debugErr("Attempted to register null shader"); Logger.OPENGL.debugStacktrace(); }
-        else if(shaders.get(ID) != null) { Logger.OPENGL.debugErr("Attempted to register seemingly existing shader @ID " + ID); Logger.OPENGL.debugStacktrace(); }
-        else shaders.put(ID, shader);
+        if(shader == null) { Logger.OPENGL.debugErr("Attempted to register null shader program"); Logger.OPENGL.debugStacktrace(); }
+        else shaderPrograms.put(ID, shader);
     }
     
     public Map<String, Texture> getTextures()
@@ -93,7 +94,6 @@ public class GLInstance
     public void registerTexture(String name, Texture texture)
     {
         if(texture == null) { Logger.OPENGL.debugErr("Attempted to register null texture"); Logger.OPENGL.debugStacktrace(); }
-        else if(textures.get(name) != null) { Logger.OPENGL.debugErr("Attempted to register seemingly existing texture @ID " + name); Logger.OPENGL.debugStacktrace(); }
         else textures.put(name, texture);
     }
     
@@ -110,7 +110,22 @@ public class GLInstance
     public void registerFont(String name, Font font)
     {
         if(font == null) { Logger.OPENGL.debugErr("Attempted to register null font"); Logger.OPENGL.debugStacktrace(); }
-        else if(fonts.get(name) != null) { Logger.OPENGL.debugErr("Attempted to register seemingly existing font @ID " + name); Logger.OPENGL.debugStacktrace(); }
         else fonts.put(name, font);
+    }
+
+    public Map<String, ShaderFile> getShaderFiles()
+    {
+        return shaderFiles;
+    }
+
+    public ShaderFile getShaderFile(String name)
+    {
+        return shaderFiles.get(name);
+    }
+
+    public void registerShaderFile(String name, ShaderFile file)
+    {
+        if(file == null) { Logger.OPENGL.debugErr("Attempted to register null shader file"); Logger.OPENGL.debugStacktrace(); }
+        else shaderFiles.put(name, file);
     }
 }

@@ -200,7 +200,7 @@ public class Camera extends GameObject
         frameBuffer.bind();
         glViewport(0, 0, frameBuffer.res.x, frameBuffer.res.y);
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-        glInstance.getShaders().forEach((i, s) -> s.drawUnsorted(this));
+        glInstance.getShaderPrograms().forEach((i, s) -> s.drawUnsorted(this));
 
         scene.sortedMeshes.sort((o1, o2) ->
         {

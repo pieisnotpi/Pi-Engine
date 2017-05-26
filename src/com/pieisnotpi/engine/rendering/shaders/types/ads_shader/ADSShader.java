@@ -12,9 +12,6 @@ import org.joml.Matrix4f;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-
 public class ADSShader extends ShaderProgram
 {
     public static final int ID = 62345;
@@ -23,7 +20,7 @@ public class ADSShader extends ShaderProgram
 
     public ADSShader(Window window)
     {
-        super(window, new ShaderFile("/assets/shaders/ads.vert", GL_VERTEX_SHADER), new ShaderFile("/assets/shaders/ads.frag", GL_FRAGMENT_SHADER));
+        super(window, ShaderFile.getShaderFile("ads.vert", ShaderFile.TYPE_VERT), ShaderFile.getShaderFile("ads.frag", ShaderFile.TYPE_FRAG));
     }
 
     public void bindUniforms(Camera camera)

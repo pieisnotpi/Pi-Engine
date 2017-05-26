@@ -32,14 +32,19 @@ public class FileUtility
         return s;
     }
     
-    public static File findFile(String path, Class relative)
+    public static File findFile(String path)
     {
         path = path.replaceAll("\\\\", "/");
-        File s = new File(relative.getResource(path).toExternalForm());
-        
-        if(!s.exists() && path.charAt(0) != '/') s = new File(relative.getResource("/" + path).toExternalForm());
-        if(!s.exists()) s = new File(path);
-        
+        File s;
+        try
+        {
+            s = new File(FileUtility.class.getResource(path).toURI());
+            if(!s.exists() && path.charAt(0) != '/')
+                s = new File(FileUtility.class.getResource("/" + path).toExternalForm());
+            if(!s.exists()) s = new File(path);
+        }
+        catch(Exception e) { s = new File(path); }
+
         if(!s.exists()) return null;
         else return s;
     }

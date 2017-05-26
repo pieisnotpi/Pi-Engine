@@ -196,7 +196,7 @@ public class Window
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
 
-        glInstance.getShaders().forEach((i, s) -> s.unsortedMeshes.clear());
+        glInstance.getShaderPrograms().forEach((i, s) -> s.unsortedMeshes.clear());
 
         if(!scene.isInitialized()) scene.init();
 
@@ -232,7 +232,7 @@ public class Window
     public Window center()
     {
         Vector2i res = getWindowRes();
-        return setWindowPos(monitor.position.x + (monitor.size.x - res.x)/2, monitor.position.y + (monitor.size.y - res.y)/2);
+        return setPosition(monitor.position.x + (monitor.size.x - res.x)/2, monitor.position.y + (monitor.size.y - res.y)/2);
     }
 
     public Window setMonitor(Monitor monitor)
@@ -247,7 +247,7 @@ public class Window
      * @param yPos The new y position of the window
      */
 
-    public Window setWindowPos(int xPos, int yPos)
+    public Window setPosition(int xPos, int yPos)
     {
         boolean temp = false;
 
@@ -272,7 +272,7 @@ public class Window
      * @param height The new height of the window, in pixels
      */
 
-    public Window setWindowRes(int width, int height)
+    public Window setResolution(int width, int height)
     {
         glfwSetWindowSize(handle, width, height);
 

@@ -94,7 +94,8 @@ public class Texture
 
         String path = name.replaceAll("\\\\", "/");
 
-        if(!path.contains("/")) path = defaultPath + path;
+        if(path.charAt(0) != '\n') path = defaultPath + path;
+        else path = path.substring(1);
         if(!path.contains(".")) path = path.concat(defaultExtension);
 
         Image image = new Image(path);

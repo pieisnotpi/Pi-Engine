@@ -8,9 +8,12 @@ import com.pieisnotpi.engine.input.keyboard.Keyboard;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.scene.Scene;
+import com.pieisnotpi.engine.utility.ShaderReloadUtility;
 import com.pieisnotpi.test.scenes.TestScene;
 import com.pieisnotpi.test.scenes.TestScene2;
 import com.pieisnotpi.test.test_editor.EditorScene;
+
+import java.nio.file.Paths;
 
 class MainInstance extends GameInstance
 {
@@ -19,6 +22,9 @@ class MainInstance extends GameInstance
     public void init()
     {
         super.init();
+
+        String shaderPath = System.getProperty("test.shader_path");
+        if(shaderPath != null) shaderReload = new ShaderReloadUtility(this, Paths.get(shaderPath));
 
         Window w0, w1;
 

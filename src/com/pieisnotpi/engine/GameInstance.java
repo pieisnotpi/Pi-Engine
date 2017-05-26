@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
+import com.pieisnotpi.engine.utility.ShaderReloadUtility;
 import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
@@ -15,8 +16,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public abstract class GameInstance
 {
     public List<Window> windows = new ArrayList<>();
-    private List<GameUpdate> updates = new ArrayList<>();
     public AudioPlayer player;
+    private List<GameUpdate> updates = new ArrayList<>();
+    public ShaderReloadUtility shaderReload;
 
     public void init()
     {

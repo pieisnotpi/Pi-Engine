@@ -27,7 +27,7 @@ public abstract class ShaderProgram
     private static final FloatBuffer vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat3b = BufferUtils.createFloatBuffer(9), mat4b = BufferUtils.createFloatBuffer(16);
 
     public List<Mesh> unsortedMeshes;
-    protected ShaderFile[] shaderFiles;
+    public ShaderFile[] shaderFiles;
     private Map<String, Integer> uniformLocations = new HashMap<>(), attribLocations = new HashMap<>();
     private Camera lastCamera;
     protected Window window;
@@ -45,10 +45,21 @@ public abstract class ShaderProgram
 
     public ShaderProgram init()
     {
-        for(ShaderFile shader : shaderFiles) shader.attach(handle);
+        for(ShaderFile shader : shaderFiles) shader.attach(this);
 
         glLinkProgram(handle);
         glUseProgram(handle);
+
+        return this;
+    }
+
+    public ShaderProgram reload()
+    {
+        glDeleteProgram(handle);
+        handle = glCreateProgram();
+        init();
+
+        Logger.OPENGL.debug("Shader program '" + handle + "' reloaded");
 
         return this;
     }
