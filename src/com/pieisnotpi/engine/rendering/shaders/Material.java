@@ -20,4 +20,5 @@ public abstract class Material
 
     public abstract Attribute[] genAttributes(boolean isStatic);
     public abstract void putElements(List<? extends Renderable> renderables, VertexArray array);
+    public abstract void bind();
 }

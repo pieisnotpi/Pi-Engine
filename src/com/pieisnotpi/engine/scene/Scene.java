@@ -76,10 +76,9 @@ public abstract class Scene
         if(PiEngine.debug)
         {
             fps = new Text(SystemFont.getFont("Arial", 28, SystemFont.PLAIN, false), "", new Vector3f(0, 0, -0.1f), Camera.ORTHO2D_R);
-            //fps.transform.setScale(0.01f, 0.01f, 0.01f);
-            //fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 32, -32);
             fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 8, -8);
             fps.setOutlineSize(1);
+            fps.setOutlineSmoothing(false);
             addGameObject(fps);
         }
 

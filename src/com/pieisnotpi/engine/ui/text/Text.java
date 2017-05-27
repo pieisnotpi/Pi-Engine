@@ -49,7 +49,7 @@ public class Text extends UiObject<TextQuad>
         }
 
         chars = new ArrayList<>(100);
-        mesh = new Mesh<>(material = new TextMaterial(0, matrixID, font.getTexture()), transform, MeshConfig.QUAD);
+        mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), transform, MeshConfig.QUAD);
         mesh.setSorting(font.needsSorted);
         transform.setTranslate(pos.x, pos.y, pos.z);
         chars = mesh.renderables;
@@ -115,6 +115,11 @@ public class Text extends UiObject<TextQuad>
     {
         if(size < 0) size = 0;
         material.outlineSize = size;
+    }
+
+    public void setOutlineSmoothing(boolean smooth)
+    {
+        material.outlineSmoothing = smooth;
     }
 
     public void setText(String value)

@@ -46,19 +46,11 @@ public class ADSShader extends ShaderProgram
     @Override
     public void bindPMUniforms(Camera camera, Mesh mesh)
     {
-        ADSMaterial m = (ADSMaterial) mesh.material;
-
-        CameraMatrix mvp = camera.getMatrix(m.matrixID);
+        CameraMatrix mvp = camera.getMatrix(mesh.material.matrixID);
         mvp.getMatrix().normal(normal);
 
         setUniformMat4("MVP", mvp.getBuffer());
         setUniformMat3("NormalMatrix", normal);
         setUniformMat4("ModelMatrix", mesh.getTransform().getBuffer());
-        setUniformVec3("m.Ka", m.ka);
-        setUniformVec3("m.Kd", m.kd);
-        setUniformVec3("m.Ks", m.ks);
-        setUniformFloat("m.Shininess", m.s);
-
-        for(int i = 0; i < m.textures.length; i++) m.textures[i].bind(i);
     }
 }

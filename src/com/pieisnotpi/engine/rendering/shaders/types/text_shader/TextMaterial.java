@@ -17,11 +17,11 @@ public class TextMaterial extends Material
 {
     public Texture[] textures;
     public int outlineSize = 0;
+    public boolean outlineSmoothing = true;
 
-    public TextMaterial(int outlineSize, int matrixID, Texture... textures)
+    public TextMaterial(int matrixID, Texture... textures)
     {
         super(TextShader.ID, matrixID);
-        this.outlineSize = outlineSize;
         this.textures = textures;
     }
 
@@ -46,5 +46,13 @@ public class TextMaterial extends Material
             BufferUtility.putColors(a.attributes[2].buffer, r.textColors);
             BufferUtility.putColors(a.attributes[3].buffer, r.outlineColors);
         });
+    }
+
+    @Override
+    public void bind()
+    {
+        shader.setUniformInt("size", outlineSize);
+        shader.setUniformBoolean("smoothOutline", outlineSmoothing);
+        for(int i = 0; i < textures.length; i++) textures[i].bind(i);
     }
 }

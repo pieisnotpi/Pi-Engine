@@ -205,6 +205,12 @@ public abstract class ShaderProgram
         if(location > -1) glUniform1f(location, value);
     }
 
+    public void setUniformBoolean(String name, boolean value)
+    {
+        int location = getUniformLocation(name);
+        if(location > -1) glUniform1i(location, value ? 1 : 0);
+    }
+
     public int getHandle()
     {
         return handle;

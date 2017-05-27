@@ -29,7 +29,7 @@ public class SystemFont extends Font
         FontMetrics metrics = g.getFontMetrics();
         g.dispose();
 
-        int w = 0, h = metrics.getHeight();
+        int w = 0, h = metrics.getHeight() + size/2;
         for(char c : sequence) w += metrics.charWidth(c) + charShift + uvShift;
 
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -45,8 +45,8 @@ public class SystemFont extends Font
         {
             char c = sequence[i];
             cw = metrics.charWidth(c);
-            g.drawString(Character.toString(c), x, metrics.getAscent());
-            sprites.add(new CharSprite(new Sprite(image.getWidth(), image.getHeight(), x - uvShift/2, 0, x + cw + uvShift/2, ch), c, 0, 0));
+            g.drawString(Character.toString(c), x, metrics.getAscent() + size/4);
+            sprites.add(new CharSprite(new Sprite(image.getWidth(), image.getHeight(), x - uvShift/2, size/4 - uvShift/2, x + cw + uvShift/2, ch + size/4 + uvShift/2), c, 0, 0));
         }
 
         g.dispose();

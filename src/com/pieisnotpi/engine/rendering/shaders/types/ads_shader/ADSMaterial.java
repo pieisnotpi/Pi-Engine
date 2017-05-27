@@ -48,4 +48,15 @@ public class ADSMaterial extends Material
             BufferUtility.putVec2s(a.attributes[2].buffer, r.texCoords);
         });
     }
+
+    @Override
+    public void bind()
+    {
+        shader.setUniformVec3("m.Ka", ka);
+        shader.setUniformVec3("m.Kd", kd);
+        shader.setUniformVec3("m.Ks", ks);
+        shader.setUniformFloat("m.Shininess", s);
+
+        for(int i = 0; i < textures.length; i++) textures[i].bind(i);
+    }
 }

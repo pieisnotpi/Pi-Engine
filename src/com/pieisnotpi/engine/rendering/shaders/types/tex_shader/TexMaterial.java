@@ -38,4 +38,10 @@ public class TexMaterial extends Material
             BufferUtility.putVec2s(a.attributes[1].buffer, r.texCoords);
         });
     }
+
+    @Override
+    public void bind()
+    {
+        for(int i = 0; i < textures.length; i++) textures[i].bind(i);
+    }
 }

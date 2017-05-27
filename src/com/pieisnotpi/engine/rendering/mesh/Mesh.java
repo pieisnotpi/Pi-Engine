@@ -101,6 +101,7 @@ public class Mesh<R extends Renderable>
     {
         array.bind();
         indices.bind();
+        material.bind();
 
         return this;
     }

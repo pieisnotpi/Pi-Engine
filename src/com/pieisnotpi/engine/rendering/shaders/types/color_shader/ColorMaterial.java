@@ -35,4 +35,7 @@ public class ColorMaterial extends Material
             BufferUtility.putColors(a.attributes[1].buffer, r.colors);
         });
     }
+
+    @Override
+    public void bind() {}
 }

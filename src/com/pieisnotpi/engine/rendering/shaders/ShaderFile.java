@@ -40,7 +40,7 @@ public class ShaderFile
         if(name.startsWith(defaultPath)) name = name.substring(defaultPath.length());
 
         try { setFile(FileUtility.findFile(path), name); }
-        catch(Exception e)
+        catch(IOException e)
         {
             Logger.OPENGL.err("Shader file error\n\t");
             e.printStackTrace();
@@ -76,6 +76,7 @@ public class ShaderFile
             initialized = false;
 
             if(old.length() > 0 && compile(old)) Logger.OPENGL.debug("Successfully reverted shader '" + name + "'");
+            else System.exit(-1);
         }
         else
         {
