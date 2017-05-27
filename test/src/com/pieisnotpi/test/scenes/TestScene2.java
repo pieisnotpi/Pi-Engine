@@ -101,7 +101,7 @@ public class TestScene2 extends PauseScene
         addGameObject(oArrow);
 
         String t3dt = "This is a reaaaaalllly long line of text. It's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
-        SystemFont font = SystemFont.getFont("Arial", 48, SystemFont.PLAIN, false);
+        SystemFont font = SystemFont.getFont("Arial", 48, SystemFont.PLAIN, true);
 
         Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), new Color(1, 0, 0), new Color(0, 0, 0), Camera.PERSP, new RainbowEffect(0.6f));
         addGameObject(text3D);
@@ -110,6 +110,7 @@ public class TestScene2 extends PauseScene
 
         Text text3D2 = new Text(PixelFont.getFont(), t3d2t, new Vector3f(0, 1.5f, 0.025f), new Color(0, 1, 0), new Color(0, 0, 0), Camera.PERSP, new WaveEffect(4, 0.1f, 5));
         addGameObject(text3D2);
+        text3D2.setOutlineSize(3);
         text3D2.setParent(oBlocks);
         text3D2.getTransform().setTranslate(0, -2, 0).setScale(0.05f, 0.05f, 0.05f);
 

@@ -79,6 +79,7 @@ public abstract class Scene
             //fps.transform.setScale(0.01f, 0.01f, 0.01f);
             //fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 32, -32);
             fps.setAlignment(UiObject.HAlignment.LEFT, UiObject.VAlignment.TOP, 8, -8);
+            fps.setOutlineSize(1);
             addGameObject(fps);
         }
 

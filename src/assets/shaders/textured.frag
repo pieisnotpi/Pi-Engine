@@ -9,6 +9,6 @@ out vec4 FragColor;
 void main()
 {
     vec4 t = texture(sampler, TexCoord);
-    if(t.w == 0f) discard;
+    if(t.w == 0) discard;
     FragColor = t;
 }

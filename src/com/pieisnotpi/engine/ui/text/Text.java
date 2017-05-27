@@ -49,7 +49,7 @@ public class Text extends UiObject<TextQuad>
         }
 
         chars = new ArrayList<>(100);
-        mesh = new Mesh<>(material = new TextMaterial(1, matrixID, font.getTexture()), transform, MeshConfig.QUAD);
+        mesh = new Mesh<>(material = new TextMaterial(0, matrixID, font.getTexture()), transform, MeshConfig.QUAD);
         mesh.setSorting(font.needsSorted);
         transform.setTranslate(pos.x, pos.y, pos.z);
         chars = mesh.renderables;

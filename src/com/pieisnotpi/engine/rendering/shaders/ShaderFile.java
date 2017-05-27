@@ -27,17 +27,14 @@ public class ShaderFile
             TYPE_COMPUTE        = GL_COMPUTE_SHADER;            // OpenGL 4.3
 
     public int handle;
-    private int shaderType;
     private String name;
-    private File file;
     private ShaderProgram program;
 
     private boolean initialized = false;
 
-    protected ShaderFile(String path, int shaderType)
+    private ShaderFile(String path, int shaderType)
     {
         handle = glCreateShader(shaderType);
-        this.shaderType = shaderType;
 
         String name = path.replaceAll("\\\\", "/");
         if(name.startsWith(defaultPath)) name = name.substring(defaultPath.length());
@@ -69,17 +66,16 @@ public class ShaderFile
         String code = scanner.useDelimiter("\\A").next();
         scanner.close();
 
-        //System.out.println(code);
-        glShaderSource(handle, code);
-        glCompileShader(handle);
+        String old = glGetShaderSource(handle);
+        boolean compiled = compile(code);
 
-        int status = glGetShaderi(handle, GL_COMPILE_STATUS);
-
-        if(status == 0)
+        if(!compiled)
         {
             String log = glGetShaderInfoLog(handle).replaceAll("\n", "\n\t");
             Logger.OPENGL.err("Failed shader '" + name + "'\n\t" + log);
             initialized = false;
+
+            if(old.length() > 0 && compile(old)) Logger.OPENGL.debug("Successfully reverted shader '" + name + "'");
         }
         else
         {
@@ -87,7 +83,6 @@ public class ShaderFile
             initialized = true;
         }
 
-        this.file = file;
         this.name = name;
     }
 
@@ -110,6 +105,16 @@ public class ShaderFile
     public String toString()
     {
         return name;
+    }
+
+    private boolean compile(String code)
+    {
+        glShaderSource(handle, code);
+        glCompileShader(handle);
+
+        int status = glGetShaderi(handle, GL_COMPILE_STATUS);
+
+        return status != 0;
     }
 
     public static ShaderFile getShaderFile(String name, int type)
