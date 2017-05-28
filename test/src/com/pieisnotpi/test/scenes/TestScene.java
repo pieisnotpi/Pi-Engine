@@ -31,7 +31,7 @@ public class TestScene extends PauseScene
 
         name = "Test Scene 1";
 
-        cameras.add(new FirstPersonCamera(90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        addCamera(new FirstPersonCamera(90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.125f, 0.729f, 0.918f);
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;

@@ -20,15 +20,16 @@ public class ErrorWindow extends Application
     public static void create(Exception exception)
     {
         File f = new File("crash.log");
+        String message = exception.getMessage() != null ? exception.getClass() + ": " + exception.getMessage() : exception.getClass().toString();
         try(PrintWriter writer = new PrintWriter(f))
         {
-            writer.println(exception.getMessage());
+            writer.println(message);
             StackTraceElement[] stacktrace = exception.getStackTrace();
             for(StackTraceElement element : stacktrace) writer.println("\t" + element);
             Logger.SYSTEM.log("Crash log written to " + f.getAbsolutePath());
         }
         catch(IOException e) { Logger.SYSTEM.err("Unable to write crash log to " + f.getAbsolutePath()); }
-        launch(exception.getLocalizedMessage());
+        launch(message);
     }
 
     @Override

@@ -85,7 +85,7 @@ public class Logger
         if(!PiEngine.debug) return;
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         err("Printing stack trace");
-        for(int i = 2; i < stack.length; i++) { System.err.printf("\tat %s%n" + stack[i]); }
+        for(int i = 2; i < stack.length; i++) { System.err.printf("\tat %s%n", stack[i]); }
     }
 
     public void setLogFormat(String format)
