@@ -17,18 +17,18 @@ public class Mousebind
         releaseHandler = release;
     }
 
-    public void press(int xPos, int yPos)
+    public void press(int xPos, int yPos) throws Exception
     {
         if(pressHandler != null && !lastStatus) pressHandler.handle(xPos, yPos);
         lastStatus = true;
     }
 
-    public void hold(int xPos, int yPos, float timeStep)
+    public void hold(int xPos, int yPos, float timeStep) throws Exception
     {
         if(holdHandler != null) holdHandler.handle(xPos, yPos, timeStep);
     }
 
-    public void release(int xPos, int yPos)
+    public void release(int xPos, int yPos) throws Exception
     {
         if(releaseHandler != null && lastStatus) releaseHandler.handle(xPos, yPos);
         lastStatus = false;

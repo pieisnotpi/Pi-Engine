@@ -19,7 +19,7 @@ class MainInstance extends GameInstance
 {
     private Scene[][] scenes = new Scene[3][2];
 
-    public void init()
+    public void init() throws Exception
     {
         super.init();
 
@@ -57,7 +57,7 @@ class MainInstance extends GameInstance
         w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, (value, timeStep) -> w1.setFullscreen(!w1.isFullscreen()), null, null));*/
     }
 
-    public void start()
+    public void start() throws Exception
     {
         windows.forEach(Window::show);
 

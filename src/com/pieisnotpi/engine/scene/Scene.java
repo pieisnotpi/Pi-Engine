@@ -10,7 +10,6 @@ import com.pieisnotpi.engine.rendering.Light;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.ui.text.Text;
@@ -43,7 +42,6 @@ public abstract class Scene
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
     public List<Light> lights = new ArrayList<>();
-    public Mesh<TexQuad> viewMesh;
 
     private GameUpdate gameUpdate;
 
@@ -71,7 +69,7 @@ public abstract class Scene
         gameObjects.forEach(gameObject -> gameObject.onWindowResize(res));
     }
 
-    public Scene init()
+    public Scene init() throws Exception
     {
         if(PiEngine.debug)
         {
@@ -82,8 +80,6 @@ public abstract class Scene
             addGameObject(fps);
         }
 
-        //listener = new AudioListener(this);
-
         gameUpdate = new GameUpdate(60, this::update).setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
 
         PiEngine.gameInstance.registerUpdate(gameUpdate);
@@ -93,14 +89,14 @@ public abstract class Scene
         return this;
     }
 
-    public void update(float timeStep)
+    public void update(float timeStep) throws Exception
     {
         if(!shouldUpdate || window == null) return;
 
         gameObjects.forEach(go -> go.update(timeStep));
     }
 
-    public void drawUpdate(float timeStep)
+    public void drawUpdate(float timeStep) throws Exception
     {
         if(window == null) return;
 

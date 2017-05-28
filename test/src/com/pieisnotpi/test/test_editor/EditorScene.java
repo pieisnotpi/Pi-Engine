@@ -26,7 +26,7 @@ public class EditorScene extends Scene
     
     public GameObject<TexCQuad> tilesObject;
 
-    public EditorScene init()
+    public EditorScene init() throws Exception
     {
         super.init();
 
@@ -96,7 +96,7 @@ public class EditorScene extends Scene
     }
 
     @Override
-    public void drawUpdate(float timeStep)
+    public void drawUpdate(float timeStep) throws Exception
     {
         super.drawUpdate(timeStep);
         tilesObject.getMesh().flagForBuild();

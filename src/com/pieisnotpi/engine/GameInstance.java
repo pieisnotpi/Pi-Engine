@@ -15,21 +15,23 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class GameInstance
 {
+    private boolean run = true;
+
     public List<Window> windows = new ArrayList<>();
     public AudioPlayer player;
     private List<GameUpdate> updates = new ArrayList<>();
-    public ShaderReloadUtility shaderReload;
+    protected ShaderReloadUtility shaderReload;
 
-    public void init()
+    public void init() throws Exception
     {
         player = new AudioPlayer();
     }
 
-    public void start()
+    public void start() throws Exception
     {
         long startTime = System.currentTimeMillis();
 
-        while(true)
+        while(run)
         {
             boolean allClosed = true;
 
@@ -105,6 +107,11 @@ public abstract class GameInstance
     public void onMonitorDisconnect(Monitor monitor)
     {
         Logger.SYSTEM.log("Monitor disconnected with ID " + monitor.monitorID);
+    }
+
+    public void close()
+    {
+        run = false;
     }
     
     public void onClose()

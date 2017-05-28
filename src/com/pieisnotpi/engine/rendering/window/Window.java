@@ -99,7 +99,7 @@ public class Window
         inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
     }
 
-    public Window init()
+    public Window init() throws Exception
     {
         if(initialized) return this;
 
@@ -151,7 +151,7 @@ public class Window
         return this;
     }
 
-    public void draw(float timeStep)
+    public void draw(float timeStep) throws Exception
     {
         if(scene == null) return;
 
@@ -189,7 +189,7 @@ public class Window
     public boolean isAlive() { return alive; }
     public boolean isFullscreen() { return fullscreen; }
 
-    public Window setScene(Scene scene)
+    public Window setScene(Scene scene) throws Exception
     {
         if(scene.equals(this.scene)) return this;
 

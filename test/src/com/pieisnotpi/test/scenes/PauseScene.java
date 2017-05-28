@@ -17,7 +17,7 @@ public abstract class PauseScene extends Scene
     public Text pausedText;
     public boolean paused = false;
 
-    public PauseScene init()
+    public PauseScene init() throws Exception
     {
         super.init();
 

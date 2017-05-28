@@ -26,6 +26,7 @@ float getAvg()
 			if(smoothOutline) search = texture(sampler, vec2(nx/tsize.x, ny/tsize.y), 0);
 			else search = texelFetch(sampler, ivec2(x + point.x, y + point.y), 0);
 			
+			if(!smoothOutline && search.w > 0) return 1;
 			total += search.w;
 		}
 	}
@@ -64,5 +65,5 @@ void main()
 		float tMult = texColor.w, oMult = 1 - texColor.w;
 		FragColor = vec4(tMult*TextColor.x + oMult*OutlineColor.x, tMult*TextColor.y + oMult*OutlineColor.y, tMult*TextColor.z + oMult*OutlineColor.z, 1);
 	}
-	else FragColor = vec4(TextColor.xyz, texColor.w*TextColor.w);
+	else FragColor = vec4(TextColor);
 }

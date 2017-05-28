@@ -18,18 +18,18 @@ public class Keybind
         releaseHandler = release;
     }
 
-    public void press()
+    public void press() throws Exception
     {
         if(pressHandler != null && !lastStatus) pressHandler.handle();
         lastStatus = true;
     }
 
-    public void hold(float timeStep)
+    public void hold(float timeStep) throws Exception
     {
         if(holdHandler != null) holdHandler.handle(timeStep);
     }
 
-    public void release()
+    public void release() throws Exception
     {
         if(releaseHandler != null && lastStatus) releaseHandler.handle();
         lastStatus = false;

@@ -30,29 +30,19 @@ import java.util.ArrayList;
 public class TestScene2 extends PauseScene
 {
     private static final int w = 100, h = 100;
-
-    private float timer = 0;
     private GameObject<Quad> oBlocks, oArrow;
-    private float x = 0.5f, y = 0;
-    //private Mesh<Quad> blocksMesh;
-    //private Mesh<TexQuad> arrow;
-    
-    Camera c;
 
-    public TestScene2 init()
+    public TestScene2 init() throws Exception
     {
         super.init();
 
         name = "Test Scene 2";
 
-        //addCamera(new Camera(1, new Vector2f(0, 0), new Vector2f(1, 1), this));
-        addCamera(c = new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
         /*addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), this));
         addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), this));
         addCamera(new Camera(new Vector3f(-2, 2, 0), 90, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), this));
         addCamera(new Camera(new Vector3f(2, 2, 0), 90, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), this));*/
-
-        //c.getTransform().setRotateDegrees(15, 45, 0);
 
         clearColor.set(0.918f, 0.729f, 0.125f);
 
@@ -138,13 +128,5 @@ public class TestScene2 extends PauseScene
         float nx = cy*0.05f, ny = -cx*0.05f;
     
         oArrow.getTransform().setRotateDegrees(nx, ny, 0);
-    }
-    
-    @Override
-    public void update(float timeStep)
-    {
-        super.update(timeStep);
-        
-        //c.getTransform().setRotateDegrees((float) Math.sin(y += 0.005f)*-45, (float) Math.sin(x += 0.005f)*45, 0);
     }
 }

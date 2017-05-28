@@ -52,7 +52,7 @@ public class GameUpdate
         return this;
     }
 
-    public void update(long time)
+    public void update(long time) throws Exception
     {
         if(!shouldUpdate(time)) return;
 
@@ -63,7 +63,7 @@ public class GameUpdate
         updates++;
     }
 
-    public void runPerSecondAction()
+    public void runPerSecondAction() throws Exception
     {
         if(perSecondAction != null) perSecondAction.runAction(1);
         totalTimeTaken = 0;

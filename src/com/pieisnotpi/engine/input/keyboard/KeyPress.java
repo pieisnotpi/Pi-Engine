@@ -2,5 +2,5 @@ package com.pieisnotpi.engine.input.keyboard;
 
 public interface KeyPress
 {
-    void handle();
+    void handle() throws Exception;
 }

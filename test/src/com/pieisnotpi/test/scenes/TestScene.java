@@ -25,7 +25,7 @@ public class TestScene extends PauseScene
     private static final int w = 100, h = 100;
     private Mesh<Quad> blocksMesh;
 
-    public TestScene init()
+    public TestScene init() throws Exception
     {
         super.init();
 

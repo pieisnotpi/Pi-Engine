@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.input;
 
+import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.joystick.Joybind;
 import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
@@ -125,12 +126,16 @@ public class InputManager
             {
                 if(keybind.active)
                 {
-                    if(getKey(keybind.key))
+                    try
                     {
-                        keybind.press();
-                        keybind.hold(timeStep);
+                        if(getKey(keybind.key))
+                        {
+                            keybind.press();
+                            keybind.hold(timeStep);
+                        }
+                        else keybind.release();
                     }
-                    else keybind.release();
+                    catch(Exception e) {PiEngine.closeWithException(e);}
                 }
             });
         }
@@ -142,12 +147,16 @@ public class InputManager
             {
                 if(mousebind.active)
                 {
-                    if(getMouseButton(mousebind.button))
+                    try
                     {
-                        mousebind.press(cursorPos.x, cursorPos.y);
-                        mousebind.hold(cursorPos.x, cursorPos.y, timeStep);
+                        if(getMouseButton(mousebind.button))
+                        {
+                            mousebind.press(cursorPos.x, cursorPos.y);
+                            mousebind.hold(cursorPos.x, cursorPos.y, timeStep);
+                        }
+                        else mousebind.release(cursorPos.x, cursorPos.y);
                     }
-                    else mousebind.release(cursorPos.x, cursorPos.y);
+                    catch(Exception e) {PiEngine.closeWithException(e);}
                 }
             });
         }
@@ -166,12 +175,16 @@ public class InputManager
                     if(joybind.isButton) value = getJoystickButton(joybind.joystick, joybind.axis) ? 1 : 0;
                     else value = getJoystickAxis(joybind.joystick, joybind.axis);
 
-                    if(value == 0 && joybind.lastStatus) joybind.release();
-                    else if(value != 0)
+                    try
                     {
-                        joybind.press();
-                        joybind.hold(value, timeStep);
+                        if(value == 0 && joybind.lastStatus) joybind.release();
+                        else if(value != 0)
+                        {
+                            joybind.press();
+                            joybind.hold(value, timeStep);
+                        }
                     }
+                    catch(Exception e) {PiEngine.closeWithException(e);}
                 }
             });
         }

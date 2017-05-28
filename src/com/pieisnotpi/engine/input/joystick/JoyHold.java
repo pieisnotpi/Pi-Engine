@@ -2,5 +2,5 @@ package com.pieisnotpi.engine.input.joystick;
 
 public interface JoyHold
 {
-    void handle(float value, float timeStep);
+    void handle(float value, float timeStep) throws Exception;
 }
