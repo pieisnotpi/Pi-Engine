@@ -1,5 +1,7 @@
 package com.pieisnotpi.test.scenes;
 
+import com.pieisnotpi.engine.input.keyboard.Keybind;
+import com.pieisnotpi.engine.input.keyboard.Keyboard;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
@@ -25,6 +27,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 
 public class TestScene2 extends PauseScene
@@ -90,12 +93,13 @@ public class TestScene2 extends PauseScene
         arrow.getTransform().translate(0, 2, 0);
         addGameObject(oArrow);
 
-        String t3dt = "This is a reaaaaalllly long line of text. It's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
-        SystemFont font = SystemFont.getFont("Arial", 48, SystemFont.PLAIN, true);
+        String t3dt = "This is a reaaaaalllly long line of text.\nIt's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
+        SystemFont font = SystemFont.getFont("Arial", 96, SystemFont.PLAIN, true);
 
         Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), new Color(1, 0, 0), new Color(0, 0, 0), Camera.PERSP, new RainbowEffect(0.6f));
         addGameObject(text3D);
-        text3D.setOutlineSize(3);
+        text3D.setOutlineSize(4);
+        text3D.setOutlineSmoothing(true);
         text3D.setParent(oBlocks);
         text3D.getTransform().setTranslate(-4, 2, 0).setScale(0.01f, 0.01f, 0.01f);
 
@@ -110,6 +114,8 @@ public class TestScene2 extends PauseScene
         lights.add(new ADSPointLight(new Vector3f(10, 2, -10), new Vector3f(0, 1.25f, 0), 1, this));
         lights.add(new ADSPointLight(new Vector3f(-10, 2, 10), new Vector3f(0, 0, 1.25f), 2, this));
         lights.add(new ADSPointLight(new Vector3f(-10, 2, -10), new Vector3f(0.8f), 3, this));
+
+        addKeybind(new Keybind(Keyboard.KEY_ENTER, () -> { throw new InvalidObjectException("Invalid key pressed"); }, null, null));
 
         return this;
     }

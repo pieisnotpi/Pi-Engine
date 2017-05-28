@@ -49,6 +49,8 @@ public class ErrorWindow extends Application
         text.setWrappingWidth(250);
         text.setTextAlignment(TextAlignment.LEFT);
         tBox.getChildren().add(text);
+        tBox.setPrefHeight(128);
+        tBox.setPrefWidth(250);
 
         Button okButton = new Button("OK");
         okButton.setOnAction(ae -> stage.close());
@@ -56,7 +58,7 @@ public class ErrorWindow extends Application
 
         pane.getChildren().addAll(tBox, okBox);
         stage.setScene(scene);
-        stage.setTitle("Pi-Engine");
+        stage.setTitle("Crash Report");
         stage.show();
     }
 }

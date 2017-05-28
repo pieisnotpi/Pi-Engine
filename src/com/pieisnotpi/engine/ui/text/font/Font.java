@@ -12,17 +12,18 @@ public abstract class Font
     protected Texture texture;
 
     public boolean needsSorted = false;
-    public float letterSpace, spaceCharSpace, newLineSpace;
+    public float spaceCharSpace, newLineSpace;
+    public int condensingFactor = 0;
     public CharSprite nullChar;
 
     protected Font() {}
 
-    protected Font(Texture texture, float letterSpace, float spaceCharSpace, float newLineSpace)
+    protected Font(Texture texture, float spaceCharSpace, float newLineSpace, int condensingFactor)
     {
         this.texture = texture;
-        this.letterSpace = letterSpace;
         this.spaceCharSpace = spaceCharSpace;
         this.newLineSpace = newLineSpace;
+        this.condensingFactor = condensingFactor;
 
         nullChar = new CharSprite(new Sprite(texture.image.width, texture.image.height, 0, 0, 0, 0), ' ', 0, 0, 0, 0);
     }

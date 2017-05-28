@@ -13,7 +13,7 @@ public class PixelFont extends Font
 
     private PixelFont()
     {
-        super(Texture.getTextureFile("text"), -1, 4, 10);
+        super(Texture.getTextureFile("text"), 4, 10, 1);
 
         // Register uppercase letters
         sprites.add(new CharSprite(new Sprite(texture, 1, 1, 8, 10), 'A', 0, 0));

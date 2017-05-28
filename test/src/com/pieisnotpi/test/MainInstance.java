@@ -11,7 +11,6 @@ import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.ShaderReloadUtility;
 import com.pieisnotpi.test.scenes.TestScene;
 import com.pieisnotpi.test.scenes.TestScene2;
-import com.pieisnotpi.test.test_editor.EditorScene;
 
 import java.nio.file.Paths;
 
@@ -23,6 +22,8 @@ class MainInstance extends GameInstance
     {
         super.init();
 
+        Image icon16 = new Image("/assets/textures/icon_16.png"), icon32 = new Image("/assets/textures/icon_32.png");
+
         String shaderPath = System.getProperty("test.shader_path");
         if(shaderPath != null) shaderReload = new ShaderReloadUtility(this, Paths.get(shaderPath));
 
@@ -32,7 +33,7 @@ class MainInstance extends GameInstance
 
         scenes[0][0] = new TestScene().init();
         scenes[1][0] = new TestScene2().init();
-        scenes[2][0] = new EditorScene().init();
+        //scenes[2][0] = new EditorScene().init();
 
         w0.setScene(scenes[1][0]);
 
@@ -40,21 +41,21 @@ class MainInstance extends GameInstance
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w0.setScene(scenes[1][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, () -> w0.setFullscreen(!w0.isFullscreen()), null, null));
-
-        w0.setIcon(new Image("/assets/textures/icon_16.png"), new Image("/assets/textures/icon_32.png"));
+        w0.setIcon(icon16, icon32);
 
         /*windows.add(w1 = new Window("Pi Engine 2", 600, 600, PiEngine.getMonitor(0)).init());
 
         scenes[0][1] = new TestScene().init();
         scenes[1][1] = new TestScene2().init();
-        scenes[2][1] = new EditorScene().init();
+        //scenes[2][1] = new EditorScene().init();
 
         w1.setScene(scenes[1][1]);
 
-        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, (value, timeStep) -> w1.setScene(scenes[0][1]), null, null));
-        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, (value, timeStep) -> w1.setScene(scenes[1][1]), null, null));
-        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, (value, timeStep) -> w1.setScene(scenes[2][1]), null, null));
-        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, (value, timeStep) -> w1.setFullscreen(!w1.isFullscreen()), null, null));*/
+        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, () -> w1.setScene(scenes[0][1]), null, null));
+        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w1.setScene(scenes[1][1]), null, null));
+        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w1.setScene(scenes[2][1]), null, null));
+        w1.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, () -> w1.setFullscreen(!w1.isFullscreen()), null, null));
+        w1.setIcon(icon16, icon32);*/
     }
 
     public void start() throws Exception

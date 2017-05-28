@@ -29,8 +29,10 @@ public class SystemFont extends Font
         FontMetrics metrics = g.getFontMetrics();
         g.dispose();
 
-        int w = 0, h = metrics.getHeight() + size/2;
-        for(char c : sequence) w += metrics.charWidth(c) + charShift + uvShift;
+        int xShift = charShift, yShift = charShift;
+
+        int w, h = metrics.getHeight() + yShift;
+        w = metrics.charsWidth(sequence, 0, sequence.length) + sequence.length*xShift;
 
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         g = image.createGraphics();
@@ -41,12 +43,12 @@ public class SystemFont extends Font
         if(antiAlias) needsSorted = true;
         texture = new Texture(org.lwjgl.opengl.GL11.glGenTextures(), antiAlias ? Texture.FILTER_LINEAR : Texture.FILTER_NEAREST);
 
-        for(int i = 0, x = 0, cw, ch = metrics.getHeight(); i < sequence.length; i++, x += cw + charShift)
+        for(int i = 0, x = xShift/2, cw, ch = metrics.getHeight(); i < sequence.length; i++, x += cw + xShift)
         {
             char c = sequence[i];
             cw = metrics.charWidth(c);
-            g.drawString(Character.toString(c), x, metrics.getAscent() + size/4);
-            sprites.add(new CharSprite(new Sprite(image.getWidth(), image.getHeight(), x - uvShift/2, size/4 - uvShift/2, x + cw + uvShift/2, ch + size/4 + uvShift/2), c, 0, 0));
+            g.drawString(Character.toString(c), x, metrics.getAscent() + yShift/2);
+            sprites.add(new CharSprite(new Sprite(image.getWidth(), image.getHeight(), x - xShift/2, 0, x + cw + xShift/2, ch + yShift), c, 0, 0));
         }
 
         g.dispose();
@@ -54,9 +56,9 @@ public class SystemFont extends Font
         texture.setImage(new Image(image));
 
         spaceCharSpace = metrics.charWidth(' ');
-        letterSpace = -spaceCharSpace/6;
-        newLineSpace = texture.image.height;
+        newLineSpace = texture.image.height - yShift;
         nullChar = new CharSprite(new Sprite(texture, 0, 0, 0, 0), ' ', 0, 0);
+        condensingFactor = xShift;
 
         PiEngine.glInstance.registerFont(name, this);
     }
@@ -75,7 +77,7 @@ public class SystemFont extends Font
 
     public static SystemFont getFont(String family, int size, int style, boolean antiAlias)
     {
-        return getFont(family, size, style, antiAlias, 10, 2);
+        return getFont(family, size, style, antiAlias, size/2, 2);
     }
 
     public static SystemFont getFont(String family, int size, int style, boolean antiAlias, int charShift, int uvShift)

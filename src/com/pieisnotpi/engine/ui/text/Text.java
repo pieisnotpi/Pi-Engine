@@ -160,7 +160,7 @@ public class Text extends UiObject<TextQuad>
 
             float x0 = xOffset + sprite.offsetX, y0 = yOffset + sprite.offsetY, x1 = sprite.sizeX, y1 = sprite.sizeY;
 
-            xOffset += (sprite.sizeX + font.letterSpace);
+            xOffset += (sprite.sizeX - font.condensingFactor);
 
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);

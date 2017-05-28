@@ -59,7 +59,7 @@ public class GameUpdate
         updateAction.runAction((time - lastUpdateTime)/1000f);
         lastUpdateTime = time;
         totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
-        if(lastTimeTaken > frequency) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run, this might be bad", name, lastTimeTaken));
+        if(lastTimeTaken > frequency) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run", name, lastTimeTaken));
         updates++;
     }
 

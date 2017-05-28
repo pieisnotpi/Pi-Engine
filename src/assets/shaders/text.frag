@@ -10,23 +10,19 @@ in vec4 OutlineColor;
 
 out vec4 FragColor;
 
-float getAvg()
+float getAvgSmooth()
 {
 	float total = 0;
 	ivec2 tsize = textureSize(sampler, 0);
-	ivec2 point = ivec2(TexCoord.x*tsize.x, TexCoord.y*tsize.y);
 	vec4 search;
 
 	for(int x = -size; x <= size; x++)
 	{
 		for(int y = -size; y <= size; y++)
 		{
-			float nx = point.x + x, ny = point.y + y;
+			float nx = TexCoord.x*tsize.x + x, ny = TexCoord.y*tsize.y + y;
 
-			if(smoothOutline) search = texture(sampler, vec2(nx/tsize.x, ny/tsize.y), 0);
-			else search = texelFetch(sampler, ivec2(x + point.x, y + point.y), 0);
-			
-			if(!smoothOutline && search.w > 0) return 1;
+			search = texture(sampler, vec2(nx/tsize.x, ny/tsize.y), 0);
 			total += search.w;
 		}
 	}
@@ -36,10 +32,31 @@ float getAvg()
 	return total;
 }
 
+bool getAvgRigid()
+{
+	ivec2 tsize = textureSize(sampler, 0);
+    ivec2 point = ivec2(TexCoord.x*tsize.x, TexCoord.y*tsize.y);
+    vec4 search;
+
+    for(int x = -size; x <= size; x++)
+    {
+        for(int y = -size; y <= size; y++)
+        {
+            float nx = point.x + x, ny = point.y + y;
+
+            search = texelFetch(sampler, ivec2(x + point.x, y + point.y), 0);
+
+            if(search.w > 0) return true;
+        }
+    }
+
+    return false;
+}
+
 void main()
 {
     vec4 texColor = texture(sampler, TexCoord);
-	
+
 	if(size == 0)
 	{
 		if(texColor.w == 0) discard;
@@ -47,23 +64,30 @@ void main()
 		return;
 	}
 
-    if(texColor.w == 0)
-    {
-		float total = getAvg();
-		
-		if(total != 0)
-		{
-			FragColor = vec4(OutlineColor.xyz, OutlineColor.w*total);
-			return;
-		}
-		
-        discard;
-    }
- 
-	if(smoothOutline)
+	if(texColor.w == 0)
 	{
-		float tMult = texColor.w, oMult = 1 - texColor.w;
-		FragColor = vec4(tMult*TextColor.x + oMult*OutlineColor.x, tMult*TextColor.y + oMult*OutlineColor.y, tMult*TextColor.z + oMult*OutlineColor.z, 1);
+		if(smoothOutline)
+		{
+			float total = getAvgSmooth();
+		
+			if(total != 0)
+			{
+				FragColor = vec4(OutlineColor.xyz, OutlineColor.w*total);
+				return;
+			}
+			else discard;
+		}
+		else
+		{
+			if(getAvgRigid())
+			{
+				FragColor = OutlineColor;
+				return;
+			}
+			else discard;
+		}
 	}
-	else FragColor = vec4(TextColor);
+ 
+	float tMult = texColor.w, oMult = 1 - texColor.w;
+	FragColor = vec4(tMult*TextColor.x + oMult*OutlineColor.x, tMult*TextColor.y + oMult*OutlineColor.y, tMult*TextColor.z + oMult*OutlineColor.z, 1);
 }
