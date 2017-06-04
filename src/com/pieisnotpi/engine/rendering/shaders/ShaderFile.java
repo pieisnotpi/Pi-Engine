@@ -5,6 +5,7 @@ import com.pieisnotpi.engine.utility.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import static com.pieisnotpi.engine.PiEngine.glInstance;
@@ -39,7 +40,7 @@ public class ShaderFile
         String name = path.replaceAll("\\\\", "/");
         if(name.startsWith(defaultPath)) name = name.substring(defaultPath.length());
 
-        try { setFile(FileUtility.findFile(path), name); }
+        try { setFile(FileUtility.findStream(path), name); }
         catch(IOException e)
         {
             Logger.OPENGL.err("Shader file error\n\t");
@@ -84,6 +85,40 @@ public class ShaderFile
             initialized = true;
         }
 
+        this.name = name;
+    }
+    
+    public void setFile(InputStream file, String name) throws IOException
+    {
+        if(file == null)
+        {
+            Logger.OPENGL.err("Shader file not found: " + name);
+            initialized = false;
+            return;
+        }
+        
+        Scanner scanner = new Scanner(file);
+        String code = scanner.useDelimiter("\\A").next();
+        scanner.close();
+        
+        String old = glGetShaderSource(handle);
+        boolean compiled = compile(code);
+        
+        if(!compiled)
+        {
+            String log = glGetShaderInfoLog(handle).replaceAll("\n", "\n\t");
+            Logger.OPENGL.err("Failed shader '" + name + "'\n\t" + log);
+            initialized = false;
+            
+            if(old.length() > 0 && compile(old)) Logger.OPENGL.debug("Successfully reverted shader '" + name + "'");
+            else System.exit(-1);
+        }
+        else
+        {
+            Logger.OPENGL.debug("Compiled shader '" + name + '\'');
+            initialized = true;
+        }
+        
         this.name = name;
     }
 

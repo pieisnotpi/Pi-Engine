@@ -38,10 +38,6 @@ public class TextQuad extends TextRenderable
     public void setQuadTextColor(Color c0, Color c1, Color c2, Color c3)
     {
         setTextColors(c0, c1, c2, c3);
-
-        /*boolean temp = false;
-        for(Color c : textColors) if(c.alpha < 1 && c.alpha > 0) temp = true;
-        if(!temp) for (Color c : outlineColors) if(c.alpha < 1 && c.alpha > 0) temp = true;*/
     }
 
     public void setQuadOutlineColor(Color color)
@@ -52,10 +48,6 @@ public class TextQuad extends TextRenderable
     public void setQuadOutlineColor(Color c0, Color c1, Color c2, Color c3)
     {
         setOutlineColors(c0, c1, c2, c3);
-
-        /*boolean temp = false;
-        for (Color c : outlineColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;
-        if(!temp) for(Color c : textColors) if(c.getAlpha() < 1 && c.getAlpha() > 0) temp = true;*/
     }
 
     public void setPos(float x, float y, float z)

@@ -48,7 +48,7 @@ public class WritableImage extends Image
     
     public WritableImage(String path)
     {
-        InputStream s = FileUtility.findStream(path, getClass());
+        InputStream s = FileUtility.findStream(path);
     
         if(s == null) return;
     

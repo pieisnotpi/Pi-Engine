@@ -5,10 +5,7 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.window.Window;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -24,7 +21,7 @@ import static org.lwjgl.opengl.GL20.*;
 public abstract class ShaderProgram
 {
     public static final int primitiveRestart = Integer.MAX_VALUE - 1;
-    private static final FloatBuffer vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat3b = BufferUtils.createFloatBuffer(9), mat4b = BufferUtils.createFloatBuffer(16);
+    private static final FloatBuffer vec2b = BufferUtils.createFloatBuffer(2), vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat3b = BufferUtils.createFloatBuffer(9), mat4b = BufferUtils.createFloatBuffer(16);
 
     public List<Mesh> unsortedMeshes;
     public ShaderFile[] shaderFiles;
@@ -173,6 +170,15 @@ public abstract class ShaderProgram
         if(location > -1) glUniformMatrix4fv(location, false, buffer);
     }
 
+    public void setUniformVec2(String name, Vector2f vec2)
+    {
+        int location = getUniformLocation(name);
+        vec2.get(vec2b);
+    
+        if(location > -1) glUniform2fv(location, vec2b);
+        vec2b.clear();
+    }
+    
     public void setUniformVec3(String name, Vector3f vec3)
     {
         int location = getUniformLocation(name);

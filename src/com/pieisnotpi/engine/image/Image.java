@@ -19,7 +19,7 @@ public class Image
     
     public Image(String path)
     {
-        InputStream s = FileUtility.findStream(path, getClass());
+        InputStream s = FileUtility.findStream(path);
         if(s == null) return;
         
         javafx.scene.image.Image image = new javafx.scene.image.Image(s);

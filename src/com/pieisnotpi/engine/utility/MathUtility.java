@@ -157,4 +157,10 @@ public class MathUtility
 
         return count % 2 != 0;
     }
+    
+    public static byte intToByte(int value)
+    {
+        if(value > 255) return -1;
+        return (byte) (value & 0xff);
+    }
 }

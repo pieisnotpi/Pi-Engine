@@ -15,16 +15,15 @@ public class FileUtility
      * Finds a file, checking both external (real) and internal (JAR/compiled code) directories
      * Inside directories are relative to the given class
      * @param path The supplied path of the file
-     * @param relative The relative class for internal directories
      * @return The file input stream. Returns null if not found.
      */
     
-    public static InputStream findStream(String path, Class relative)
+    public static InputStream findStream(String path)
     {
         path = path.replaceAll("\\\\", "/");
-        InputStream s = relative.getResourceAsStream(path);
+        InputStream s = FileUtility.class.getResourceAsStream(path);
         
-        if(s == null && path.charAt(0) != '/') s = relative.getResourceAsStream("/" + path);
+        if(s == null && path.charAt(0) != '/') s = FileUtility.class.getResourceAsStream("/" + path);
         if(s == null)
             try { s = new FileInputStream(path); }
             catch(FileNotFoundException e) { Logger.SYSTEM.err("File not found " + path); }
