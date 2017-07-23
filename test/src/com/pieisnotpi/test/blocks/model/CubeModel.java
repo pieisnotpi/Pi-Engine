@@ -1,6 +1,6 @@
 package com.pieisnotpi.test.blocks.model;
 
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexCube;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexCube;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 
 public class CubeModel

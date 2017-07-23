@@ -1,10 +1,9 @@
-package com.pieisnotpi.engine.rendering.shaders.types.tex_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.color;
 
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
-import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
@@ -12,21 +11,19 @@ import java.util.List;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
-public class TexMaterial extends Material
+public class ColorMaterial extends Material
 {
-    public Texture[] textures;
-
-    public TexMaterial(int matrixID, Texture... textures)
+    public ColorMaterial(int matrixID)
     {
-        super(TexShader.ID, matrixID);
-        this.textures = textures;
+        super(ColorShader.ID, matrixID);
     }
 
-    @Override
     public Attribute[] genAttributes(boolean isStatic)
     {
-        int mode = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic)};
+        int mode = GL_DYNAMIC_DRAW;
+        if(isStatic) mode = GL_STATIC_DRAW;
+
+        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexColor", shader, 4, mode, isStatic)};
     }
 
     @Override
@@ -34,14 +31,12 @@ public class TexMaterial extends Material
     {
         renderables.forEach(r ->
         {
+            if(!r.enabled) return;
             BufferUtility.putVec3s(a.attributes[0].buffer, r.points);
-            BufferUtility.putVec2s(a.attributes[1].buffer, r.texCoords);
+            BufferUtility.putColors(a.attributes[1].buffer, r.colors);
         });
     }
 
     @Override
-    public void bind()
-    {
-        for(int i = 0; i < textures.length; i++) textures[i].bind(i);
-    }
+    public void bind() {}
 }

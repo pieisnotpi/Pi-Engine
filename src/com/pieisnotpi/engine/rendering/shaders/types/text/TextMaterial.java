@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.text;
 
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
@@ -40,6 +40,8 @@ public class TextMaterial extends Material
         buffer.forEach(renderable ->
         {
             TextRenderable r = (TextRenderable) renderable;
+
+            if(!r.enabled) return;
 
             BufferUtility.putVec3s(a.attributes[0].buffer, r.points);
             BufferUtility.putVec2s(a.attributes[1].buffer, r.texCoords);

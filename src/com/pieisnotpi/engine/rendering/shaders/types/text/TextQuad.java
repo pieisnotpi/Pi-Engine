@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.text;
 
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.ui.text.TextRenderable;

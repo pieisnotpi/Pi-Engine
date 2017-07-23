@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.tex_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.tex;
 
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shapes.Quad;

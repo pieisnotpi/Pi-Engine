@@ -4,7 +4,7 @@ import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.GameObject;

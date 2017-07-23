@@ -5,8 +5,8 @@ import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexMaterial;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.IgnoreMeshWarning;
@@ -211,7 +211,7 @@ public class Camera extends GameObject
             else return 0;
         });
 
-        scene.sortedMeshes.forEach(m -> m.material.shader.draw(m, this));
+        scene.sortedMeshes.forEach(m -> m.draw(this));
 
         shaders.forEach(s ->
         {

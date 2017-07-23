@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.text_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.text;
 
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;

@@ -184,7 +184,7 @@ public class Mesh<R extends Renderable>
     public boolean shouldBuild() { return shouldBuild; }
 
     public boolean shouldSort() { return shouldSort; }
-    
+
     public boolean isDestroyed() { return destroyed; }
 
     public void destroy()

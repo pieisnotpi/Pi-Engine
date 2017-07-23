@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.ads;
 
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
@@ -43,6 +43,7 @@ public class ADSMaterial extends Material
     {
         renderables.forEach(r ->
         {
+            if(!r.enabled) return;
             BufferUtility.putVec3s(a.attributes[0].buffer, r.points);
             BufferUtility.putVec3s(a.attributes[1].buffer, r.normals);
             BufferUtility.putVec2s(a.attributes[2].buffer, r.texCoords);

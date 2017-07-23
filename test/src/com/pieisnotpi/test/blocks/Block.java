@@ -3,7 +3,7 @@ package com.pieisnotpi.test.blocks;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexCube;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexCube;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.test.blocks.model.Model;

@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.tex_c;
 
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.shaders.Material;
@@ -34,6 +34,7 @@ public class TexCMaterial extends Material
     {
         renderables.forEach(r ->
         {
+            if(!r.enabled) return;
             BufferUtility.putVec3s(a.attributes[0].buffer, r.points);
             BufferUtility.putColors(a.attributes[1].buffer, r.colors);
             BufferUtility.putVec2s(a.attributes[2].buffer, r.texCoords);

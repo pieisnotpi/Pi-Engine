@@ -1,7 +1,7 @@
 package com.pieisnotpi.test.scenes;
 
 import com.pieisnotpi.engine.rendering.cameras.Camera;
-import com.pieisnotpi.engine.rendering.shaders.types.color_shader.ColorQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.color.ColorQuad;
 import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.ui.text.Text;
 import com.pieisnotpi.test.cameras.FirstPersonCamera;

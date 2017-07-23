@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.ui.text.effects;
 
-import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.text.TextQuad;
 import com.pieisnotpi.engine.ui.text.Text;
 
 import java.util.List;
@@ -29,9 +29,15 @@ public class WaveEffect implements TextEffect
         for(TextQuad c : chars)
         {
             float offset = -text.newlineSpace*c.line + c.cSprite.offsetY, sine = (float) Math.sin(x + c.getX()*heightDif)*scale;
-            //c.setY(offset + text.getY() + sine);
+            c.setY(offset + sine);
         }
 
         x += speed*timeStep;
+    }
+
+    @Override
+    public void onTextUpdated()
+    {
+        x = 0;
     }
 }

@@ -5,7 +5,7 @@ import com.pieisnotpi.engine.utility.Color;
 
 public class RainbowEffect implements TextEffect
 {
-    float speed, x;
+    private float speed, x;
     private Color c = new Color(0, 0, 0);
     private Text text;
 
@@ -50,5 +50,11 @@ public class RainbowEffect implements TextEffect
 
             text.chars.get(i).setQuadTextColor(this.c.set(r, g, b));
         }
+    }
+
+    @Override
+    public void onTextUpdated()
+    {
+
     }
 }

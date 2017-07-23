@@ -5,16 +5,17 @@ import com.pieisnotpi.engine.input.keyboard.Keyboard;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
-import com.pieisnotpi.engine.rendering.shaders.types.ads_shader.ADSMaterial;
-import com.pieisnotpi.engine.rendering.shaders.types.ads_shader.ADSPointLight;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexMaterial;
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSPointLight;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.ui.text.Text;
 import com.pieisnotpi.engine.ui.text.effects.RainbowEffect;
+import com.pieisnotpi.engine.ui.text.effects.UnfoldEffect;
 import com.pieisnotpi.engine.ui.text.effects.WaveEffect;
 import com.pieisnotpi.engine.ui.text.font.SystemFont;
 import com.pieisnotpi.engine.utility.Color;
@@ -41,7 +42,7 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
         /*addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), this));
         addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), this));
         addCamera(new Camera(new Vector3f(-2, 2, 0), 90, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), this));
@@ -96,7 +97,9 @@ public class TestScene2 extends PauseScene
         String t3dt = "This is a reaaaaalllly long line of text.\nIt's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
         SystemFont font = SystemFont.getFont("Arial", 96, SystemFont.PLAIN, true);
 
-        Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), new Color(1, 0, 0), new Color(0, 0, 0), Camera.PERSP, new RainbowEffect(0.6f));
+        UnfoldEffect e = new UnfoldEffect(10);
+
+        Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), Camera.PERSP, new RainbowEffect(0.6f), e, new WaveEffect(0.1f, 0.1f, 1f));
         addGameObject(text3D);
         text3D.setOutlineSize(4);
         text3D.setOutlineSmoothing(true);
@@ -116,6 +119,8 @@ public class TestScene2 extends PauseScene
         lights.add(new ADSPointLight(new Vector3f(-10, 2, -10), new Vector3f(0.8f), 3, this));
 
         addKeybind(new Keybind(Keyboard.KEY_ENTER, () -> { throw new InvalidObjectException("Invalid key pressed"); }, null, null));
+        addKeybind(new Keybind(Keyboard.KEY_Q, e::start, null, null));
+        addKeybind(new Keybind(Keyboard.KEY_E, e::end, null, null));
 
         return this;
     }

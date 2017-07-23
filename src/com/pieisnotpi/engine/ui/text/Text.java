@@ -2,8 +2,8 @@ package com.pieisnotpi.engine.ui.text;
 
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
-import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextMaterial;
-import com.pieisnotpi.engine.rendering.shaders.types.text_shader.TextQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.text.TextMaterial;
+import com.pieisnotpi.engine.rendering.shaders.types.text.TextQuad;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.ui.text.effects.TextEffect;
 import com.pieisnotpi.engine.ui.text.font.CharSprite;
@@ -171,8 +171,10 @@ public class Text extends UiObject<TextQuad>
         size.set(maxX, maxY, 0);
         transform.setCenter(size.x/2, size.y/2, 0);
 
+        if(effectsEnabled) effects.forEach(TextEffect::onTextUpdated);
         mesh.flagForBuild();
         align();
+
     }
 
     public void setFont(Font font)

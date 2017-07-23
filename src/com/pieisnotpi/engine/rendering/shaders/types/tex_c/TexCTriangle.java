@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.tex_c;
 
 import com.pieisnotpi.engine.rendering.shapes.Triangle;
 import com.pieisnotpi.engine.utility.Color;

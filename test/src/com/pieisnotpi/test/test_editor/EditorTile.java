@@ -1,6 +1,6 @@
 package com.pieisnotpi.test.test_editor;
 
-import com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader.TexCQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_c.TexCQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.utility.Color;

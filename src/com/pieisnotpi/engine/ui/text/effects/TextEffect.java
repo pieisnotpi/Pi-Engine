@@ -6,4 +6,5 @@ public interface TextEffect
 {
     void setText(Text text);
     void process(float timeStep);
+    void onTextUpdated();
 }

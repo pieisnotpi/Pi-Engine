@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shaders.types.ads_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.ads;
 
 import com.pieisnotpi.engine.rendering.Light;
 import com.pieisnotpi.engine.rendering.cameras.Camera;

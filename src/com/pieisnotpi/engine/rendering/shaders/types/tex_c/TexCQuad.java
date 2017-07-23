@@ -1,6 +1,6 @@
-package com.pieisnotpi.engine.rendering.shaders.types.tex_c_shader;
+package com.pieisnotpi.engine.rendering.shaders.types.tex_c;
 
-import com.pieisnotpi.engine.rendering.shaders.types.tex_shader.TexQuad;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
