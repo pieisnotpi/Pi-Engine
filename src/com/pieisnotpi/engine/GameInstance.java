@@ -3,34 +3,35 @@ package com.pieisnotpi.engine;
 import com.pieisnotpi.engine.audio.AudioPlayer;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Monitor;
-import com.pieisnotpi.engine.rendering.Window;
+import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.updates.GameUpdate;
+import com.pieisnotpi.engine.utility.ShaderReloadUtility;
+import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class GameInstance
 {
-    private boolean isRunning = true;
-    private long startTime;
+    private boolean run = true;
 
     public List<Window> windows = new ArrayList<>();
-    public List<GameUpdate> updates = new ArrayList<>();
     public AudioPlayer player;
+    private List<GameUpdate> updates = new ArrayList<>();
+    protected ShaderReloadUtility shaderReload;
 
-    public void init()
+    public void init() throws Exception
     {
-        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
         player = new AudioPlayer();
     }
 
-    public void start()
+    public void start() throws Exception
     {
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-        while(isRunning)
+        while(run)
         {
             boolean allClosed = true;
 
@@ -38,7 +39,7 @@ public abstract class GameInstance
             {
                 Window window = windows.get(i);
 
-                if(!glfwWindowShouldClose(window.windowID)) allClosed = false;
+                if(!glfwWindowShouldClose(window.handle) && window.isAlive()) allClosed = false;
                 else
                 {
                     Logger.SYSTEM.log("Window '" + window.name + "' has been terminated");
@@ -54,21 +55,16 @@ public abstract class GameInstance
 
             for(GameUpdate update : updates)
             {
-                if(update.updates < update.frequency && update.lastUpdateTime + update.period <= getTime())
-                {
-                    long t = System.currentTimeMillis();
-                    update.update(getTime());
-                    update.lastTimeTaken = System.currentTimeMillis() - t;
-                }
+                if(update.lastUpdateTime <= 0) update.lastUpdateTime = System.currentTimeMillis() - update.frequency - 1;
+                update.update(System.currentTimeMillis());
                 if(update.updates != update.frequency) finished = false;
             }
 
-            if(finished || getTime() >= 1000)
+            if(finished || System.currentTimeMillis() - startTime >= 1000)
             {
                 for(GameUpdate update : updates)
                 {
                     update.runPerSecondAction();
-                    update.lastUpdateTime = -100;
                     update.updates = 0;
                 }
 
@@ -76,44 +72,56 @@ public abstract class GameInstance
             }
             else
             {
-                long sleepTime = Long.MAX_VALUE;
+                long time = System.currentTimeMillis(), sleepTime = Long.MAX_VALUE;
 
-                for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, update.lastUpdateTime + update.period);
-
-                sleepTime -= getTime();
+                for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, (update.lastUpdateTime + update.period) - time);
 
                 if(sleepTime > 0 && sleepTime != Long.MAX_VALUE)
                 try { Thread.sleep(sleepTime); }
                 catch(InterruptedException e)
                 {
                     e.printStackTrace();
-                    windows.forEach(Window::destroy);
-                    isRunning = false;
+                    break;
                 }
             }
         }
 
-        player.destroy();
+    }
+    
+    public void registerUpdate(GameUpdate update)
+    {
+        updates.add(update);
+        update.lastUpdateTime = System.currentTimeMillis();
+    }
+    
+    public void unregisterUpdate(GameUpdate update)
+    {
+        updates.remove(update);
     }
 
     public void onMonitorConnect(Monitor monitor)
     {
-        Logger.SYSTEM.debug("Monitor connected with ID " + monitor.monitorID);
+        Logger.SYSTEM.log("Monitor connected with ID " + monitor.monitorID);
     }
 
     public void onMonitorDisconnect(Monitor monitor)
     {
-        if(Window.prefMonitor >= PiEngine.monitorPointers.limit()) Window.prefMonitor = 0;
-        Logger.SYSTEM.debug("Monitor disconnected with ID " + monitor.monitorID);
+        Logger.SYSTEM.log("Monitor disconnected with ID " + monitor.monitorID);
     }
 
-    public long getTime()
+    public void close()
     {
-        return System.currentTimeMillis() - startTime;
+        run = false;
     }
-
-    public void process()
+    
+    public void onClose()
     {
-        for(Window window : windows) window.scene.update();
+        if(player != null) player.destroy();
+        windows.forEach(Window::destroy);
+        
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    
+        GL.destroy();
     }
 }

@@ -12,7 +12,7 @@ import static org.lwjgl.openal.AL10.*;
 public class AudioListener
 {
     private Vector3f pos = new Vector3f(), rot = new Vector3f();
-    private AudioPlayer player = PiEngine.instance.player;
+    private AudioPlayer player = PiEngine.gameInstance.player;
     private List<AudioSource> sources = new ArrayList<>();
     private Scene scene;
 
@@ -20,8 +20,15 @@ public class AudioListener
     {
         this.scene = scene;
 
-        /*AudioFile file = new AudioFile("/assets/test2.ogg")*//*.clipSeconds(0.5f)*//*.bind();
-        sources.add(new AudioSource(file, player).setPosition(0, 0, 0).setLooping(true).setRelative(false).play());*/
+        /*int length = 1024, jump = (Short.MAX_VALUE - Short.MIN_VALUE)/length;
+        ShortBuffer samples = BufferUtils.createShortBuffer(length);
+        for(int i = 0; i < length; i++) samples.put((short) (Short.MIN_VALUE + i*jump));
+        samples.flip();
+        AudioBuffer buffer = new AudioBuffer(samples, 256, 1).bind();
+        sources.add(new AudioSource(buffer, player).setRelative(true).setLooping(true).play());*/
+
+        /*AudioBuffer file = new AudioBuffer("/assets/sounds/test2.ogg").bind();
+        sources.add(new AudioSource(file, player).setPosition(0, 0, 0).setLooping(true).setRelative(true).play());*/
     }
 
     public void setPosition(float x, float y, float z)

@@ -2,74 +2,122 @@ package com.pieisnotpi.engine.output;
 
 import com.pieisnotpi.engine.PiEngine;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 public class Logger
 {
-    public static final Logger TEXTURES = new Logger("TEXTURES"), SHADER_COMPILER = new Logger("SHADER_COMPILER"), SHADER_PROGRAM = new Logger("SHADER_PROGRAM"), SYSTEM = new Logger("SYSTEM"), AUDIO = new Logger("Audio");
-
-    private String identity;
-    private static final String LOG = "LOG", ERR = "ERR", DEBUG = "DEBUG", DEBUG_ERR = "DEBUG_ERR";
-
     /**
+     * Uses standardized String.format formatting, thus arguments must formatted '%n$s'
+     * where n is an argument index corresponding to the following, i.e. '%1$s' for argument #1
+     *
+     * #1 == Message type (I.E. Debug/Error/Log/etc.)
+     * #2 == Logger Identity (Identity set at initialization)
+     * #3 == Current Time (Current system time, uses String 'timeFormat')
+     * #4 == Message (Message given when logging something)
+     * #5 == GL Instance
+     *
      * logFormat: String used to determine the format that the logger uses
      * timeFormat: String used with var dateFormat
-     * dateFormat: Date formatter used for parameter %3
-     * %1 == Message type (I.E. Debug/Error/Log/etc.)
-     * %2 == Logger Identity (Identity set at initialization)
-     * %3 == Current Time (Current system time, uses String 'timeFormat')
-     * %4 == Message (Message given when logging something)
      */
 
-    private static String logFormat = "[%2|%3|%1]: %4", timeFormat = "kk:mm:ss";
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat(timeFormat);
+    public static String standardLogFormat = "[%2$s|%3$s|%1$s]: %4$s", standardTimeFormat = "%1$tH:%1$tM:%1$tS";
+
+    private static final String LOG = "LOG", ERR = "ERR", DEBUG = "DEBUG", DEBUG_ERR = "DEBUG_ERR";
+    public static final Logger OPENGL = new Logger("OPENGL"), SYSTEM = new Logger("SYSTEM"), AUDIO = new Logger("AUDIO");
+
+    private String identity, logFormat, timeFormat;
 
     public Logger(String identity)
     {
         this.identity = identity;
+        logFormat = standardLogFormat;
+        timeFormat = standardTimeFormat;
     }
 
     // Standard log
     public void log(String message)
     {
-        System.out.println(format(LOG, message));
+        log(message, LOG);
+    }
+    
+    // Standard log, w/ type
+    public void log(String message, String type)
+    {
+        System.out.println(format(type, message));
     }
 
     // Error log
     public void err(String message)
     {
-        System.err.println(format(ERR, message));
+        err(message, ERR);
+    }
+    
+    // Error log, w/ type
+    public void err(String message, String type)
+    {
+        System.err.println(format(type, message));
     }
 
     // Debug log, only logs if debug mode is on
     public void debug(String message)
     {
-        if(PiEngine.debug) System.out.println(format(DEBUG, message));
+        debug(message, DEBUG);
+    }
+    
+    // Debug log, only logs if debug mode is on, w/ type
+    public void debug(String message, String type)
+    {
+        if(PiEngine.debug) System.out.println(format(type, message));
     }
 
     // Debug error log, only logs if debug mode is on
     public void debugErr(String message)
     {
-        if(PiEngine.debug) System.err.println(format(DEBUG_ERR, message));
+        debugErr(message, DEBUG_ERR);
+    }
+    
+    // Debug error log, only logs if debug mode is on, w/ type
+    public void debugErr(String message, String type)
+    {
+        if(PiEngine.debug) System.err.println(format(type, message));
+    }
+    
+    public void debugStacktrace()
+    {
+        if(!PiEngine.debug) return;
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        err("Printing stack trace");
+        for(int i = 2; i < stack.length; i++) { System.err.printf("\tat %s%n", stack[i]); }
+    }
+
+    public void setLogFormat(String format)
+    {
+        if(format != null) logFormat = format;
+    }
+    
+    public void setTimeFormat(String format)
+    {
+        if(format != null) timeFormat = format;
     }
 
     // Formats a message for printing
     private String format(String type, String message)
     {
-        return logFormat.replaceAll("%1", type).replaceAll("%2", identity).replaceAll("%3", dateFormat.format(Calendar.getInstance().getTime())).replaceAll("%4", message);
+        return String.format(logFormat, type, identity, getTime(), message, PiEngine.glInstance != null ? PiEngine.glInstance.window.handle + "" : "NONE");
     }
 
-    // Sets the loggers format
-    public static void setLogFormat(String format)
+    private String getTime()
     {
-        logFormat = format;
+        return String.format(timeFormat, System.currentTimeMillis());
     }
 
-    // Sets the time format
-    public static void setTimeFormat(String format)
+    // Sets the logger's format
+    public static void setStandardLogFormat(String format)
     {
-        timeFormat = format;
-        dateFormat.applyPattern(timeFormat);
+        if(format != null) standardLogFormat = format;
+    }
+
+    // Sets the logger's format
+    public static void setStandardTimeFormat(String format)
+    {
+        if(format != null) standardTimeFormat = format;
     }
 }

@@ -5,6 +5,8 @@ import org.joml.Vector3f;
 
 public class MathUtility
 {
+    public static final float toRads = (float) (Math.PI/180), toDegs = (float) (180/Math.PI);
+
     /**
      *
      * @param value Value to be rounded
@@ -154,5 +156,11 @@ public class MathUtility
         }
 
         return count % 2 != 0;
+    }
+    
+    public static byte intToByte(int value)
+    {
+        if(value > 255) return -1;
+        return (byte) (value & 0xff);
     }
 }

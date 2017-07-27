@@ -1,10 +1,10 @@
-#version 150
+#version 130
+
+uniform sampler2D sampler;
 
 in vec2 TexCoord;
 
 out vec4 FragColor;
-
-uniform sampler2D sampler;
 
 void main()
 {

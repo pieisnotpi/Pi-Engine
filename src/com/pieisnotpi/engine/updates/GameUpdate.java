@@ -1,5 +1,7 @@
 package com.pieisnotpi.engine.updates;
 
+import com.pieisnotpi.engine.output.Logger;
+
 public class GameUpdate
 {
     /**
@@ -9,6 +11,8 @@ public class GameUpdate
      * @value abbreviation: The abbreviation of this GameUpdate's name, used for debug
      * @value action: The action this GameUpdate runs
      */
+
+    public String name = "GAME";
     public long lastUpdateTime = 0, lastTimeTaken = 0, totalTimeTaken = 0;
     public int updates, period, frequency;
     private GameUpdateAction updateAction;
@@ -34,24 +38,39 @@ public class GameUpdate
         period = 1000/frequency;
     }
 
-    public void setFrequency(int frequency)
+    public GameUpdate setName(String name)
+    {
+        this.name = name;
+        return this;
+    }
+
+    public GameUpdate setFrequency(int frequency)
     {
         this.frequency = frequency;
         period = 1000/frequency;
+
+        return this;
     }
 
-    public void update(long time)
+    public void update(long time) throws Exception
     {
-        long temp = System.currentTimeMillis();
+        if(!shouldUpdate(time)) return;
+
+        updateAction.runAction((time - lastUpdateTime)/1000f);
         lastUpdateTime = time;
-        updateAction.runAction();
+        totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
+        if(lastTimeTaken > frequency) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run", name, lastTimeTaken));
         updates++;
-        totalTimeTaken += System.currentTimeMillis() - temp;
     }
 
-    public void runPerSecondAction()
+    public void runPerSecondAction() throws Exception
     {
-        if(perSecondAction != null) perSecondAction.runAction();
+        if(perSecondAction != null) perSecondAction.runAction(1);
         totalTimeTaken = 0;
+    }
+
+    public boolean shouldUpdate(long time)
+    {
+        return updates < frequency && lastUpdateTime + period <= time;
     }
 }

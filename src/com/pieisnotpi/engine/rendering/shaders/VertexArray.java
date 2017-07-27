@@ -1,9 +1,8 @@
 package com.pieisnotpi.engine.rendering.shaders;
 
-import java.nio.FloatBuffer;
+import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
@@ -11,51 +10,35 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class VertexArray
 {
-    public int handle, programHandle;
+    public boolean alive = false;
+    public int handle = -1;
     public Attribute[] attributes;
 
     public VertexArray(Attribute... attributes)
     {
         this.attributes = attributes;
+        handle = glGenVertexArrays();
     }
 
-    public void init(int programHandle)
+    public VertexArray init()
     {
-        this.programHandle = programHandle;
-
-        int[] handles = new int[attributes.length];
-        glGenBuffers(handles);
-
-        for(Attribute a : attributes) a.init(programHandle);
-
-        handle = glGenVertexArrays();
         glBindVertexArray(handle);
 
-        for(Attribute attribute : attributes)
+        for(Attribute a : attributes)
         {
-            glEnableVertexAttribArray(attribute.location);
-            glBindBuffer(GL_ARRAY_BUFFER, attribute.handle);
-            glVertexAttribPointer(attribute.location, attribute.size, GL_FLOAT, false, 0, NULL);
+            glEnableVertexAttribArray(a.location);
+            a.bind();
+            glVertexAttribPointer(a.location, a.size, GL_FLOAT, false, 0, NULL);
         }
+
+        alive = true;
+
+        return this;
     }
 
     public void bind()
     {
         glBindVertexArray(handle);
-    }
-
-    public void bindAttribute(String name, FloatBuffer value)
-    {
-        for(Attribute attribute : attributes)
-        {
-            if(attribute.name.equals(name))
-            {
-                attribute.buffer = value;
-                attribute.bindData();
-
-                break;
-            }
-        }
     }
 
     public String toString()
@@ -67,10 +50,10 @@ public class VertexArray
         return temp;
     }
 
-    public void finalize() throws Throwable
+    public void destroy()
     {
-        super.finalize();
-
+        alive = false;
+        for(Attribute a : attributes) a.destroy();
         glDeleteVertexArrays(handle);
     }
 }

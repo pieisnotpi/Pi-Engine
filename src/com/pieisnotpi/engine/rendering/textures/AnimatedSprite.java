@@ -74,6 +74,12 @@ public class AnimatedSprite extends Sprite
 
         timer.start();
     }
+    
+    public void reset()
+    {
+        timer.start();
+        set(sprites[current = 0]);
+    }
 
     public boolean updateAnimation()
     {

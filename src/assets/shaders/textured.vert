@@ -1,14 +1,15 @@
-#version 150
+#version 130
+
+uniform mat4 transform;
+uniform mat4 camera;
 
 in vec3 VertexPosition;
-in vec2 VertexTexCoords;
+in vec2 VertexTexCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 camera;
-
 void main()
 {
-    TexCoord = VertexTexCoords;
-    gl_Position = camera*vec4(VertexPosition, 1.0);
+    TexCoord = VertexTexCoord;
+    gl_Position = camera*transform*vec4(VertexPosition, 1.0f);
 }

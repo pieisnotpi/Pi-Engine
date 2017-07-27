@@ -1,190 +1,116 @@
 package com.pieisnotpi.engine.rendering.textures;
 
+import com.pieisnotpi.engine.image.Image;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.Window;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
+import org.joml.Vector2i;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
+import static com.pieisnotpi.engine.PiEngine.glInstance;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class Texture
 {
-    public static Map<String, Texture> textures = new HashMap<>();
-    public static String defaultPath = "/assets/textures/";
+    public static String defaultPath = "/assets/textures/", defaultExtension = ".png";
+    public static final int FILTER_NEAREST = GL_NEAREST, FILTER_LINEAR = GL_LINEAR;
 
-    private int texID = -1;
-    public int width, height;
+    public Vector2i res;
+    public int texFilter, handle = -1;
+    public Image image;
+    
+    public Texture(String path)
+    {
+        this(path, FILTER_NEAREST);
+    }
+    
+    public Texture(String path, int texFilter)
+    {
+        this(new Image(path), texFilter);
+    }
 
     public Texture(Image image)
     {
-        texID = glGenTextures();
-        compileTexture(image);
+        this(image, FILTER_NEAREST);
     }
 
-    public Texture(BufferedImage image)
+    public Texture(Image image, int texFilter)
     {
-        texID = glGenTextures();
-        compileTexture(image);
+        this.texFilter = texFilter;
+        
+        handle = glGenTextures();
+        setImage(image);
     }
 
-    public Texture(int texID, int width, int height)
+    public Texture(int texID)
     {
-        this.texID = texID;
-        this.width = width;
-        this.height = height;
+        this(texID, FILTER_NEAREST);
     }
 
-    public Texture(String path)
+    public Texture(int texID, int texFilter)
     {
-        try
-        {
-            InputStream file = Texture.class.getResourceAsStream(path);
-
-            if(file == null)
-            {
-                Logger.TEXTURES.err("Texture at path " + path + " failed to load");
-                return;
-            }
-
-            Image image = new Image(file);
-
-            texID = glGenTextures();
-            compileTexture(image);
-
-            file.close();
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        this.handle = texID;
+        this.texFilter = texFilter;
     }
 
     public void bind(int sampler)
     {
-        glActiveTexture(GL_TEXTURE0 + sampler);
-        glBindTexture(GL_TEXTURE_2D, texID);
-
-        Window.lastTextureID = texID;
+        glInstance.bindTexture(sampler, GL_TEXTURE_2D, handle);
     }
 
-    public void compileTexture(BufferedImage image)
+    public void setImage(Image image)
     {
-        width = image.getWidth();
-        height = image.getHeight();
+        this.image = image;
 
         bind(0);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bytes);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texFilter);
+        res = new Vector2i(image.width, image.height);
+        
+        image.freeBuffer();
+    }
+    
+    public float[] getGLImage()
+    {
+        float[] temp = new float[res.x*res.y*4];
+        bind(3);
+        glReadPixels(0, 0, res.x, res.y, GL_RGBA, GL_UNSIGNED_BYTE, temp);
+        return temp;
     }
 
-    public void compileTexture(Image image)
+    public int getHandle()
     {
-        width = (int) image.getWidth();
-        height = (int) image.getHeight();
-
-        bind(0);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, getBytes(image));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        return handle;
     }
 
-    public int getTexID()
+    public static Texture getTextureFile(String name)
     {
-        return texID;
+        return getTextureFile(name, FILTER_NEAREST);
     }
 
-    public void finalize() throws Throwable
+    public static Texture getTextureFile(String name, int texFilter)
     {
-        super.finalize();
-
-        glDeleteTextures(texID);
-    }
-
-    public static Texture getTexture(String name)
-    {
-        Texture t = textures.get(name);
+        Texture t = glInstance.getTexture(name + texFilter);
         if(t != null) return t;
 
-        try
-        {
-            String path = name;
+        String path = name.replaceAll("\\\\", "/");
 
-            if(!path.contains("\\") && !path.contains("/")) path = defaultPath + path;
-            if(!path.contains(".")) path += ".png";
+        if(path.charAt(0) != '\n') path = defaultPath + path;
+        else path = path.substring(1);
+        if(!path.contains(".")) path = path.concat(defaultExtension);
 
-            Texture temp = new Texture(path);
-            Logger.TEXTURES.debug("Found texture '" + path + "'");
-            textures.put(name, temp);
-            return temp;
-        }
-        catch(Exception e)
+        Image image = new Image(path);
+        if(image.bytes == null) return null;
+        else
         {
-            e.printStackTrace();
-            return null;
+            t = new Texture(image, texFilter);
+            Logger.OPENGL.debug("Found texture '" + path + '\'');
+            glInstance.registerTexture(name + texFilter, t);
+            return t;
         }
     }
 
-    public static ByteBuffer getBytes(Image image)
+    public static Texture getTextureInternal(String name)
     {
-        int w = (int) image.getWidth(), h = (int) image.getHeight();
-
-        ByteBuffer bytes = ByteBuffer.allocateDirect((int) (4*image.getWidth()*image.getHeight()));
-
-        for(int y = 0; y < h; y++)
-        {
-            for(int x = 0; x < w; x++)
-            {
-                Color pixel = image.getPixelReader().getColor(x, y);
-
-                bytes.put((byte) ((int) (pixel.getRed()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getGreen()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getBlue()*255) & 0xff));
-                bytes.put((byte) ((int) (pixel.getOpacity()*255) & 0xff));
-            }
-        }
-
-        bytes.flip();
-
-        return bytes;
-    }
-
-    public static ByteBuffer getBytes(BufferedImage image)
-    {
-        int w = image.getWidth(), h = image.getHeight();
-
-        int[] pixels = new int[w*h];
-        image.getRGB(0, 0, w, h, pixels, 0, w);
-
-        ByteBuffer bytes = ByteBuffer.allocateDirect(w*h*4);
-
-        for(int y = 0; y < h; y++)
-        {
-            for(int x = 0; x < w; x++)
-            {
-                int pixel = pixels[y*w + x];
-
-                bytes.put((byte) ((pixel >> 16) & 0xFF));
-                bytes.put((byte) ((pixel >> 8) & 0xFF));
-                bytes.put((byte) (pixel & 0xFF));
-                bytes.put((byte) ((pixel >> 24) & 0xFF));
-            }
-        }
-
-        bytes.flip();
-
-        return bytes;
+        return glInstance.getTexture(name);
     }
 }
