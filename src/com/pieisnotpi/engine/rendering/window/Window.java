@@ -88,7 +88,7 @@ public class Window
 
         drawUpdate = new GameUpdate(refreshRate, this::draw, timeStep ->
         {
-            if(scene == null) return;
+            if(scene == null || scene.fps == null) return;
 
             String time = Float.toString((float) this.time/drawUpdate.updates);
             if(scene.fps != null) scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));

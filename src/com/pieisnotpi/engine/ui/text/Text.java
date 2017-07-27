@@ -124,7 +124,7 @@ public class Text extends UiObject<TextQuad>
 
     public void setText(String value)
     {
-        if(value == null || value.equals(text) || value.equals("") || !enabled) return;
+        if(value == null || value.equals(text) || value.equals("")) return;
         size.set(0);
 
         text = value;

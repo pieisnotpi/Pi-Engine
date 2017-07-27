@@ -61,7 +61,7 @@ public abstract class PauseScene extends Scene
 
         shouldUpdate = !paused;
 
-        if(paused) pausedText.enable();
-        else pausedText.disable();
+        if(paused) addGameObject(pausedText);
+        else removeGameObject(pausedText);
     }
 }

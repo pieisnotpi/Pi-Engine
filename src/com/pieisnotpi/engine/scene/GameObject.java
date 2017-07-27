@@ -30,17 +30,9 @@ public class GameObject<m extends Renderable>
     protected Transform transform = new Transform();
     protected Vector3f size = new Vector3f();
     protected Scene scene;
-    protected boolean enabled = true;
 
     public void update(float timeStep) {}
     public void drawUpdate(float timeStep) {}
-    public void physicsUpdate(float timeStep) {}
-    public void enable() { enabled = true; }
-    public void disable() { enabled = false; }
-
-    public void setWidth(float width) { size.x = width; }
-    public void setHeight(float height) { size.y = height; }
-    public void setDepth(float depth) { size.z = depth; }
     public void setScene(Scene scene) { this.scene = scene; }
 
     public void onJoystickConnect(Joystick joystick) {}
@@ -62,9 +54,8 @@ public class GameObject<m extends Renderable>
     public void onMouseExited() {}
     public void onMouseMovement(Vector2f scaled, Vector2i unscaled) {}
     public void onWindowChanged(Window oldWindow, Window newWindow) {}
-    public void toggle() { if(enabled) disable(); else enable(); }
 
-    public boolean isEnabled() { return enabled; }
+    public boolean isRegistered() { return scene != null; }
     public boolean isPointInsideObject(Vector2f point) { return false; }
 
     public float getWidth() { return size.x*transform.scale.x; }
