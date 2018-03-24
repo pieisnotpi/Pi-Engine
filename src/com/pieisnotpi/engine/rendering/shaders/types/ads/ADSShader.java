@@ -4,6 +4,7 @@ import com.pieisnotpi.engine.rendering.Light;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.cameras.CameraMatrix;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.ShaderFile;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.window.Window;
@@ -44,13 +45,13 @@ public class ADSShader extends ShaderProgram
     }
 
     @Override
-    public void bindPMUniforms(Camera camera, Mesh mesh)
+    public void bindPMUniforms(Transform transform, Camera camera, Mesh mesh)
     {
         CameraMatrix mvp = camera.getMatrix(mesh.material.matrixID);
         mvp.getMatrix().normal(normal);
 
         setUniformMat4("MVP", mvp.getBuffer());
         setUniformMat3("NormalMatrix", normal);
-        setUniformMat4("ModelMatrix", mesh.getTransform().getBuffer());
+        setUniformMat4("ModelMatrix", transform.getBuffer());
     }
 }

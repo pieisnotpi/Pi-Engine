@@ -34,7 +34,8 @@ public class FirstPersonCamera extends Camera
     public int pauseSlot = -1, fullscreenSlot = -1;
 
     private int joystick;
-    private float mouseRotAmount = 0.05f, moveAmount = 2.4f, joySensitivity = 120;
+    private float mouseRotAmount = 0.03f, moveAmount = 2.4f, joySensitivity = 120;
+    private float xr, yr;
     private boolean hideCursor = false, ignoreNextMovement = false;
 
     public FirstPersonCamera(float fov, int joystick, Vector2f viewPos, Vector2f viewSize)
@@ -49,19 +50,19 @@ public class FirstPersonCamera extends Camera
 
         if(joystick == 0)
         {
-            keybinds.add(new Keybind(GLFW_KEY_W, null, (timeStep) -> transform.translate(0, 0, -moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_S, null, (timeStep) -> transform.translate(0, 0, moveAmount/scene.window.getRefreshRate()), null));
-            keybinds.add(new Keybind(GLFW_KEY_D, null, (timeStep) -> transform.translate(moveAmount/scene.window.getRefreshRate(), 0, 0), null));
-            keybinds.add(new Keybind(GLFW_KEY_A, null, (timeStep) -> transform.translate(-moveAmount/scene.window.getRefreshRate(), 0, 0), null));
-            keybinds.add(new Keybind(GLFW_KEY_SPACE, null, (timeStep) -> transform.translateAbs(0, moveAmount/scene.window.getRefreshRate(), 0), null));
-            keybinds.add(new Keybind(GLFW_KEY_LEFT_SHIFT, null, (timeStep) -> transform.translateAbs(0, -moveAmount/scene.window.getRefreshRate(), 0), null));
+            keybinds.add(new Keybind(GLFW_KEY_W, null, (timeStep) -> transform.translate(0, 0, -moveAmount*timeStep), null));
+            keybinds.add(new Keybind(GLFW_KEY_S, null, (timeStep) -> transform.translate(0, 0, moveAmount*timeStep), null));
+            keybinds.add(new Keybind(GLFW_KEY_D, null, (timeStep) -> transform.translate(moveAmount*timeStep, 0, 0), null));
+            keybinds.add(new Keybind(GLFW_KEY_A, null, (timeStep) -> transform.translate(-moveAmount*timeStep, 0, 0), null));
+            keybinds.add(new Keybind(GLFW_KEY_SPACE, null, (timeStep) -> transform.translateAbs(0, moveAmount*timeStep, 0), null));
+            keybinds.add(new Keybind(GLFW_KEY_LEFT_SHIFT, null, (timeStep) -> transform.translateAbs(0, -moveAmount*timeStep, 0), null));
             keybinds.add(new Keybind(GLFW_KEY_ESCAPE, () ->
             {
                 ignoreNextMovement = hideCursor = !hideCursor;
                 if(scene.window != null) if(hideCursor)
                 {
                     glfwSetCursorPos(scene.window.handle, scene.window.getWindowRes().x/2, scene.window.getWindowRes().y/2);
-                    glfwSetInputMode(scene.window.handle, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+                    glfwSetInputMode(scene.window.handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                     scene.gameObjects.forEach(GameObject::onMouseExited);
                 }
                 else glfwSetInputMode(scene.window.handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -87,10 +88,22 @@ public class FirstPersonCamera extends Camera
 
         if(joy.name.contains("Xbox"))
         {
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, null, (value, timeStep) -> transform.rotateDegrees(0, joySensitivity*timeStep*value, 0), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, null, (value, timeStep) -> transform.rotateDegrees(joySensitivity*timeStep*value, 0, 0), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, null, (value, timeStep) -> transform.translate(moveAmount*timeStep*value, 0, 0), null));
-            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, null, (value, timeStep) -> transform.translate(0, 0, moveAmount*timeStep*-value), null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_X, false, null, (value, timeStep) ->
+            {
+                if(Math.abs(value) > 0.05f) transform.rotateDegrees(0, joySensitivity*timeStep*value, 0);
+            }, null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_RSTICK_Y, false, null, (value, timeStep) ->
+            {
+                if(Math.abs(value) > 0.05f) transform.rotateDegrees(joySensitivity*timeStep*value, 0, 0);
+            }, null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_X, false, null, (value, timeStep) ->
+            {
+                if(Math.abs(value) > 0.05f) transform.translate(moveAmount*timeStep*value, 0, 0);
+            }, null));
+            joybinds.add(new Joybind(joystick, Xbox.AXIS_LSTICK_Y, false, null, (value, timeStep) ->
+            {
+                if(Math.abs(value) > 0.05f) transform.translate(0, 0, moveAmount*timeStep*-value);
+            }, null));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_A, true, null, (value, timeStep) -> transform.translate(0, moveAmount*timeStep, 0), null));
             joybinds.add(new Joybind(joystick, Xbox.BUTTON_B, true, null, (value, timeStep) -> transform.translate(0, -moveAmount*timeStep, 0), null));
 
@@ -158,12 +171,13 @@ public class FirstPersonCamera extends Camera
 
         if(hideCursor && !ignoreNextMovement)
         {
-            if(cx > -0.001 && cx < 0.001) cx = 0;
-            if(cy > -0.001 && cy < 0.001) cy = 0;
+            if(Math.abs(cx) > 0.001) xr += -cx*mouseRotAmount;
+            if(Math.abs(cy) > 0.001) yr += cy*mouseRotAmount;
+            
+            if(yr > 90) yr = 89.9f;
+            if(yr < -90) yr = -89.9f;
 
-            float nx = -cy*mouseRotAmount - transform.rotDeg.x, ny = -cx*mouseRotAmount - transform.rotDeg.y;
-
-            transform.setRotateDegrees(nx, ny, 0);
+            transform.setRotateDegrees(yr, xr, 0);
             glfwSetCursorPos(scene.window.handle, res.x/2f, res.y/2f);
         }
 

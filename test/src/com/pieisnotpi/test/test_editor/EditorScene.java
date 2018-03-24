@@ -1,6 +1,7 @@
 package com.pieisnotpi.test.test_editor;
 
 import com.pieisnotpi.engine.input.keyboard.Keyboard;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
@@ -21,6 +22,7 @@ public class EditorScene extends Scene
     private SpriteSet curSpriteSet;
     private List<SpriteSet> types = new ArrayList<>();
     private EditorTile[][] tiles = new EditorTile[24][24];
+    public Mesh<TexCQuad> mesh;
 
     private int curType = 0;
     
@@ -36,8 +38,8 @@ public class EditorScene extends Scene
         assert tex != null;
         int tw = tex.image.width, th = tex.image.height;
 
-        Mesh<TexCQuad> mesh = new Mesh<>(new TexCMaterial(Camera.ORTHO2D_S, tex), new Transform(), MeshConfig.QUAD);
-        addGameObject(tilesObject = new GameObject<>(mesh));
+        mesh = new Mesh<>(new TexCMaterial(Camera.ORTHO2D_S, tex), MeshConfig.QUAD);
+        addGameObject(tilesObject = new GameObject<>(new Renderable(1, 0, new Transform(), mesh)));
 
         cameras.add(new Camera(90, new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.6f, 0.6f, 0.6f);
@@ -99,7 +101,7 @@ public class EditorScene extends Scene
     public void drawUpdate(float timeStep) throws Exception
     {
         super.drawUpdate(timeStep);
-        tilesObject.getMesh().flagForBuild();
+        mesh.flagForBuild();
     }
 
     public Sprite getCurSprite()

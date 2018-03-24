@@ -2,14 +2,16 @@ package com.pieisnotpi.test.scenes;
 
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.keyboard.Keyboard;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
 import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSPointLight;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
-import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.GameObject;
@@ -24,17 +26,19 @@ import com.pieisnotpi.test.blocks.Block;
 import com.pieisnotpi.test.blocks.Metal;
 import com.pieisnotpi.test.cameras.FirstPersonCamera;
 import com.pieisnotpi.test.fonts.PixelFont;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
+import org.joml.*;
 
 import java.io.InvalidObjectException;
+import java.lang.Math;
 import java.util.ArrayList;
 
 public class TestScene2 extends PauseScene
 {
     private static final int w = 100, h = 100;
     private GameObject<Quad> oBlocks, oArrow;
+    private int[] view = new int[] {0, 0, 1, 1};
+    private final Vector3f arrowPos = new Vector3f(0, 2, 0);
+    private Vector4f arrowPostMul = new Vector4f();
 
     public TestScene2 init() throws Exception
     {
@@ -42,19 +46,20 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
-        /*addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f), this));
-        addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f), this));
-        addCamera(new Camera(new Vector3f(-2, 2, 0), 90, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f), this));
-        addCamera(new Camera(new Vector3f(2, 2, 0), 90, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f), this));*/
+        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
+        //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
+        /*addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f)));
+        addCamera(new Camera(new Vector3f(-2, 2, 0), 90, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f)));
+        addCamera(new Camera(new Vector3f(2, 2, 0), 90, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));*/
 
         clearColor.set(0.918f, 0.729f, 0.125f);
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;
 
         ADSMaterial blockMaterial = new ADSMaterial(new Vector3f(0.25f), new Vector3f(0.2f), new Vector3f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
-        oBlocks = new GameObject<>();
-        Mesh<Quad> blocksMesh = oBlocks.createMesh(blockMaterial, MeshConfig.QUAD_STATIC).setRenderables(new ArrayList<>(w*h*4));
+        Mesh<Quad> blocksMesh = new Mesh<Quad>(blockMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
+        oBlocks = new GameObject<>(new Renderable(0, 0, new Transform(), blocksMesh));
 
         Block block;
 
@@ -70,7 +75,7 @@ public class TestScene2 extends PauseScene
 
                 block.cubes.forEach(cube ->
                 {
-                    for(Quad side : cube.sides) if(side.enabled) blocksMesh.addRenderable(side);
+                    for(Quad side : cube.sides) if(side.enabled) blocksMesh.addPrimitive(side);
                 });
             }
 
@@ -84,14 +89,15 @@ public class TestScene2 extends PauseScene
         //Mesh<Quad> blocksMesh2 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(90, 0, 0), this).register();
         //Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();
 
+        Mesh<Quad> arrow = new Mesh<>(new TexMaterial(Camera.PERSP, Texture.getTextureFile("arrow.png")), MeshConfig.QUAD_STATIC);
         oArrow = new GameObject<>();
-        Mesh<Quad> arrow = oArrow.createMesh(new TexMaterial(Camera.PERSP, Texture.getTextureFile("arrow.png")), MeshConfig.QUAD_STATIC);
+        oArrow.createRenderable(0, 0, arrow);
         Sprite t = new Sprite(0f, 0f, 1f, 1f);
         TexQuad t0 = new TexQuad(-0.5f, 0, -0.5f, 1, 0, 1, t), t1 = new TexQuad(0, -0.5f, -0.5f, 0, 1, 1, t);
         MathUtility.rotateAxisY(90, 0, 0, t0.points);
-        arrow.addRenderable(t0).addRenderable(t1);
+        arrow.addPrimitive(t0).addPrimitive(t1);
         arrow.build();
-        arrow.getTransform().translate(0, 2, 0);
+        oArrow.getTransform().translate(0, 2, 0);
         addGameObject(oArrow);
 
         String t3dt = "This is a reaaaaalllly long line of text.\nIt's for testing stuff.", t3d2t = "I.\nLike.\nTests.";
@@ -126,18 +132,29 @@ public class TestScene2 extends PauseScene
     }
     
     @Override
+    public void onWindowResize(Vector2i res)
+    {
+        super.onWindowResize(res);
+        view[2] = res.x;
+        view[3] = res.y;
+    }
+    
+    @Override
     public void onMouseMovement(Vector2f scaled, Vector2i unscaled)
     {
         super.onMouseMovement(scaled, unscaled);
     
-        Vector2i res = window.getWindowRes();
-        float cx = (float) (unscaled.x*2 - res.x), cy = (float) (unscaled.y*2 - res.y);
+        Camera c = cameras.get(0);
+        Matrix4f matrix = c.getMatrix(Camera.PERSP).getMatrix();
+        arrowPostMul = matrix.project(arrowPos, view, arrowPostMul.set(0, 0, 0, 1));
+        float cx = unscaled.x - arrowPostMul.x, cy = unscaled.y - arrowPostMul.y;
     
         if(cx > -0.001 && cx < 0.001) cx = 0;
         if(cy > -0.001 && cy < 0.001) cy = 0;
     
-        float nx = cy*0.05f, ny = -cx*0.05f;
+        double r = Math.atan2(cy, cx), cr = c.getTransform().rotRad.y;
+        float rz = (float) Math.toDegrees(r*Math.cos(cr)), ry = (float) Math.toDegrees(r*Math.sin(cr));
     
-        oArrow.getTransform().setRotateDegrees(nx, ny, 0);
+        oArrow.getTransform().setRotateDegrees(90, ry, rz - 90);
     }
 }

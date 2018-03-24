@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.rendering.cameras;
 
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.buffers.FrameBuffer;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
@@ -10,16 +11,14 @@ import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.IgnoreMeshWarning;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.pieisnotpi.engine.PiEngine.glInstance;
 import static com.pieisnotpi.engine.utility.MathUtility.toRads;
-import static org.lwjgl.opengl.GL11.*;
 
 @IgnoreMeshWarning
 public class Camera extends GameObject
@@ -27,20 +26,22 @@ public class Camera extends GameObject
     public static final int CQ = 0, ORTHO2D_S = 1, ORTHO2D_R = 2, PERSP = 3, ORTHO = 4;
     public static final Sprite sprite = new Sprite(0f, 0f, 1f, 1f, false);
 
+    public static final Transform blankTransform = new Transform();
+    
+    public static DrawPassInit passInitializer = new DrawPassInit(){};
+    
     public Vector2f viewPos, viewSize;
     public FrameBuffer frameBuffer;
     public TexQuad quad;
     public Mesh<TexQuad> mesh;
     public List<ShaderProgram> shaders = new ArrayList<>();
     
-    private Map<Integer, CameraMatrix> matrices = new HashMap<>();
-    
-    protected Quaternionf quaternion = new Quaternionf();
-
     protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
     protected float zoom = 1;
     protected boolean ratioUpdated = false, zoomUpdated = false, fovUpdated = false;
 
+    private Map<Integer, DrawPass> passes = new TreeMap<>();
+    private Map<Integer, CameraMatrix> matrices = new HashMap<>();
     private Matrix4f mView = new Matrix4f();
 
     public Camera(float fov, Vector2i res)
@@ -72,7 +73,8 @@ public class Camera extends GameObject
         ratio = (float) res.x/res.y;
         
         quad = new TexQuad(0, 0, -0.1f, ratio, 1, 0, sprite);
-        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, frameBuffer.texture), transform, MeshConfig.QUAD).addRenderable(quad).build();
+        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, frameBuffer.texture), MeshConfig.QUAD).addPrimitive(quad).build();
+        passInitializer.init(this);
     }
 
     public Camera(Vector3f position, float fov, Vector2f viewPos, Vector2f viewSize)
@@ -93,9 +95,9 @@ public class Camera extends GameObject
         matrices.get(CQ).ortho2D(0, 1, 0, 1);
         
         frameBuffer = new FrameBuffer(new Vector2i(300, 300));
-        //quad = new TexQuad(0, 0, -0.1f, viewSize.x, viewSize.y, 0, sprite);
         quad = new TexQuad(0, 0, -0.1f, 1, 1, 0, sprite);
-        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, /*Texture.getTextureFile("crate")*/frameBuffer.texture), new Transform(), MeshConfig.QUAD).addRenderable(quad).build();
+        mesh = new Mesh<TexQuad>(new TexMaterial(CQ, frameBuffer.texture), MeshConfig.QUAD).addPrimitive(quad).build();
+        passInitializer.init(this);
     }
 
     public float getZoom()
@@ -166,6 +168,11 @@ public class Camera extends GameObject
         this.fov = fov;
         fovUpdated = true;
     }
+    
+    public void addDrawPass(int pass, DrawPass drawPass)
+    {
+        passes.put(pass, drawPass);
+    }
 
     public void drawUpdate(float timeStep)
     {
@@ -195,36 +202,12 @@ public class Camera extends GameObject
         zoomUpdated = false;
     }
 
-    public void drawToBuffer()
+    public void draw()
     {
-        frameBuffer.bind();
-        glViewport(0, 0, frameBuffer.res.x, frameBuffer.res.y);
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-        glInstance.getShaderPrograms().forEach((i, s) -> s.drawUnsorted(this));
-
-        scene.sortedMeshes.sort((o1, o2) ->
+        passes.forEach((i, p) ->
         {
-            Vector3f p1 = o1.getTransform().pos, p2 = o2.getTransform().pos;
-
-            if(p1.z > p2.z) return 1;
-            else if(p2.z > p1.z) return -1;
-            else return 0;
+            List<Renderable> r = scene.renderables.get(i);
+            p.draw(r);
         });
-
-        scene.sortedMeshes.forEach(m -> m.draw(this));
-
-        shaders.forEach(s ->
-        {
-            glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-            s.draw(mesh, this);
-        });
-
-        frameBuffer.unbind();
-    }
-
-    public void drawView(Vector2i res)
-    {
-        glViewport((int) (viewPos.x*res.x), (int) (viewPos.y*res.y), (int) (viewSize.x*res.x), (int) (viewSize.y*res.y));
-        mesh.draw(this);
     }
 }

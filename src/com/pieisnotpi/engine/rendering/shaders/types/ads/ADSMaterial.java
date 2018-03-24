@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.ads;
 
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
@@ -39,7 +39,7 @@ public class ADSMaterial extends Material
         return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexNormal", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic)};
     }
 
-    public void putElements(List<? extends Renderable> renderables, VertexArray a)
+    public void putElements(List<? extends Primitive> renderables, VertexArray a)
     {
         renderables.forEach(r ->
         {

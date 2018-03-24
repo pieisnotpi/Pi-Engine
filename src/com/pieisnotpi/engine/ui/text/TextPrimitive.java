@@ -1,16 +1,16 @@
 package com.pieisnotpi.engine.ui.text;
 
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 
 import java.util.Arrays;
 
-public class TextRenderable extends Renderable
+public class TextPrimitive extends Primitive
 {
     public Color[] textColors, outlineColors;
     
-    public TextRenderable()
+    public TextPrimitive()
     {
         super(4);
     

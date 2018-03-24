@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex;
 
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

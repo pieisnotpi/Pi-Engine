@@ -1,11 +1,11 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text;
 
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.ui.text.TextRenderable;
+import com.pieisnotpi.engine.ui.text.TextPrimitive;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
@@ -35,11 +35,11 @@ public class TextMaterial extends Material
     }
 
     @Override
-    public void putElements(List<? extends Renderable> buffer, VertexArray a)
+    public void putElements(List<? extends Primitive> buffer, VertexArray a)
     {
         buffer.forEach(renderable ->
         {
-            TextRenderable r = (TextRenderable) renderable;
+            TextPrimitive r = (TextPrimitive) renderable;
 
             if(!r.enabled) return;
 

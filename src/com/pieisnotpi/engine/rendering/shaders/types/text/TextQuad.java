@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text;
 
 import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.ui.text.TextRenderable;
+import com.pieisnotpi.engine.ui.text.TextPrimitive;
 import com.pieisnotpi.engine.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 
 import static com.pieisnotpi.engine.utility.MathUtility.*;
 
-public class TextQuad extends TextRenderable
+public class TextQuad extends TextPrimitive
 {
     public int line = 0;
     public float xRot = 0, yRot = 0, zRot = 0;

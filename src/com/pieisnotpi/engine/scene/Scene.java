@@ -7,9 +7,8 @@ import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.mouse.Mousebind;
 import com.pieisnotpi.engine.rendering.Light;
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
-import com.pieisnotpi.engine.rendering.mesh.Mesh;
-import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.window.Window;
 import com.pieisnotpi.engine.ui.UiObject;
 import com.pieisnotpi.engine.ui.text.Text;
@@ -22,6 +21,8 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The base class for scenes, the foundation of the engine's user interface.
@@ -37,7 +38,7 @@ public abstract class Scene
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
     public List<GameObject> gameObjects = new ArrayList<>(20);
-    public List<Mesh> unsortedMeshes = new ArrayList<>(100), sortedMeshes = new ArrayList<>(10);
+    public Map<Integer, List<Renderable>> renderables = new TreeMap<>();
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();
     public List<Mousebind> mousebinds = new ArrayList<>();
@@ -114,7 +115,6 @@ public abstract class Scene
         if(window != null)
         {
             onWindowResize(window.getWindowRes());
-            unsortedMeshes.forEach(m -> m.material.shader.addUnsortedMesh(m));
         }
     }
 
@@ -208,35 +208,28 @@ public abstract class Scene
      * This should not be used without the context of a GameObject.
      * All meshes should be registered through an associated GameObject
      *
-     * @param mesh Mesh to be registered.
+     * @param r Renderable to be registered.
      */
     
-    public void addMesh(Mesh mesh)
+    public void addRenderable(Renderable r)
     {
-        Material m = mesh.material;
-        if(!mesh.shouldSort())
-        {
-            unsortedMeshes.add(mesh);
-            if(window != null) m.shader.addUnsortedMesh(mesh);
-        }
-        else sortedMeshes.add(mesh);
+        List<Renderable> d = renderables.computeIfAbsent(r.getPass(), k -> new ArrayList<>());
+    
+        d.add(r);
+        d.sort(Renderable.comparator);
     }
     
     /**
      * This should not be used without the context of a GameObject.
      * All meshes should be registered through an associated GameObject
      *
-     * @param mesh Mesh to be unregistered.
+     * @param r Renderable to be unregistered.
      */
     
-    public void removeMesh(Mesh mesh)
+    public void removeRenderable(Renderable r)
     {
-        if(!mesh.shouldSort())
-        {
-            unsortedMeshes.remove(mesh);
-            if(window != null) mesh.material.shader.removeUnsortedMesh(mesh);
-        }
-        else sortedMeshes.remove(mesh);
+        List<Renderable> d = renderables.get(r.getPass());
+        if(d != null) d.remove(r);
     }
 
     public boolean isInitialized() { return initialized; }

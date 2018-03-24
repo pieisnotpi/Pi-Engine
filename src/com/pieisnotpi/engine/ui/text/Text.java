@@ -1,5 +1,6 @@
 package com.pieisnotpi.engine.ui.text;
 
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.shaders.types.text.TextMaterial;
@@ -27,6 +28,7 @@ public class Text extends UiObject<TextQuad>
     private Color textColor, outlineColor;
     private Font font;
     private TextMaterial material;
+    private Mesh<TextQuad> mesh;
 
     public Text(Font font, String text, Vector3f pos, int matrixID, TextEffect... effects)
     {
@@ -49,10 +51,10 @@ public class Text extends UiObject<TextQuad>
         }
 
         chars = new ArrayList<>(100);
-        mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), transform, MeshConfig.QUAD);
-        mesh.setSorting(font.needsSorted);
+        mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), MeshConfig.QUAD);
         transform.setTranslate(pos.x, pos.y, pos.z);
-        chars = mesh.renderables;
+        chars = mesh.primitives;
+        renderable = new Renderable(1, 0, transform, mesh);
 
         setText(text);
     }
@@ -96,6 +98,11 @@ public class Text extends UiObject<TextQuad>
     {
         return chars;
     }
+    
+    public Mesh<TextQuad> getMesh()
+    {
+        return mesh;
+    }
 
     public void setTextColor(Color textColor)
     {
@@ -128,7 +135,7 @@ public class Text extends UiObject<TextQuad>
         size.set(0);
 
         text = value;
-        chars.forEach(TextRenderable::nullify);
+        chars.forEach(TextPrimitive::nullify);
         chars.clear();
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
@@ -165,7 +172,7 @@ public class Text extends UiObject<TextQuad>
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);
 
-            chars.add(new TextQuad(x0, y0, 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line));
+            chars.add(new TextQuad(x0, y0, 0.001f*i, x1, y1, sprite, textColor, outlineColor, line));
         }
 
         size.set(maxX, maxY, 0);

@@ -1,116 +1,54 @@
 package com.pieisnotpi.engine.rendering;
 
-import com.pieisnotpi.engine.utility.Color;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
 
-import java.util.Arrays;
+import java.util.Comparator;
 
 public class Renderable
 {
-    public int vertCount;
-    public Vector3f[] points;
-    public Vector2f[] texCoords;
-    public Vector3f[] normals;
-    public Color[] colors;
-    public boolean enabled = true;
+    public static final Comparator<Renderable> comparator = Comparator.comparingInt(r -> r.layer);
 
-    public float getX() { return 0; }
-    public float getY() { return 0; }
-    public float getZ() { return 0; }
+    private Mesh[] meshes;
+    private Transform transform;
+    private int pass, layer;
 
-    public Renderable(int vertCount)
+    public Renderable(int pass, Transform transform, Mesh... meshes)
     {
-        this.vertCount = vertCount;
-        points = new Vector3f[vertCount];
+        this(pass, 0, transform, meshes);
     }
     
-    public void setX(float x, int index)
+    public Renderable(int pass, int layer, Transform transform, Mesh... meshes)
     {
-        float dif = x - points[index].x;
-
-        for(Vector3f point : points) point.x += dif;
-        normalize();
+        this.pass = pass;
+        this.layer = layer;
+        this.transform = transform;
+        this.meshes = meshes;
     }
 
-    public void setY(float y, int index)
+    //TODO: ASSIMP Importing
+    public Renderable(int pass, int layer, Transform transform, String path)
     {
-        float dif = y - points[index].y;
-
-        for(Vector3f point : points) point.y += dif;
-        normalize();
-    }
-
-    public void setZ(float z, int index)
-    {
-        float dif = z - points[index].z;
-
-        for(Vector3f point : points) point.z += dif;
-        normalize();
-    }
-
-    public void setPoints(Vector3f... points)
-    {
-        if(points.length == 0) return;
-
-        for(int a = 0, b = 0; a < this.points.length; a++, b++)
-        {
-            if(b >= points.length) b = 0;
-            if(points[b] != null) this.points[a] = points[b];
-        }
-
-        normalize();
-    }
-
-    public void setColors(Color... colors)
-    {
-        initColors();
-
-        for(int a = 0, b = 0; a < this.colors.length; a++, b++)
-        {
-            if(b >= colors.length) b = 0;
-            if(colors[b] != null) this.colors[a] = colors[b];
-        }
-    }
-
-    public void setTexCoords(Vector2f... texCoords)
-    {
-        initTexCoords();
-
-        for(int a = 0, b = 0; a < this.texCoords.length; a++, b++)
-        {
-            if(b >= texCoords.length) b = 0;
-            if(texCoords[b] != null) this.texCoords[a] = texCoords[b];
-        }
-    }
-
-    public void normalize()
-    {
-        initNormals();
-        
-        for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
-    }
-
-    public void nullify()
-    {
-        points = null;
-        colors = null;
-        normals = null;
-        texCoords = null;
-    }
     
-    private void initColors()
-    {
-        if(colors == null) colors = new Color[vertCount];
     }
-    
-    private void initNormals()
+
+    public int getPass()
     {
-        if(normals == null) { normals = new Vector3f[vertCount]; Arrays.fill(normals, new Vector3f());}
+        return pass;
     }
-    
-    private void initTexCoords()
+
+    public int getLayer()
     {
-        if(texCoords == null) texCoords = new Vector2f[vertCount];
+        return layer;
+    }
+
+    public Mesh[] getMeshes()
+    {
+        return meshes;
+    }
+
+    public Transform getTransform()
+    {
+        return transform;
     }
 }

@@ -39,7 +39,7 @@ class MainInstance extends GameInstance
 
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, () -> w0.setScene(scenes[0][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w0.setScene(scenes[1][0]), null, null));
-        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
+        //w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, () -> w0.setFullscreen(!w0.isFullscreen()), null, null));
         w0.setIcon(icon16, icon32);
 

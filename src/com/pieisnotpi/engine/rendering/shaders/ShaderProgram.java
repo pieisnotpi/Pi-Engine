@@ -4,6 +4,7 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
@@ -78,7 +79,7 @@ public abstract class ShaderProgram
      */
 
     public void bindUniforms(Camera camera) {}
-
+    
     /**
      * Binds uniforms that are dependent on the current mesh
      * Called once per mesh draw
@@ -86,32 +87,13 @@ public abstract class ShaderProgram
      * @param mesh The current mesh being drawn
      */
 
-    public void bindPMUniforms(Camera camera, Mesh mesh)
+    public void bindPMUniforms(Transform transform, Camera camera, Mesh mesh)
     {
-        setUniformMat4("transform", mesh.getTransform().getBuffer());
+        setUniformMat4("transform", transform.getBuffer());
         if(lastMatrix != mesh.material.matrixID) setUniformMat4("camera", camera.getMatrix(mesh.material.matrixID).getBuffer());
     }
 
-    public void drawUnsorted(Camera camera)
-    {
-        if(unsortedMeshes.size() == 0) return;
-
-        use();
-
-        bindUniforms(camera);
-
-        unsortedMeshes.forEach((m) ->
-        {
-            if(m.shouldBuild()) m.build();
-
-            m.bind();
-
-            bindPMUniforms(camera, m);
-            glDrawElements(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0);
-        });
-    }
-
-    public void draw(Mesh mesh, Camera camera)
+    public void draw(Transform transform, Mesh mesh, Camera camera)
     {
         use();
 
@@ -124,7 +106,7 @@ public abstract class ShaderProgram
         if(mesh.shouldBuild()) mesh.build();
         mesh.bind();
 
-        bindPMUniforms(camera, mesh);
+        bindPMUniforms(transform, camera, mesh);
         glDrawElements(mesh.getDrawMode(), mesh.indices.count, GL_UNSIGNED_INT, 0);
     }
 

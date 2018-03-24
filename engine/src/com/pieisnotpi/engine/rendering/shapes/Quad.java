@@ -4,6 +4,8 @@ import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 
+import static com.pieisnotpi.engine.utility.MathUtility.*;
+
 public class Quad extends Renderable
 {
     public Quad(float x, float y, float z, float width, float height, float depth)
@@ -28,14 +30,6 @@ public class Quad extends Renderable
         points[1].add(xDif, yDif, zDif);
         points[2].add(xDif, yDif, zDif);
         points[3].add(xDif, yDif, zDif);
-    }
-    
-    public void setSize(float w, float h, float d)
-    {
-        points[1].x = points[0].x + w;
-        points[2].y = points[0].y + h;
-        points[3].x = points[1].x;
-        points[3].y = points[2].y;
     }
 
     public float getX()

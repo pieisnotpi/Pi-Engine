@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.mesh;
 
-import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -11,81 +11,48 @@ import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mesh<R extends Renderable>
+public class Mesh<R extends Primitive>
 {
-    public Mesh original;
     public VertexArray array;
     public IndexBuffer indices;
     public Material material;
-    public List<R> renderables;
+    public List<R> primitives;
     
-    protected Transform transform;
-    protected List<Mesh> copies;
     protected MeshConfig config;
-    protected int vertCount, primCount;
-    protected boolean shouldSort = false, shouldBuild = true;
+    protected int vertCount, primCount, layer;
+    protected boolean shouldBuild = true;
     
     private boolean destroyed = false;
 
-    public Mesh(Material material, Transform transform, MeshConfig config)
+    public Mesh(Material material, MeshConfig config)
     {
         this.material = material;
-        this.transform = transform;
         this.config = config;
 
-        renderables = new ArrayList<>();
+        primitives = new ArrayList<>();
         array = new VertexArray(material.genAttributes(config.isStatic)).init();
         indices = new IndexBuffer(config.isStatic);
     }
 
-    public Mesh(Mesh original, Transform transform)
+    public Mesh<R> setPrimitives(List<R> primitives)
     {
-        this.original = original;
-        this.transform = transform;
-
-        original.registerCopy(this);
-
-        material = original.material;
-        array = original.array;
-        indices = original.indices;
-        vertCount = original.vertCount;
-        config = original.config;
-        primCount = original.primCount;
-        shouldSort = original.shouldSort;
-        shouldBuild = original.shouldBuild;
-    }
-
-    public Mesh<R> setTransform(Transform transform)
-    {
-        this.transform = transform;
+        this.primitives = primitives;
         return this;
     }
 
-    public Mesh<R> setSorting(boolean sorting)
+    public Mesh<R> addPrimitive(R primitive)
     {
-        shouldSort = sorting;
-        return this;
-    }
-
-    public Mesh<R> setRenderables(List<R> renderables)
-    {
-        this.renderables = renderables;
-        return this;
-    }
-
-    public Mesh<R> addRenderable(R renderable)
-    {
-        if(renderables == null) renderables = new ArrayList<>();
-        renderables.add(renderable);
+        if(primitives == null) primitives = new ArrayList<>();
+        primitives.add(primitive);
         shouldBuild = true;
         return this;
     }
 
-    public Mesh<R> removeRenderable(R renderable)
+    public Mesh<R> removePrimitive(R primitive)
     {
-        if(renderables != null)
+        if(primitives != null)
         {
-            renderables.remove(renderable);
+            primitives.remove(primitive);
             shouldBuild = true;
         }
         return this;
@@ -108,29 +75,18 @@ public class Mesh<R extends Renderable>
 
     public Mesh<R> build()
     {
-        if(original != null)
-        {
-            original.build();
+        if(primitives == null || primitives.size() == 0 || !array.alive || !indices.alive) return this;
 
-            vertCount = original.vertCount;
-            primCount = original.primCount;
-            shouldSort = original.shouldSort;
-
-            return this;
-        }
-
-        if(renderables == null || renderables.size() == 0 || !array.alive || !indices.alive) return this;
-
-        primCount = renderables.size();
+        primCount = primitives.size();
         vertCount = config.vpr*primCount;
 
         for(Attribute attribute : array.attributes) attribute.setBufferSize(attribute.size*vertCount);
 
-        material.putElements(renderables, array);
+        material.putElements(primitives, array);
         if(config.isStatic)
         {
-            renderables.forEach(Renderable::nullify);
-            renderables = null;
+            primitives.forEach(Primitive::nullify);
+            primitives = null;
         }
 
         for(Attribute a : array.attributes)
@@ -155,23 +111,10 @@ public class Mesh<R extends Renderable>
         return this;
     }
     
-    public void draw(Camera camera)
+    public void draw(Transform transform, Camera camera)
     {
-        material.shader.draw(this, camera);
+        material.shader.draw(transform, this, camera);
     }
-
-    protected void registerCopy(Mesh copy)
-    {
-        if(copies == null) copies = new ArrayList<>();
-        copies.add(copy);
-    }
-
-    protected void unregisterCopy(Mesh copy)
-    {
-        if(copies != null) copies.remove(copy);
-    }
-
-    public Transform getTransform() { return transform; }
 
     public int getVertCount() { return vertCount; }
 
@@ -183,26 +126,17 @@ public class Mesh<R extends Renderable>
 
     public boolean shouldBuild() { return shouldBuild; }
 
-    public boolean shouldSort() { return shouldSort; }
-
     public boolean isDestroyed() { return destroyed; }
 
     public void destroy()
     {
-        if(original == null)
-        {
-            array.destroy();
-            indices.destroy();
-        }
-        else original.unregisterCopy(this);
+        array.destroy();
+        indices.destroy();
 
-        if(copies != null) while(copies.size() > 0) copies.get(0).destroy();
-
-        transform.removeFromParent();
-
-        renderables = null;
+        primitives = null;
         array = null;
         indices = null;
-        transform = null;
+        
+        destroyed = true;
     }
 }

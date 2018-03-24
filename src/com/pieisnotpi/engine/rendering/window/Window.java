@@ -27,7 +27,7 @@ public class Window
     public long handle;
     public boolean focused = true;
 
-    public static HintInitializer hintInitializer = new HintInitializer() {};
+    public static HintInitializer hintInitializer = new HintInitializer(){};
     public static ShaderInitializer shaderInitializer = new ShaderInitializer(){};
 
     private int vsync = 0, refreshRate;
@@ -153,7 +153,8 @@ public class Window
 
     public void draw(float timeStep) throws Exception
     {
-        if(scene == null) return;
+        if(scene == null) throw new IllegalArgumentException("Scene cannot be null");
+        if(scene.cameras.size() == 0) throw new IllegalArgumentException("Scene must have a camera");
 
         long t = System.currentTimeMillis();
 
@@ -167,12 +168,7 @@ public class Window
 
         scene.drawUpdate(timeStep);
 
-        for(Camera camera : scene.cameras) camera.drawToBuffer();
-
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-        for(Camera camera : scene.cameras) camera.drawView(bufferRes);
+        scene.cameras.forEach(Camera::draw);
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
@@ -183,6 +179,7 @@ public class Window
     public String getName() { return name; }
     public Vector2i getMiddle() { return middle; }
     public Vector2i getWindowRes() { if(fullscreen) return fullscreenRes; else return windowedRes; }
+    public Vector2i getBufferRes() { return bufferRes; }
     public Vector2i getWindowPos() { return pos; }
     public int getRefreshRate() { return refreshRate; }
     public int getVsync() { return vsync; }

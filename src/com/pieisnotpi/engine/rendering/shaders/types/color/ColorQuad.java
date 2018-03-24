@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.color;
 
-import com.pieisnotpi.engine.rendering.shapes.Quad;
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.utility.Color;
 
 public class ColorQuad extends Quad

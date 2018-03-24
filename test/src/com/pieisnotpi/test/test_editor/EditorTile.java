@@ -132,25 +132,25 @@ public class EditorTile extends UiObject
     private void registerFore()
     {
         foreground.enabled = true;
-        scene.tilesObject.getMesh().addRenderable(foreground);
+        scene.mesh.addPrimitive(foreground);
     }
 
     private void unregisterFore()
     {
         foreground.enabled = false;
-        scene.tilesObject.getMesh().removeRenderable(foreground);
+        scene.mesh.removePrimitive(foreground);
     }
 
     private void registerBack()
     {
         background.enabled = true;
-        scene.tilesObject.getMesh().addRenderable(background);
+        scene.mesh.addPrimitive(background);
     }
 
     private void unregisterBack()
     {
         background.enabled = false;
-        scene.tilesObject.getMesh().removeRenderable(background);
+        scene.mesh.removePrimitive(background);
     }
     
     @Override
