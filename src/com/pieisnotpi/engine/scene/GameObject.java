@@ -5,7 +5,6 @@ import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -14,7 +13,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameObject<m extends Primitive>
+public class GameObject
 {
     public GameObject() {}
     
@@ -97,9 +96,9 @@ public class GameObject<m extends Primitive>
         this.renderable = r;
     }
     
-    public Renderable createRenderable(int pass, int layer, Mesh mesh)
+    public Renderable createRenderable(int pass, int layer, Mesh... meshes)
     {
-        setRenderable(new Renderable(pass, layer, transform, mesh));
+        setRenderable(new Renderable(pass, layer, transform, meshes));
         return renderable;
     }
     
@@ -131,5 +130,8 @@ public class GameObject<m extends Primitive>
             GameObject child = children.remove(0);
             child.destroy();
         }
+
+        onUnregister();
+        renderable.destroy();
     }
 }

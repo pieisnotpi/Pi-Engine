@@ -51,4 +51,12 @@ public class Renderable
     {
         return transform;
     }
+
+    public void destroy()
+    {
+        for (Mesh mesh : meshes)
+        {
+            mesh.destroy();
+        }
+    }
 }

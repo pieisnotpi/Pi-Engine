@@ -96,7 +96,7 @@ public class Window
             this.time = 0;
         }).setName("DRAW");
 
-        inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
+        inputUpdate = new GameUpdate(refreshRate, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
     }
 
     public Window init() throws Exception

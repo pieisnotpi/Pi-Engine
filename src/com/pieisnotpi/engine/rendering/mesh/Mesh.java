@@ -75,7 +75,7 @@ public class Mesh<R extends Primitive>
 
     public Mesh<R> build()
     {
-        if(primitives == null || primitives.size() == 0 || !array.alive || !indices.alive) return this;
+        if(primitives == null || primitives.size() == 0 || !array.isAlive() || !indices.alive) return this;
 
         primCount = primitives.size();
         vertCount = config.vpr*primCount;

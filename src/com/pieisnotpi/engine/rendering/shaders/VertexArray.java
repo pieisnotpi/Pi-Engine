@@ -10,8 +10,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class VertexArray
 {
-    public boolean alive = false;
-    public int handle = -1;
+    private boolean alive = false;
+    private int handle;
     public Attribute[] attributes;
 
     public VertexArray(Attribute... attributes)
@@ -48,6 +48,16 @@ public class VertexArray
         for(int i = 0; i < attributes.length; i++) temp += "a" + i + ": (" + attributes[i] + "), ";
 
         return temp;
+    }
+
+    public boolean isAlive()
+    {
+        return alive;
+    }
+
+    public int getHandle()
+    {
+        return handle;
     }
 
     public void destroy()

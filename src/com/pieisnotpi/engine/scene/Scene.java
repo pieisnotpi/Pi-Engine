@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 /**
  * The base class for scenes, the foundation of the engine's user interface.
- * All scenes used by the game should extend this class.
+ * All scenes used by the game will extend this class.
  */
 
 public abstract class Scene

@@ -44,7 +44,7 @@ public class EditorTile extends UiObject
             foreSprite = scene.getCurSprite();
 
             foreground.setQuadSprite(foreSprite);
-            foreground.setQuadColors(blankColor);
+            foreground.setColor(blankColor);
 
             placed = true;
         }
@@ -66,7 +66,7 @@ public class EditorTile extends UiObject
             backSprite = scene.getCurSprite();
 
             background.setQuadSprite(backSprite);
-            background.setQuadColors(backgroundColor);
+            background.setColor(backgroundColor);
 
             placed = true;
         }
@@ -108,7 +108,7 @@ public class EditorTile extends UiObject
     {
         if(!foreShowing && !foreground.enabled) registerFore();
 
-        foreground.setQuadColors(highlightColor);
+        foreground.setColor(highlightColor);
         foreground.setQuadSprite(scene.getCurSprite());
     }
 
@@ -117,7 +117,7 @@ public class EditorTile extends UiObject
         if(!foreShowing) unregisterFore();
 
         foreground.setQuadSprite(foreSprite);
-        foreground.setQuadColors(blankColor);
+        foreground.setColor(blankColor);
     }
 
     public void blank()

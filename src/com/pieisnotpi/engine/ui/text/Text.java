@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.ui.text;
 
-import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.shaders.types.text.TextMaterial;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Text extends UiObject<TextQuad>
+public class Text extends UiObject
 {
     public String text;
     public List<TextQuad> chars;
@@ -52,9 +51,9 @@ public class Text extends UiObject<TextQuad>
 
         chars = new ArrayList<>(100);
         mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), MeshConfig.QUAD);
-        transform.setTranslate(pos.x, pos.y, pos.z);
+        transform.setTranslate(pos);
         chars = mesh.primitives;
-        renderable = new Renderable(1, 0, transform, mesh);
+        renderable = createRenderable(1, 0, mesh);
 
         setText(text);
     }
@@ -107,14 +106,14 @@ public class Text extends UiObject<TextQuad>
     public void setTextColor(Color textColor)
     {
         this.textColor = textColor;
-        chars.forEach(c -> c.setQuadTextColor(textColor));
+        chars.forEach(c -> c.setTextColor(textColor));
         mesh.flagForBuild();
     }
     
     public void setOutlineColor(Color outlineColor)
     {
         this.outlineColor = outlineColor;
-        chars.forEach(c -> c.setQuadOutlineColor(textColor));
+        chars.forEach(c -> c.setOutlineColor(textColor));
         mesh.flagForBuild();
     }
     
@@ -135,7 +134,7 @@ public class Text extends UiObject<TextQuad>
         size.set(0);
 
         text = value;
-        chars.forEach(TextPrimitive::nullify);
+        chars.forEach(TextQuad::nullify);
         chars.clear();
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
@@ -172,7 +171,7 @@ public class Text extends UiObject<TextQuad>
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);
 
-            chars.add(new TextQuad(x0, y0, 0.001f*i, x1, y1, sprite, textColor, outlineColor, line));
+            chars.add(new TextQuad(x0, y0, 0/*0.001f*i*/, x1, y1, sprite, textColor, outlineColor, line));
         }
 
         size.set(maxX, maxY, 0);
@@ -181,7 +180,6 @@ public class Text extends UiObject<TextQuad>
         if(effectsEnabled) effects.forEach(TextEffect::onTextUpdated);
         mesh.flagForBuild();
         align();
-
     }
 
     public void setFont(Font font)
@@ -221,11 +219,5 @@ public class Text extends UiObject<TextQuad>
         }
 
         return maxX;
-    }
-
-    public void destroy()
-    {
-        super.destroy();
-        mesh.destroy();
     }
 }

@@ -11,6 +11,7 @@ import com.pieisnotpi.engine.scene.Scene;
 import com.pieisnotpi.engine.utility.ShaderReloadUtility;
 import com.pieisnotpi.test.scenes.TestScene;
 import com.pieisnotpi.test.scenes.TestScene2;
+import com.pieisnotpi.test.test_editor.EditorScene;
 
 import java.nio.file.Paths;
 
@@ -25,7 +26,7 @@ class MainInstance extends GameInstance
         Image icon16 = new Image("/assets/textures/icon_16.png"), icon32 = new Image("/assets/textures/icon_32.png");
 
         String shaderPath = System.getProperty("test.shader_path");
-        if(shaderPath != null) shaderReload = new ShaderReloadUtility(this, Paths.get(shaderPath));
+        if(shaderPath != null && PiEngine.debug) shaderReload = new ShaderReloadUtility(this, Paths.get(shaderPath));
 
         Window w0, w1;
 
@@ -33,13 +34,14 @@ class MainInstance extends GameInstance
 
         scenes[0][0] = new TestScene().init();
         scenes[1][0] = new TestScene2().init();
-        //scenes[2][0] = new EditorScene().init();
+        //scenes[2][0] = new BoxScene().init();
+        scenes[2][0] = new EditorScene().init();
 
-        w0.setScene(scenes[1][0]);
+        w0.setScene(scenes[2][0]);
 
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, () -> w0.setScene(scenes[0][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w0.setScene(scenes[1][0]), null, null));
-        //w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
+        w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_3, () -> w0.setScene(scenes[2][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_F11, () -> w0.setFullscreen(!w0.isFullscreen()), null, null));
         w0.setIcon(icon16, icon32);
 

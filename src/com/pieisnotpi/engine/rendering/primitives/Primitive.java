@@ -49,7 +49,7 @@ public class Primitive
         normalize();
     }
 
-    public void setPoints(Vector3f... points)
+    protected void setPoints(Vector3f... points)
     {
         if(points.length == 0) return;
 
@@ -62,7 +62,7 @@ public class Primitive
         normalize();
     }
 
-    public void setColors(Color... colors)
+    protected void setColors(Color... colors)
     {
         initColors();
 
@@ -73,7 +73,7 @@ public class Primitive
         }
     }
 
-    public void setTexCoords(Vector2f... texCoords)
+    protected void setTexCoords(Vector2f... texCoords)
     {
         initTexCoords();
 
@@ -99,17 +99,17 @@ public class Primitive
         texCoords = null;
     }
     
-    private void initColors()
+    protected void initColors()
     {
         if(colors == null) colors = new Color[vertCount];
     }
-    
-    private void initNormals()
+
+    protected void initNormals()
     {
         if(normals == null) { normals = new Vector3f[vertCount]; Arrays.fill(normals, new Vector3f());}
     }
-    
-    private void initTexCoords()
+
+    protected void initTexCoords()
     {
         if(texCoords == null) texCoords = new Vector2f[vertCount];
     }

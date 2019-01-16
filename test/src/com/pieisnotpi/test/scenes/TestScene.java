@@ -41,7 +41,7 @@ public class TestScene extends PauseScene
 
         TexMaterial blocksMaterial = new TexMaterial(Camera.PERSP, Texture.getTextureFile("grass"));
         blocksMesh = new Mesh<Quad>(blocksMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
-        GameObject grass = new GameObject<>(new Renderable(0, 0, new Transform(), blocksMesh));
+        GameObject grass = new GameObject(new Renderable(0, 0, new Transform(), blocksMesh));
 
         for(int x = 0; x < w; x++)
         {

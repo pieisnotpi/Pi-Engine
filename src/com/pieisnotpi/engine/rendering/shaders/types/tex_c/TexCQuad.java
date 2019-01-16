@@ -14,7 +14,7 @@ public class TexCQuad extends TexQuad
         super(x, y, z, width, height, depth, sprite);
         this.sprite = sprite;
 
-        setQuadColors(color, color, color, color);
+        setColors(color, color, color, color);
     }
 
     public TexCQuad(Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3, Sprite sprite, Color color)
@@ -22,6 +22,6 @@ public class TexCQuad extends TexQuad
         super(c0, c1, c2, c3, sprite);
         this.sprite = sprite;
 
-        setQuadColors(color, color, color, color);
+        setColors(color, color, color, color);
     }
 }

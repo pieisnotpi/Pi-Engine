@@ -35,7 +35,7 @@ import java.util.ArrayList;
 public class TestScene2 extends PauseScene
 {
     private static final int w = 100, h = 100;
-    private GameObject<Quad> oBlocks, oArrow;
+    private GameObject oBlocks, oArrow;
     private int[] view = new int[] {0, 0, 1, 1};
     private final Vector3f arrowPos = new Vector3f(0, 2, 0);
     private Vector4f arrowPostMul = new Vector4f();
@@ -46,7 +46,10 @@ public class TestScene2 extends PauseScene
 
         name = "Test Scene 2";
 
-        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        Camera c = new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(1, 1));
+        //c.shaders.add(new TexCShader(null));
+
+        addCamera(c);
         //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
         //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
         /*addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f)));
@@ -59,7 +62,7 @@ public class TestScene2 extends PauseScene
 
         ADSMaterial blockMaterial = new ADSMaterial(new Vector3f(0.25f), new Vector3f(0.2f), new Vector3f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
         Mesh<Quad> blocksMesh = new Mesh<Quad>(blockMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
-        oBlocks = new GameObject<>(new Renderable(0, 0, new Transform(), blocksMesh));
+        oBlocks = new GameObject(new Renderable(0, 0, new Transform(), blocksMesh));
 
         Block block;
 
@@ -90,7 +93,7 @@ public class TestScene2 extends PauseScene
         //Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();
 
         Mesh<Quad> arrow = new Mesh<>(new TexMaterial(Camera.PERSP, Texture.getTextureFile("arrow.png")), MeshConfig.QUAD_STATIC);
-        oArrow = new GameObject<>();
+        oArrow = new GameObject();
         oArrow.createRenderable(0, 0, arrow);
         Sprite t = new Sprite(0f, 0f, 1f, 1f);
         TexQuad t0 = new TexQuad(-0.5f, 0, -0.5f, 1, 0, 1, t), t1 = new TexQuad(0, -0.5f, -0.5f, 0, 1, 1, t);

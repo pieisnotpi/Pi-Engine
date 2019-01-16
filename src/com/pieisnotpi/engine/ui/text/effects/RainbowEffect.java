@@ -48,7 +48,7 @@ public class RainbowEffect implements TextEffect
                 b = 1 - r;
             }
 
-            text.chars.get(i).setQuadTextColor(this.c.set(r, g, b));
+            text.chars.get(i).setTextColor(c.set(r, g, b));
         }
     }
 

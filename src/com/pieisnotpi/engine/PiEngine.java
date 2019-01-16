@@ -43,7 +43,7 @@ public class PiEngine
     {
         try
         {
-            if(inst == null) throw new AssertionError();
+            if(inst == null) throw new IllegalArgumentException("Must provide a non-null game-instance");
 
             setDebug("true".equals(System.getProperty("piengine.debug")));
             setGlDebug("true".equals(System.getProperty("piengine.gl_debug")));

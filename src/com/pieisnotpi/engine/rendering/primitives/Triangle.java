@@ -30,6 +30,20 @@ public class Triangle extends Primitive
         setTexCoords(c0t, c1t, c2t);
     }
 
+    public void setColor(Color color)
+    {
+        setColors(color, color, color);
+    }
+
+    public void setColors(Color c0, Color c1, Color c2)
+    {
+        initColors();
+
+        colors[0] = (c0);
+        colors[1] = (c1);
+        colors[2] = (c2);
+    }
+
     public String toString()
     {
         return "c0: " + points[0] + ", c1: " + points[1] + ", c2: " + points[2];

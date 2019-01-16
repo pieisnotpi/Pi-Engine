@@ -1,6 +1,5 @@
 package com.pieisnotpi.engine.utility;
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class MathUtility
@@ -8,29 +7,25 @@ public class MathUtility
     public static final float toRads = (float) (Math.PI/180), toDegs = (float) (180/Math.PI);
 
     /**
-     *
+     * Rounds a float value to a specified decimal place
+     * Mostly supports negative place values (rounding to places left of the decimal)
+     * but may suffer from floating point imprecision issues
      * @param value Value to be rounded
-     * @param place Decimal place to round to
+     * @param place Decimal place to round to (can be negative)
      * @return Rounded float
      */
-
     public static float roundToDecimal(float value, int place)
     {
-        int offset = Float.toString(value).indexOf('.') - 1;
+        if (place == 0) return Math.round(value);
 
-        if(offset == -1) return value;
-        if(place < 1) return Math.round(value);
-
-        int mult = (int) Math.pow(10, place + offset);
-
-        return (float) Math.round(value*mult)/mult;
+        float mul = (float) Math.pow(10, place);
+        return Math.round(value*mul)/mul;
     }
 
     /**
      * @param floats A series of floats to be compared
      * @return The smallest of the given floats
      */
-
     public static float smallestFloat(float... floats)
     {
         float smallest = Float.MAX_VALUE;
@@ -44,7 +39,6 @@ public class MathUtility
      * @param floats A series of floats to be compared
      * @return The largest of the given floats
      */
-
     public static float largestFloat(float... floats)
     {
         float largest = Float.MIN_VALUE;
@@ -58,7 +52,6 @@ public class MathUtility
      * @param vectors A series of vectors to be averaged
      * @return The average of the given vectors
      */
-
     public static Vector3f averageVector(Vector3f... vectors)
     {
         float x = 0, y = 0, z = 0;
@@ -83,7 +76,6 @@ public class MathUtility
      * @param cz The z point of rotation
      * @param points The points to be rotated
      */
-
     public static void rotateAxisX(float angle, float cy, float cz, Vector3f... points)
     {
         double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
@@ -103,7 +95,6 @@ public class MathUtility
      * @param cz The z point of rotation
      * @param points The points to be rotated
      */
-
     public static void rotateAxisY(float angle, float cx, float cz, Vector3f... points)
     {
         double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
@@ -123,7 +114,6 @@ public class MathUtility
      * @param cy The y point of rotation
      * @param points The points to be rotated
      */
-
     public static void rotateAxisZ(float angle, float cx, float cy, Vector3f... points)
     {
         double a = Math.toRadians(angle), cos = Math.cos(a), sin = Math.sin(a);
@@ -135,27 +125,6 @@ public class MathUtility
             point.x = (float) (cx + x*cos - y*sin);
             point.y = (float) (cy + x*sin + y*cos);
         }
-    }
-
-    public static boolean isPointInside(Vector2f point, Vector3f... points)
-    {
-        int count = 0;
-
-        for(int i = 0; i < points.length; i++)
-        {
-            Vector3f p0, p1;
-
-            if(i == points.length - 1) { p0 = points[i]; p1 = points[0]; }
-            else { p0 = points[i]; p1 = points[i + 1]; }
-
-            if((p0.y <= point.y && p1.y > point.y) || (p1.y <= point.y && p0.y > point.y))
-            {
-                float vt = (point.y - p0.y)/(p1.y - p0.y);
-                if (point.x < p0.x + vt * (p1.x - p0.x)) count++;
-            }
-        }
-
-        return count % 2 != 0;
     }
     
     public static byte intToByte(int value)

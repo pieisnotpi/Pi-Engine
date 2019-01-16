@@ -5,7 +5,6 @@ import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.ui.text.TextPrimitive;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class TextMaterial extends Material
     {
         buffer.forEach(renderable ->
         {
-            TextPrimitive r = (TextPrimitive) renderable;
+            TextQuad r = (TextQuad) renderable;
 
             if(!r.enabled) return;
 

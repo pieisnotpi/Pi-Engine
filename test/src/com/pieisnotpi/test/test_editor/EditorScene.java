@@ -21,12 +21,12 @@ public class EditorScene extends Scene
 {
     private SpriteSet curSpriteSet;
     private List<SpriteSet> types = new ArrayList<>();
-    private EditorTile[][] tiles = new EditorTile[24][24];
+    private EditorTile[][] tiles = new EditorTile[16][16];
     public Mesh<TexCQuad> mesh;
 
     private int curType = 0;
     
-    public GameObject<TexCQuad> tilesObject;
+    public GameObject tilesObject;
 
     public EditorScene init() throws Exception
     {
@@ -39,9 +39,9 @@ public class EditorScene extends Scene
         int tw = tex.image.width, th = tex.image.height;
 
         mesh = new Mesh<>(new TexCMaterial(Camera.ORTHO2D_S, tex), MeshConfig.QUAD);
-        addGameObject(tilesObject = new GameObject<>(new Renderable(1, 0, new Transform(), mesh)));
+        addGameObject(tilesObject = new GameObject(new Renderable(1, 0, new Transform(), mesh)));
 
-        cameras.add(new Camera(90, new Vector2f(0, 0), new Vector2f(1, 1)));
+        addCamera(new Camera(90, new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.6f, 0.6f, 0.6f);
 
         Sprite[] grass = new Sprite[8];
@@ -53,6 +53,12 @@ public class EditorScene extends Scene
         grass[5] = new Sprite(tw, th, 16, 32, 32, 48);
         grass[6] = new Sprite(tw, th, 0, 32, 16, 48);
         grass[7] = new Sprite(tw, th, 0, 16, 16, 32);
+
+        Sprite[] grassCorner = new Sprite[4];
+        grassCorner[0] = new Sprite(tw, th, 160, 0, 176, 16);
+        grassCorner[1] = new Sprite(tw, th, 176, 0, 192, 16);
+        grassCorner[2] = new Sprite(tw, th, 176, 16, 192, 32);
+        grassCorner[3] = new Sprite(tw, th, 160, 16, 176, 32);
 
         Sprite[] grassStair = new Sprite[4];
         grassStair[0] = new Sprite(tw, th, 128, 0, 144, 16);
@@ -80,6 +86,7 @@ public class EditorScene extends Scene
         dirt[0] = new Sprite(tw, th, 16, 16, 32, 32);
 
         types.add(new SpriteSet(grass));
+        types.add(new SpriteSet(grassCorner));
         types.add(new SpriteSet(grassStair));
         types.add(new SpriteSet(stone));
         types.add(new SpriteSet(stoneStair));
