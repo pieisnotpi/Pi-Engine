@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 
 public class CameraMatrix
 {
-    public Matrix4f matrix, projection, view;
+    private Matrix4f matrix, projection, view;
     private FloatBuffer buffer;
     
     public CameraMatrix(Matrix4f view)

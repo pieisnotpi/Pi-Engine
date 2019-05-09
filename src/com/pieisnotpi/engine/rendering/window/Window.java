@@ -34,7 +34,7 @@ public class Window
     private long time = 0;
     private boolean alive = true, fullscreen, initialized = false;
 
-    private GameUpdate drawUpdate, inputUpdate;
+    private GameUpdate windowUpdate;
 
     protected Logger logger;
 
@@ -86,17 +86,21 @@ public class Window
         inputManager = new InputManager(this);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
 
-        drawUpdate = new GameUpdate(refreshRate, this::draw, timeStep ->
+        windowUpdate = new GameUpdate(refreshRate,
+        (timeStep) ->
+        {
+            inputManager.pollInputs(timeStep);
+            draw(timeStep);
+        },
+        (timeStep) ->
         {
             if(scene.fps == null) return;
 
-            String time = Float.toString((float) this.time/drawUpdate.updates);
-            scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
+            String time = Float.toString((float) this.time/windowUpdate.updates);
+            scene.fps.setText(String.format("%dfps/%smspf", windowUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
 
             this.time = 0;
-        }).setName("DRAW");
-
-        inputUpdate = new GameUpdate(refreshRate, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
+        }).setName("WINDOW");
     }
 
     public Window init()
@@ -206,8 +210,7 @@ public class Window
 
         glfwShowWindow(handle);
 
-        PiEngine.gameInstance.registerUpdate(inputUpdate);
-        PiEngine.gameInstance.registerUpdate(drawUpdate);
+        PiEngine.gameInstance.registerUpdate(windowUpdate);
 
         return this;
     }
@@ -218,8 +221,7 @@ public class Window
 
         glfwHideWindow(handle);
 
-        PiEngine.gameInstance.unregisterUpdate(inputUpdate);
-        PiEngine.gameInstance.unregisterUpdate(drawUpdate);
+        PiEngine.gameInstance.unregisterUpdate(windowUpdate);
 
         return this;
     }
@@ -290,7 +292,7 @@ public class Window
     {
         this.refreshRate = refreshRate;
 
-        drawUpdate.setFrequency(refreshRate);
+        windowUpdate.setFrequency(refreshRate);
 
         return this;
     }
@@ -368,21 +370,12 @@ public class Window
         {
             alive = false;
 
-            PiEngine.gameInstance.unregisterUpdate(drawUpdate);
-            PiEngine.gameInstance.unregisterUpdate(inputUpdate);
+            PiEngine.gameInstance.unregisterUpdate(windowUpdate);
 
             glfwFreeCallbacks(handle);
             glfwDestroyWindow(handle);
         }
     }
-
-    /*private void bind()
-    {
-        if(handle == Window.lastWindow) return;
-
-        glfwMakeContextCurrent(Window.lastWindow = handle);
-        GL.setCapabilities(capabilities);
-    }*/
 
     private void setCurrentMonitor()
     {
