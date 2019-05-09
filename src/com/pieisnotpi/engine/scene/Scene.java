@@ -37,7 +37,7 @@ public abstract class Scene
     public String name = "Scene";
     public Color clearColor = new Color(0.5f, 0.5f, 0.5f);
     public List<Camera> cameras = new ArrayList<>();
-    public List<GameObject> gameObjects = new ArrayList<>(20);
+    public ObjectTree gameObjects = new ObjectTree();
     public Map<Integer, List<Renderable>> renderables = new TreeMap<>();
     public List<Keybind> keybinds = new ArrayList<>();
     public List<Joybind> joybinds = new ArrayList<>();

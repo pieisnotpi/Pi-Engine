@@ -43,7 +43,7 @@ public class Window
     public Monitor monitor;
     public GLInstance glInstance;
     public InputManager inputManager;
-    protected Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i(), bufferRes = new Vector2i();
+    private Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i(), bufferRes = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -88,10 +88,10 @@ public class Window
 
         drawUpdate = new GameUpdate(refreshRate, this::draw, timeStep ->
         {
-            if(scene == null || scene.fps == null) return;
+            if(scene.fps == null) return;
 
             String time = Float.toString((float) this.time/drawUpdate.updates);
-            if(scene.fps != null) scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
+            scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
 
             this.time = 0;
         }).setName("DRAW");
@@ -99,7 +99,7 @@ public class Window
         inputUpdate = new GameUpdate(refreshRate, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
     }
 
-    public Window init() throws Exception
+    public Window init()
     {
         if(initialized) return this;
 
@@ -151,7 +151,7 @@ public class Window
         return this;
     }
 
-    public void draw(float timeStep) throws Exception
+    private void draw(float timeStep) throws Exception
     {
         if(scene == null) throw new IllegalArgumentException("Scene cannot be null");
         if(scene.cameras.size() == 0) throw new IllegalArgumentException("Scene must have a camera");
@@ -192,8 +192,6 @@ public class Window
 
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
-
-        glInstance.getShaderPrograms().forEach((i, s) -> s.unsortedMeshes.clear());
 
         if(!scene.isInitialized()) scene.init();
 

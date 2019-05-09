@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text;
 
 import com.pieisnotpi.engine.rendering.primitives.Primitive;
-import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
@@ -15,18 +14,16 @@ public class TextQuad extends Primitive
 {
     public int line;
     private float xRot = 0, yRot = 0, zRot = 0;
-    protected Sprite sprite;
-    public CharSprite cSprite;
+    public CharSprite sprite;
 
     public Color[] textColors, outlineColors;
 
-    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line)
+    public TextQuad(float x, float y, float z, float width, float height, CharSprite sprite, Color textColor, Color outlineColor, int line)
     {
         super(4);
 
         this.line = line;
-        this.cSprite = cSprite;
-        this.sprite = cSprite.sprite;
+        this.sprite = sprite;
 
         texCoords = new Vector2f[vertCount];
         textColors = new Color[vertCount];

@@ -32,7 +32,17 @@ public class IndexBuffer extends GLBuffer<IntBuffer>
     @Override
     public GLBuffer bindData()
     {
+        buffer.flip();
         count = buffer.limit();
-        return super.bindData();
+        bind();
+        bufferDataCall();
+        if(clearMemory) buffer.limit(0);
+        return this;
+    }
+
+    @Override
+    public int size()
+    {
+        return count;
     }
 }

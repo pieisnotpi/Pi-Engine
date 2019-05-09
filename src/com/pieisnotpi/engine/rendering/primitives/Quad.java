@@ -109,6 +109,8 @@ public class Quad extends Primitive
 
     public void setQuadTexCoords(float x0, float y0, float x1, float y1)
     {
+        initTexCoords();
+
         texCoords[0].set(x0, y0);
         texCoords[1].set(x1, y0);
         texCoords[2].set(x0, y1);

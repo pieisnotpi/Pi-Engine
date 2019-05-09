@@ -42,7 +42,7 @@ public interface DrawPassInit
                 camera.shaders.forEach(s ->
                 {
                     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-                    s.draw(Camera.blankTransform, camera.mesh, camera);
+                    s.shader.draw(Camera.blankTransform, camera.mesh, camera);
                 });
                 
                 camera.frameBuffer.unbind();

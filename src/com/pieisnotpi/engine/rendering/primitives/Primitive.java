@@ -111,6 +111,6 @@ public class Primitive
 
     protected void initTexCoords()
     {
-        if(texCoords == null) texCoords = new Vector2f[vertCount];
+        if(texCoords == null) { texCoords = new Vector2f[vertCount]; Arrays.fill(texCoords, new Vector2f()); }
     }
 }

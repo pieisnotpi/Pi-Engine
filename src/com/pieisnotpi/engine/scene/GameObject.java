@@ -10,9 +10,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GameObject
 {
     public GameObject() {}
@@ -20,10 +17,9 @@ public class GameObject
     public GameObject(Renderable renderable) { this.renderable = renderable; }
     
     protected Renderable renderable;
-    protected GameObject parent;
-    protected List<GameObject> children = new ArrayList<>();
     protected Transform transform = new Transform();
     protected Vector3f size = new Vector3f();
+    protected ObjectTree.Node node;
     protected Scene scene;
 
     public void update(float timeStep) {}
@@ -61,28 +57,25 @@ public class GameObject
     public Vector3f getSize() { return size; }
     public Scene getScene() { return scene; }
     
-    public void setParent(GameObject parent)
+    /*public void setParent(GameObject parent)
     {
         if(this.parent != null) this.parent.removeChild(this);
         if(parent != null) parent.addChild(this);
-    }
+    }*/
     
     public void addChild(GameObject child)
     {
-        child.parent = this;
-        children.add(child);
+        if (node == null) throw new IllegalArgumentException("Cannot add a child to an unregistered object");
         transform.addChild(child.transform);
-        if(scene != null) scene.addGameObject(child);
+        node.addChild(child);
+        child.onRegister(scene);
     }
     
     public void removeChild(GameObject child)
     {
-        if(!children.contains(child)) return;
-        
-        child.parent = null;
-        children.remove(child);
+        if (child.node != null) child.node.removeSelf();
         transform.removeChild(child.transform);
-        if(scene != null) scene.removeGameObject(child);
+        child.onUnregister();
     }
     
     public void setRenderable(Renderable r)
@@ -109,26 +102,24 @@ public class GameObject
         if(renderable != null) scene.addRenderable(renderable);
         else if(!getClass().isAnnotationPresent(IgnoreMeshWarning.class))
             Logger.SYSTEM.debugErr(String.format("Object added without associated renderable%n\t%s%n", toString()));
-        
-        children.forEach(scene::addGameObject);
     }
     
     public void onUnregister()
     {
         if(scene != null && renderable != null) scene.removeRenderable(renderable);
-        if(scene != null) children.forEach(scene::removeGameObject);
+        node.removeSelf();
     
         scene = null;
     }
     
     public void destroy()
     {
-        if(parent != null) parent.removeChild(this);
-        else scene.removeGameObject(this);
-        while(children.size() > 0)
+        ObjectTree.Node child = node.getChild();
+
+        while (child != null)
         {
-            GameObject child = children.remove(0);
-            child.destroy();
+            child.getData().destroy();
+            child = child.next();
         }
 
         onUnregister();

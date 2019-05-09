@@ -37,7 +37,7 @@ class MainInstance extends GameInstance
         //scenes[2][0] = new BoxScene().init();
         scenes[2][0] = new EditorScene().init();
 
-        w0.setScene(scenes[2][0]);
+        w0.setScene(scenes[1][0]);
 
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_1, () -> w0.setScene(scenes[0][0]), null, null));
         w0.inputManager.keybinds.add(new Keybind(Keyboard.KEY_2, () -> w0.setScene(scenes[1][0]), null, null));

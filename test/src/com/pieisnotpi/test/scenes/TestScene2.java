@@ -112,14 +112,16 @@ public class TestScene2 extends PauseScene
         addGameObject(text3D);
         text3D.setOutlineSize(4);
         text3D.setOutlineSmoothing(true);
-        text3D.setParent(oBlocks);
+        oBlocks.addChild(text3D);
+        //text3D.setParent(oBlocks);
         text3D.getTransform().setTranslate(-4, 2, 0).setScale(0.01f, 0.01f, 0.01f);
 
         Text text3D2 = new Text(PixelFont.getFont(), t3d2t, new Vector3f(0, 1.5f, 0.025f), new Color(0, 1, 0), new Color(0, 0, 0), Camera.PERSP, new WaveEffect(4, 0.1f, 5));
         addGameObject(text3D2);
         text3D2.setOutlineSize(1);
         text3D2.setOutlineSmoothing(false);
-        text3D2.setParent(oBlocks);
+        oBlocks.addChild(text3D2);
+        //text3D2.setParent(oBlocks);
         text3D2.getTransform().setTranslate(0, -2, 0).setScale(0.05f, 0.05f, 0.05f);
 
         lights.add(new ADSPointLight(new Vector3f(10, 2, 10), new Vector3f(1.25f, 0, 0), 0, this));

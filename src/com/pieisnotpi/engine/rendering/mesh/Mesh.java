@@ -9,19 +9,19 @@ import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Mesh<R extends Primitive>
 {
-    public VertexArray array;
-    public IndexBuffer indices;
-    public Material material;
-    public List<R> primitives;
-    
-    protected MeshConfig config;
-    protected int vertCount, primCount, layer;
-    protected boolean shouldBuild = true;
-    
+    private VertexArray array;
+    private IndexBuffer indices;
+    private Material material;
+    private List<R> primitives;
+
+    private MeshConfig config;
+    private int vertCount, primCount, layer;
+    private boolean shouldBuild = true;
     private boolean destroyed = false;
 
     public Mesh(Material material, MeshConfig config)
@@ -29,7 +29,7 @@ public class Mesh<R extends Primitive>
         this.material = material;
         this.config = config;
 
-        primitives = new ArrayList<>();
+        primitives = new LinkedList<>();
         array = new VertexArray(material.genAttributes(config.isStatic)).init();
         indices = new IndexBuffer(config.isStatic);
     }
@@ -75,7 +75,7 @@ public class Mesh<R extends Primitive>
 
     public Mesh<R> build()
     {
-        if(primitives == null || primitives.size() == 0 || !array.isAlive() || !indices.alive) return this;
+        if(primitives == null || !array.isAlive() || !indices.alive) return this;
 
         primCount = primitives.size();
         vertCount = config.vpr*primCount;
@@ -89,12 +89,6 @@ public class Mesh<R extends Primitive>
             primitives = null;
         }
 
-        for(Attribute a : array.attributes)
-        {
-            a.buffer.flip();
-            a.bindData();
-        }
-
         indices.setBufferSize(vertCount + primCount);
 
         for(int i = 0; i < vertCount; i++)
@@ -103,12 +97,19 @@ public class Mesh<R extends Primitive>
             if(i != 0 && i != vertCount - 1 && (i + 1) % config.vpr == 0) indices.buffer.put(ShaderProgram.primitiveRestart);
         }
 
-        indices.buffer.flip();
-        indices.bindData(indices.buffer);
-
-        shouldBuild = false;
+        bindData();
 
         return this;
+    }
+
+    public void bindData()
+    {
+        for(Attribute a : array.attributes)
+        {
+            a.bindData();
+        }
+        indices.bindData();
+        shouldBuild = false;
     }
     
     public void draw(Transform transform, Camera camera)
@@ -122,11 +123,15 @@ public class Mesh<R extends Primitive>
 
     public int getDrawMode() { return config.drawMode; }
 
-    public int getPrimCount() { return primCount; }
+    public int getPrimCount() { return indices.size(); }
 
     public boolean shouldBuild() { return shouldBuild; }
 
     public boolean isDestroyed() { return destroyed; }
+
+    public List<R> getPrimitives() { return primitives; }
+
+    public Material getMaterial() { return material; }
 
     public void destroy()
     {

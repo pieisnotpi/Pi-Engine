@@ -47,7 +47,7 @@ public class ADSShader extends ShaderProgram
     @Override
     public void bindPMUniforms(Transform transform, Camera camera, Mesh mesh)
     {
-        CameraMatrix mvp = camera.getMatrix(mesh.material.matrixID);
+        CameraMatrix mvp = camera.getMatrix(mesh.getMaterial().matrixID);
         mvp.getMatrix().normal(normal);
 
         setUniformMat4("MVP", mvp.getBuffer());

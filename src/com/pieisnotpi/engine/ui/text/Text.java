@@ -19,10 +19,9 @@ public class Text extends UiObject
 {
     public String text;
     public List<TextQuad> chars;
-    public ArrayList<TextEffect> effects;
+    public List<TextEffect> effects;
 
-    public boolean effectsEnabled = false;
-    public float newlineSpace;
+    private boolean effectsEnabled = false;
 
     private Color textColor, outlineColor;
     private Font font;
@@ -52,7 +51,7 @@ public class Text extends UiObject
         chars = new ArrayList<>(100);
         mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), MeshConfig.QUAD);
         transform.setTranslate(pos);
-        chars = mesh.primitives;
+        chars = mesh.getPrimitives();
         renderable = createRenderable(1, 0, mesh);
 
         setText(text);
@@ -139,7 +138,6 @@ public class Text extends UiObject
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
 
-        newlineSpace = font.newLineSpace;
         int line = 0;
 
         for(int i = 0; i < text.length(); i++)
@@ -155,14 +153,14 @@ public class Text extends UiObject
             if(c == '\n' && i != text.length() - 1)
             {
                 xOffset = 0;
-                yOffset -= newlineSpace;
+                yOffset -= font.newLineSpace;
                 line++;
                 continue;
             }
 
             CharSprite sprite = font.getCharSprite(c);
 
-            if(sprite.equals(font.nullChar)) continue;
+            if(sprite == null) continue;
 
             float x0 = xOffset + sprite.offsetX, y0 = yOffset + sprite.offsetY, x1 = sprite.sizeX, y1 = sprite.sizeY;
 
@@ -185,7 +183,7 @@ public class Text extends UiObject
     public void setFont(Font font)
     {
         this.font = font;
-        ((TextMaterial) mesh.material).textures[0] = font.getTexture();
+        material.textures[0] = font.getTexture();
         String t = text;
         text = "";
         setText(t);
@@ -212,7 +210,7 @@ public class Text extends UiObject
 
             CharSprite sprite = font.getCharSprite(c);
 
-            if(sprite == font.nullChar) continue;
+            if(sprite == null) continue;
 
             x += (sprite.sizeX - 1);
             maxX = Float.max(maxX, x);

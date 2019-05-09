@@ -5,7 +5,7 @@ import com.pieisnotpi.engine.rendering.buffers.FrameBuffer;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
+import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
@@ -34,7 +34,7 @@ public class Camera extends GameObject
     public FrameBuffer frameBuffer;
     public TexQuad quad;
     public Mesh<TexQuad> mesh;
-    public List<ShaderProgram> shaders = new ArrayList<>();
+    public List<Material> shaders = new LinkedList<>();
     
     protected float fov, zNear = 0.001f, zFar = 1000, ratio = -1;
     protected float zoom = 1;

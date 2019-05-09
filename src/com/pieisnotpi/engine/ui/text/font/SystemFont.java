@@ -3,7 +3,6 @@ package com.pieisnotpi.engine.ui.text.font;
 import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.image.Image;
 import com.pieisnotpi.engine.output.Logger;
-import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 
 import java.awt.*;
@@ -29,10 +28,9 @@ public class SystemFont extends Font
         FontMetrics metrics = g.getFontMetrics();
         g.dispose();
 
-        int xShift = charShift, yShift = charShift;
-
-        int w, h = metrics.getHeight() + yShift;
-        w = metrics.charsWidth(sequence, 0, sequence.length) + sequence.length*xShift;
+        int midShift = charShift/2;
+        int w = metrics.charsWidth(sequence, 0, sequence.length) + sequence.length*charShift;
+        int h = metrics.getHeight() + charShift;
 
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         g = image.createGraphics();
@@ -43,12 +41,12 @@ public class SystemFont extends Font
         if(antiAlias) needsSorted = true;
         texture = new Texture(org.lwjgl.opengl.GL11.glGenTextures(), antiAlias ? Texture.FILTER_LINEAR : Texture.FILTER_NEAREST);
 
-        for(int i = 0, x = xShift/2, cw, ch = metrics.getHeight(); i < sequence.length; i++, x += cw + xShift)
+        for(int i = 0, x = midShift, cw, ch = metrics.getHeight(); i < sequence.length; i++, x += cw + charShift)
         {
             char c = sequence[i];
             cw = metrics.charWidth(c);
-            g.drawString(Character.toString(c), x, metrics.getAscent() + yShift/2);
-            sprites.add(new CharSprite(new Sprite(image.getWidth(), image.getHeight(), x - xShift/2, 0, x + cw + xShift/2, ch + yShift), c, 0, 0));
+            g.drawString(Character.toString(c), x, metrics.getAscent() + midShift);
+            sprites.put(c, new CharSprite(w, h, x - midShift, 0, x + cw + midShift, ch + charShift, 0, 0));
         }
 
         g.dispose();
@@ -56,14 +54,13 @@ public class SystemFont extends Font
         texture.setImage(new Image(image));
 
         spaceCharSpace = metrics.charWidth(' ');
-        newLineSpace = texture.image.height - yShift;
-        nullChar = new CharSprite(new Sprite(texture, 0, 0, 0, 0), ' ', 0, 0);
-        condensingFactor = xShift;
+        newLineSpace = texture.image.height - charShift;
+        condensingFactor = charShift;
 
         PiEngine.glInstance.registerFont(name, this);
     }
 
-    protected static void buildSequence()
+    private static void buildSequence()
     {
         if(sequence[0] == 0)
         {

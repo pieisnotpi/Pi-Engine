@@ -30,19 +30,6 @@ public abstract class GameInstance
     public void start() throws Exception
     {
         long startTime = System.currentTimeMillis();
-    
-        /*PointerBuffer remotery = PointerBuffer.allocateDirect(1);
-        
-        if(debug)
-        {
-            int error = rmt_CreateGlobalInstance(remotery);
-            System.out.println("Error code: " + error);
-            IntBuffer cpuBuffer = BufferUtils.createIntBuffer(1), glBuffer = BufferUtils.createIntBuffer(1);
-            rmt_BeginCPUSample("CPU_Sample", RMTSF_None, cpuBuffer);
-            rmt_LogText("Waffles!");
-            rmt_BindOpenGL();
-            rmt_BeginOpenGLSample("OpenGL Sample", glBuffer);
-        }*/
 
         while(run)
         {
@@ -98,12 +85,6 @@ public abstract class GameInstance
                 }
             }
         }
-        
-        /*rmt_EndCPUSample();
-        rmt_EndOpenGLSample();
-        System.out.println(0);
-        //rmt_DestroyGlobalInstance(rmt_GetGlobalInstance());
-        System.out.println(1);*/
     }
     
     public void registerUpdate(GameUpdate update)

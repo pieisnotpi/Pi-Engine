@@ -28,7 +28,7 @@ public class WaveEffect implements TextEffect
 
         for(TextQuad c : chars)
         {
-            float offset = -text.newlineSpace*c.line + c.cSprite.offsetY, sine = (float) Math.sin(x + c.getX()*heightDif)*scale;
+            float offset = -text.getFont().newLineSpace()*c.line + c.sprite.offsetY, sine = (float) Math.sin(x + c.getX()*heightDif)*scale;
             c.setY(offset + sine);
         }
 
