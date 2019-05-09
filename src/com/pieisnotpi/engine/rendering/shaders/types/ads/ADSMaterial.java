@@ -1,25 +1,63 @@
 package com.pieisnotpi.engine.rendering.shaders.types.ads;
 
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.utility.BufferUtility;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.lwjgl.assimp.AIColor4D;
+import org.lwjgl.assimp.AIMaterial;
+import org.lwjgl.assimp.AIString;
+import org.lwjgl.assimp.Assimp;
 
+import java.nio.IntBuffer;
 import java.util.List;
 
+import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class ADSMaterial extends Material
 {
     public Texture[] textures;
-    public Vector3f ka, kd, ks;
+    public Vector4f ka, kd, ks;
     public float s;
 
-    public ADSMaterial(Vector3f ambient, Vector3f diffuse, Vector3f specular, float shininess, int matrixID, Texture... textures)
+    public ADSMaterial(AIMaterial material)
+    {
+        super(ADSShader.ID, Camera.PERSP);
+        AIColor4D color = AIColor4D.create();
+
+        AIString path = AIString.calloc();
+        Assimp.aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null, null);
+        String textPath = path.dataString();
+        if (textPath != null && textPath.length() > 0) {
+            textures[0] = Texture.getTextureFile(textPath);
+        }
+
+        ka = new Vector4f();
+        int result = aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
+        if (result == 0) {
+            ka = new Vector4f(color.r(), color.g(), color.b(), color.a());
+        }
+
+        kd = new Vector4f();
+        result = aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
+        if (result == 0) {
+            kd = new Vector4f(color.r(), color.g(), color.b(), color.a());
+        }
+
+        ks = new Vector4f();
+        result = aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
+        if (result == 0) {
+            ks = new Vector4f(color.r(), color.g(), color.b(), color.a());
+        }
+    }
+
+    public ADSMaterial(Vector4f ambient, Vector4f diffuse, Vector4f specular, float shininess, int matrixID, Texture... textures)
     {
         super(ADSShader.ID, matrixID);
         this.textures = textures;
@@ -53,9 +91,9 @@ public class ADSMaterial extends Material
     @Override
     public void bind()
     {
-        shader.setUniformVec3("m.Ka", ka);
-        shader.setUniformVec3("m.Kd", kd);
-        shader.setUniformVec3("m.Ks", ks);
+        shader.setUniformVec4("m.Ka", ka);
+        shader.setUniformVec4("m.Kd", kd);
+        shader.setUniformVec4("m.Ks", ks);
         shader.setUniformFloat("m.Shininess", s);
 
         for(int i = 0; i < textures.length; i++) textures[i].bind(i);

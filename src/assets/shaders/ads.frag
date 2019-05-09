@@ -10,39 +10,39 @@ uniform LightInfo lights[16];
 
 struct Material
 {
-    vec3 Kd;
-    vec3 Ka;
-    vec3 Ks;
+    vec4 Kd;
+    vec4 Ka;
+    vec4 Ks;
     float Shininess;
 };
 
 uniform Material m;
 uniform sampler2D sampler;
 
-in vec3 Position;
-in vec3 Normal;
+in vec4 Position;
+in vec4 Normal;
 in vec2 TexCoord;
 
 out vec4 FragColor;
 
-vec3 ads(int index)
+vec4 ads(int index)
 {
     LightInfo l = lights[index];
 
-    vec3 s = normalize(vec3(l.Position) - Position);
-    vec3 v = normalize(vec3(-Position));
-    vec3 h = normalize(v + s);
+    vec4 s = normalize(l.Position - Position);
+    vec4 v = normalize(-Position);
+    vec4 h = normalize(v + s);
 
-    return l.Intensity*(m.Ka + m.Kd*max(dot(s, Normal), 0.0 ) + m.Ks*pow(max(dot(h, Normal), 0.0), m.Shininess));
+    return vec4(l.Intensity, 1.0)*(m.Ka + m.Kd*max(dot(s, Normal), 0.0 ) + m.Ks*pow(max(dot(h, Normal), 0.0), m.Shininess));
 }
 
 void main()
 {
-    vec3 Color = vec3(0);
+    vec4 color = vec4(0);
 
-    for(int i = 0; i < 16; i++) Color += ads(i);
+    for(int i = 0; i < 16; i++) color += ads(i);
 
     vec4 t = texture(sampler, TexCoord);
     if(t.w == 0) discard;
-    FragColor = t*vec4(Color, 1);
+    FragColor = t*color;
 }

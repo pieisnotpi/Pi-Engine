@@ -15,7 +15,7 @@ public interface HintInitializer
         FLOATING        = GLFW_FLOATING,
         MAXIMIZED       = GLFW_MAXIMIZED,
         CENTER_CURSOR   = GLFW_CENTER_CURSOR,
-        TRANSPARENT     = GLFW_TRANSPARENT,
+        //TRANSPARENT     = GLFW_TRANSPARENT,
         SAMPLES         = GLFW_SAMPLES,
         REFRESH_RATE    = GLFW_REFRESH_RATE;
 

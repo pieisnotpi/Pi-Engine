@@ -60,7 +60,8 @@ public class TestScene2 extends PauseScene
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;
 
-        ADSMaterial blockMaterial = new ADSMaterial(new Vector3f(0.25f), new Vector3f(0.2f), new Vector3f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
+        //ADSMaterial blockMaterial = new ADSMaterial(new Vector3f(0.25f), new Vector3f(0.2f), new Vector3f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
+        ADSMaterial blockMaterial = new ADSMaterial(new Vector4f(0.25f), new Vector4f(0.2f), new Vector4f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
         Mesh<Quad> blocksMesh = new Mesh<Quad>(blockMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
         oBlocks = new GameObject(new Renderable(0, 0, new Transform(), blocksMesh));
 

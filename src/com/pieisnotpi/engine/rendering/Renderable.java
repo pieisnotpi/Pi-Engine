@@ -2,8 +2,16 @@ package com.pieisnotpi.engine.rendering;
 
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
+import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIMaterial;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
 
+import java.io.FileNotFoundException;
 import java.util.Comparator;
+
+import static org.lwjgl.assimp.Assimp.*;
 
 public class Renderable
 {
@@ -27,9 +35,34 @@ public class Renderable
     }
 
     //TODO: ASSIMP Importing
-    public Renderable(int pass, int layer, Transform transform, String path)
+    public Renderable(int pass, int layer, Transform transform, String path) throws Exception
     {
-    
+        this.pass = pass;
+        this.layer = layer;
+        this.transform = transform;
+
+        AIScene scene = aiImportFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals);
+        if (scene == null) throw new FileNotFoundException("Invalid/nonexistent file provided");
+
+        int numMaterials = scene.mNumMaterials();
+        ADSMaterial[] materials = new ADSMaterial[numMaterials];
+        PointerBuffer pMaterials = scene.mMaterials();
+
+        for (int i = 0; i < numMaterials; i++)
+        {
+            AIMaterial m = AIMaterial.create(pMaterials.get(0));
+            materials[i] = new ADSMaterial(m);
+        }
+
+        int numMeshes = scene.mNumMeshes();
+        PointerBuffer pMeshes = scene.mMeshes();
+        meshes = new Mesh[numMeshes];
+
+        for (int i = 0; i < numMeshes; i++)
+        {
+            AIMesh m = AIMesh.create(pMeshes.get(i));
+            meshes[i] = new Mesh(m, materials);
+        }
     }
 
     public int getPass()

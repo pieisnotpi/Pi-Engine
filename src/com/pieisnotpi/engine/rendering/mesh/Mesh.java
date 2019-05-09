@@ -7,6 +7,9 @@ import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
+import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIVector3D;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,6 +26,54 @@ public class Mesh<R extends Primitive>
     private int vertCount, primCount, layer;
     private boolean shouldBuild = true;
     private boolean destroyed = false;
+
+    public Mesh(AIMesh mesh, ADSMaterial[] materials)
+    {
+        int matId = mesh.mMaterialIndex();
+        if (matId >= 0 && matId < materials.length) {
+            material = materials[matId];
+        } else {
+            throw new IllegalArgumentException("No material provided. That's bad.");
+        }
+
+        config = MeshConfig.TRIANGLE_STATIC;
+
+        array = new VertexArray(material.genAttributes(config.isStatic)).init();
+        indices = new IndexBuffer(config.isStatic);
+
+        Attribute vertices = array.attributes[0];
+        Attribute normals = array.attributes[1];
+        Attribute texCoords = array.attributes[2];
+
+        AIVector3D.Buffer aiVertices = mesh.mVertices();
+        int index = 0;
+        while (aiVertices.remaining() > 0) {
+            AIVector3D aiVertex = aiVertices.get();
+            vertices.buffer.put(aiVertex.x());
+            vertices.buffer.put(aiVertex.y());
+            vertices.buffer.put(aiVertex.z());
+            indices.buffer.put(index);
+            indices.buffer.put(index + 1);
+            indices.buffer.put(index + 2);
+            index += 3;
+        }
+
+        AIVector3D.Buffer aiNormals = mesh.mNormals();
+        while (aiVertices.remaining() > 0) {
+            AIVector3D aiNormal = aiNormals.get();
+            normals.buffer.put(aiNormal.x());
+            normals.buffer.put(aiNormal.y());
+            normals.buffer.put(aiNormal.z());
+        }
+
+        AIVector3D.Buffer aiTexCoords = mesh.mTextureCoords(0);
+        while (aiVertices.remaining() > 0) {
+            AIVector3D aiTexCoord = aiTexCoords.get();
+            texCoords.buffer.put(aiTexCoord.x());
+            texCoords.buffer.put(aiTexCoord.y());
+            //texCoords.buffer.put(aiVertex.z());
+        }
+    }
 
     public Mesh(Material material, MeshConfig config)
     {
