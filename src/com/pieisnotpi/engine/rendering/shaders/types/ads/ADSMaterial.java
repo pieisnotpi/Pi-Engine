@@ -36,27 +36,31 @@ public class ADSMaterial extends Material
         String textPath = path.dataString();
         textures = new Texture[1];
         // TODO remove
-        textures[0] = Texture.getTextureFile("metal.png");
-        if (textPath != null && textPath.length() > 0)
+        textures[0] = Texture.getTextureFile("grass.png");
+        /*if (textPath != null && textPath.length() > 0)
         {
+            System.out.println(textPath);
             textures[0] = Texture.getTextureFile(textPath);
-        }
+        }*/
 
-        ka = new Vector4f();
+        //ka = new Vector4f(0.25f);
+        ka = new Vector4f(1f);
         int result = aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
         if (result == 0)
         {
             ka = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
-        kd = new Vector4f();
+        //kd = new Vector4f(0.2f);
+        kd = new Vector4f(1f);
         result = aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
         if (result == 0)
         {
             kd = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
-        ks = new Vector4f();
+        //ks = new Vector4f(0.5f);
+        ks = new Vector4f(1f);
         result = aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
         if (result == 0)
         {

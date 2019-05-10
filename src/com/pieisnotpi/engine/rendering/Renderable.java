@@ -1,8 +1,11 @@
 package com.pieisnotpi.engine.rendering;
 
+import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import com.pieisnotpi.engine.rendering.shaders.Material;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
+import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.utility.FileUtility;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMaterial;
@@ -49,13 +52,15 @@ public class Renderable
         if (scene == null) throw new FileNotFoundException("Invalid/nonexistent file provided");
 
         int numMaterials = scene.mNumMaterials();
-        ADSMaterial[] materials = new ADSMaterial[numMaterials];
+        //ADSMaterial[] materials = new ADSMaterial[numMaterials];
+        Material[] materials = new TexMaterial[numMaterials];
         PointerBuffer pMaterials = scene.mMaterials();
 
         for (int i = 0; i < numMaterials; i++)
         {
             AIMaterial m = AIMaterial.create(pMaterials.get(0));
-            materials[i] = new ADSMaterial(m);
+            //materials[i] = new ADSMaterial(m);
+            materials[i] = new TexMaterial(Camera.PERSP, Texture.getTextureFile("grass"));
         }
 
         int numMeshes = scene.mNumMeshes();

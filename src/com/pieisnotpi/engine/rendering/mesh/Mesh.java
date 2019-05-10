@@ -7,7 +7,7 @@ import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
-import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import org.lwjgl.assimp.AIFace;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIVector3D;
 
@@ -27,7 +27,7 @@ public class Mesh<R extends Primitive>
     private boolean shouldBuild = true;
     private boolean destroyed = false;
 
-    public Mesh(AIMesh mesh, ADSMaterial[] materials)
+    public Mesh(AIMesh mesh, Material[] materials)
     {
         int matId = mesh.mMaterialIndex();
         if (matId >= 0 && matId < materials.length) {
@@ -42,37 +42,46 @@ public class Mesh<R extends Primitive>
         indices = new IndexBuffer(config.isStatic);
 
         Attribute vertices = array.attributes[0];
-        Attribute normals = array.attributes[1];
-        Attribute texCoords = array.attributes[2];
+        /*Attribute normals = array.attributes[1];
+        Attribute texCoords = array.attributes[2];*/
+        Attribute texCoords = array.attributes[1];
 
+        AIFace.Buffer aiFaces = mesh.mFaces();
         AIVector3D.Buffer aiVertices = mesh.mVertices();
         vertices.setBufferSize(aiVertices.limit()*3);
         indices.setBufferSize(aiVertices.limit()*4);
         int index = 1;
-        while (aiVertices.remaining() > 0) {
+        while (aiVertices.remaining() > 0 && aiFaces.remaining() > 0)
+        {
             AIVector3D aiVertex = aiVertices.get();
+            AIFace face = aiFaces.get();
             vertices.buffer.put(aiVertex.x());
             vertices.buffer.put(aiVertex.y());
             vertices.buffer.put(aiVertex.z());
-            indices.buffer.put(index);
+            indices.buffer.put(face.mIndices());
+            indices.buffer.put(ShaderProgram.primitiveRestart);
+            //indices.buffer.put(faces.)
+            /*indices.buffer.put(index);
             indices.buffer.put(index + 1);
             indices.buffer.put(index + 2);
-            indices.buffer.put(ShaderProgram.primitiveRestart);
+            indices.buffer.put(ShaderProgram.primitiveRestart);*/
             index += 3;
         }
 
-        AIVector3D.Buffer aiNormals = mesh.mNormals();
+        /*AIVector3D.Buffer aiNormals = mesh.mNormals();
         normals.setBufferSize(aiNormals.limit()*3);
-        while (aiVertices.remaining() > 0) {
+        while (aiNormals.remaining() > 0)
+        {
             AIVector3D aiNormal = aiNormals.get();
             normals.buffer.put(aiNormal.x());
             normals.buffer.put(aiNormal.y());
             normals.buffer.put(aiNormal.z());
-        }
+        }*/
 
         AIVector3D.Buffer aiTexCoords = mesh.mTextureCoords(0);
         texCoords.setBufferSize(aiTexCoords.limit()*2);
-        while (aiVertices.remaining() > 0) {
+        while (aiTexCoords.remaining() > 0)
+        {
             AIVector3D aiTexCoord = aiTexCoords.get();
             texCoords.buffer.put(aiTexCoord.x());
             texCoords.buffer.put(aiTexCoord.y());

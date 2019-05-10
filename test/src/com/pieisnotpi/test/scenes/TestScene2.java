@@ -87,7 +87,8 @@ public class TestScene2 extends PauseScene
         addGameObject(oBlocks);
         /*GameObject object = new GameObject();
         object.setRenderable(new Renderable(0, 0, object.getTransform(), "/assets/models/Wooden well.FBX"));
-        addGameObject(object);*/
+        addGameObject(object);
+        object.getTransform().scale(0.01f).rotateDegrees(-90, 0, 0).translate(0, -500, 60);*/
 
         /*Mesh<Quad> blocksMesh2 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(90, 0, 0), this).register();
         Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();*/
