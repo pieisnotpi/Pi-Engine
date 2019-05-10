@@ -47,11 +47,8 @@ public class TestScene2 extends PauseScene
         name = "Test Scene 2";
 
         Camera c = new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(1, 1));
-        //c.shaders.add(new TexCShader(null));
 
         addCamera(c);
-        //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 10), 70, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
-        //addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 90, 0, new Vector2f(0, 0), new Vector2f(0.5f, 0.5f)));
         /*addCamera(new Camera(new Vector3f(-2, 2, -2), 90, new Vector2f(0.5f, 0), new Vector2f(0.5f, 0.5f)));
         addCamera(new Camera(new Vector3f(-2, 2, 0), 90, new Vector2f(0, 0.5f), new Vector2f(0.5f, 0.5f)));
         addCamera(new Camera(new Vector3f(2, 2, 0), 90, new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f)));*/
@@ -60,8 +57,7 @@ public class TestScene2 extends PauseScene
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;
 
-        //ADSMaterial blockMaterial = new ADSMaterial(new Vector3f(0.25f), new Vector3f(0.2f), new Vector3f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
-        ADSMaterial blockMaterial = new ADSMaterial(new Vector4f(0.25f), new Vector4f(0.2f), new Vector4f(0.1f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
+        ADSMaterial blockMaterial = new ADSMaterial(new Vector4f(0.25f), new Vector4f(0.2f), new Vector4f(0.5f), 1, Camera.PERSP, Texture.getTextureFile("metal"));
         Mesh<Quad> blocksMesh = new Mesh<Quad>(blockMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
         oBlocks = new GameObject(new Renderable(0, 0, new Transform(), blocksMesh));
 
@@ -89,9 +85,12 @@ public class TestScene2 extends PauseScene
 
         blocksMesh.build();
         addGameObject(oBlocks);
+        /*GameObject object = new GameObject();
+        object.setRenderable(new Renderable(0, 0, object.getTransform(), "/assets/models/Wooden well.FBX"));
+        addGameObject(object);*/
 
-        //Mesh<Quad> blocksMesh2 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(90, 0, 0), this).register();
-        //Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();
+        /*Mesh<Quad> blocksMesh2 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(90, 0, 0), this).register();
+        Mesh<Quad> blocksMesh3 = new Mesh<Quad>(blocksMesh, new Transform().rotateDegrees(0, 0, 90), this).register();*/
 
         Mesh<Quad> arrow = new Mesh<>(new TexMaterial(Camera.PERSP, Texture.getTextureFile("arrow.png")), MeshConfig.QUAD_STATIC);
         oArrow = new GameObject();
@@ -110,19 +109,15 @@ public class TestScene2 extends PauseScene
         UnfoldEffect e = new UnfoldEffect(10);
 
         Text text3D = new Text(font, t3dt, new Vector3f(0, 1.5f, 0), Camera.PERSP, new RainbowEffect(0.6f), e, new WaveEffect(0.1f, 0.1f, 1f));
-        addGameObject(text3D);
         text3D.setOutlineSize(4);
         text3D.setOutlineSmoothing(true);
         oBlocks.addChild(text3D);
-        //text3D.setParent(oBlocks);
         text3D.getTransform().setTranslate(-4, 2, 0).setScale(0.01f, 0.01f, 0.01f);
 
         Text text3D2 = new Text(PixelFont.getFont(), t3d2t, new Vector3f(0, 1.5f, 0.025f), new Color(0, 1, 0), new Color(0, 0, 0), Camera.PERSP, new WaveEffect(4, 0.1f, 5));
-        addGameObject(text3D2);
         text3D2.setOutlineSize(1);
         text3D2.setOutlineSmoothing(false);
         oBlocks.addChild(text3D2);
-        //text3D2.setParent(oBlocks);
         text3D2.getTransform().setTranslate(0, -2, 0).setScale(0.05f, 0.05f, 0.05f);
 
         lights.add(new ADSPointLight(new Vector3f(10, 2, 10), new Vector3f(1.25f, 0, 0), 0, this));
@@ -133,10 +128,18 @@ public class TestScene2 extends PauseScene
         addKeybind(new Keybind(Keyboard.KEY_ENTER, () -> { throw new InvalidObjectException("Invalid key pressed"); }, null, null));
         addKeybind(new Keybind(Keyboard.KEY_Q, e::start, null, null));
         addKeybind(new Keybind(Keyboard.KEY_E, e::end, null, null));
+        addKeybind(new Keybind(Keyboard.KEY_T, () -> removeGameObject(text3D)/*text3D.setOutlineSize(0)*/, null, null));
 
         return this;
     }
-    
+
+    @Override
+    public void drawUpdate(float timeStep) throws Exception
+    {
+        super.drawUpdate(timeStep);
+        //cameras.get(0).getTransform().rotateDegrees(0, 0.1f, 0);
+    }
+
     @Override
     public void onWindowResize(Vector2i res)
     {

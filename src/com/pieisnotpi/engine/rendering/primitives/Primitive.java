@@ -87,8 +87,9 @@ public class Primitive
     public void normalize()
     {
         initNormals();
-        
-        for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
+        Vector3f v1 = points[1].sub(points[0], new Vector3f()), v2 = points[2].sub(points[0], new Vector3f());
+        Vector3f normal = v1.cross(v2, new Vector3f()).normalize();
+        Arrays.fill(normals, normal);
     }
 
     public void nullify()

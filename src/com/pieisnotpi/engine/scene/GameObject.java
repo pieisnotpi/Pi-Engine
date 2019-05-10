@@ -107,7 +107,7 @@ public class GameObject
     public void onUnregister()
     {
         if(scene != null && renderable != null) scene.removeRenderable(renderable);
-        node.removeSelf();
+        if(node != null) node.removeSelf();
     
         scene = null;
     }

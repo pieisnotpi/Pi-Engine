@@ -3,11 +3,13 @@ package com.pieisnotpi.engine.rendering;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.shaders.types.ads.ADSMaterial;
+import com.pieisnotpi.engine.utility.FileUtility;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMaterial;
 import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
 
@@ -41,7 +43,9 @@ public class Renderable
         this.layer = layer;
         this.transform = transform;
 
-        AIScene scene = aiImportFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals);
+        File f = FileUtility.findFile(path);
+        if (f == null) throw new FileNotFoundException("Couldn't find file " + path);
+        AIScene scene = aiImportFile(f.getAbsolutePath(), aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals);
         if (scene == null) throw new FileNotFoundException("Invalid/nonexistent file provided");
 
         int numMaterials = scene.mNumMaterials();

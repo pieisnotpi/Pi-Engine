@@ -34,25 +34,32 @@ public class ADSMaterial extends Material
         AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null, null);
         String textPath = path.dataString();
-        if (textPath != null && textPath.length() > 0) {
+        textures = new Texture[1];
+        // TODO remove
+        textures[0] = Texture.getTextureFile("metal.png");
+        if (textPath != null && textPath.length() > 0)
+        {
             textures[0] = Texture.getTextureFile(textPath);
         }
 
         ka = new Vector4f();
         int result = aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == 0)
+        {
             ka = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
         kd = new Vector4f();
         result = aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == 0)
+        {
             kd = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
         ks = new Vector4f();
         result = aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == 0)
+        {
             ks = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
     }

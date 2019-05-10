@@ -46,7 +46,9 @@ public class Mesh<R extends Primitive>
         Attribute texCoords = array.attributes[2];
 
         AIVector3D.Buffer aiVertices = mesh.mVertices();
-        int index = 0;
+        vertices.setBufferSize(aiVertices.limit()*3);
+        indices.setBufferSize(aiVertices.limit()*4);
+        int index = 1;
         while (aiVertices.remaining() > 0) {
             AIVector3D aiVertex = aiVertices.get();
             vertices.buffer.put(aiVertex.x());
@@ -55,10 +57,12 @@ public class Mesh<R extends Primitive>
             indices.buffer.put(index);
             indices.buffer.put(index + 1);
             indices.buffer.put(index + 2);
+            indices.buffer.put(ShaderProgram.primitiveRestart);
             index += 3;
         }
 
         AIVector3D.Buffer aiNormals = mesh.mNormals();
+        normals.setBufferSize(aiNormals.limit()*3);
         while (aiVertices.remaining() > 0) {
             AIVector3D aiNormal = aiNormals.get();
             normals.buffer.put(aiNormal.x());
@@ -67,12 +71,15 @@ public class Mesh<R extends Primitive>
         }
 
         AIVector3D.Buffer aiTexCoords = mesh.mTextureCoords(0);
+        texCoords.setBufferSize(aiTexCoords.limit()*2);
         while (aiVertices.remaining() > 0) {
             AIVector3D aiTexCoord = aiTexCoords.get();
             texCoords.buffer.put(aiTexCoord.x());
             texCoords.buffer.put(aiTexCoord.y());
             //texCoords.buffer.put(aiVertex.z());
         }
+
+        bindData();
     }
 
     public Mesh(Material material, MeshConfig config)
