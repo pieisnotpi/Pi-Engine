@@ -55,8 +55,7 @@ public abstract class GameInstance
 
             for(GameUpdate update : updates)
             {
-                if(update.lastUpdateTime <= 0) update.lastUpdateTime = System.currentTimeMillis() - update.frequency - 1;
-                update.update(System.currentTimeMillis());
+                update.update();
                 if(update.updates != update.frequency) finished = false;
             }
 
@@ -77,7 +76,7 @@ public abstract class GameInstance
                 for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, (update.lastUpdateTime + update.period) - time);
 
                 if(sleepTime > 0 && sleepTime != Long.MAX_VALUE)
-                try { Thread.sleep(sleepTime); }
+                try { Thread.sleep(sleepTime - 1); }
                 catch(InterruptedException e)
                 {
                     e.printStackTrace();

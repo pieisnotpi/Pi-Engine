@@ -15,8 +15,13 @@ public class SystemFont extends Font
 
     public static final int PLAIN = java.awt.Font.PLAIN, BOLD = java.awt.Font.BOLD, ITALIC = java.awt.Font.ITALIC;
 
+    private String fontFamily;
+    private int fontSize;
+
     private SystemFont(String name, String family, int size, int style, boolean antiAlias, int charShift, int uvShift)
     {
+        fontFamily = family;
+        fontSize = size;
         buildSequence();
 
         java.awt.Font font = new java.awt.Font(family, style, size);
@@ -58,6 +63,11 @@ public class SystemFont extends Font
         condensingFactor = charShift;
 
         PiEngine.glInstance.registerFont(name, this);
+    }
+
+    public String toString()
+    {
+        return String.format("%dpt %s", fontSize, fontFamily);
     }
 
     private static void buildSequence()

@@ -57,12 +57,6 @@ public class GameObject
     public Vector3f getSize() { return size; }
     public Scene getScene() { return scene; }
     
-    /*public void setParent(GameObject parent)
-    {
-        if(this.parent != null) this.parent.removeChild(this);
-        if(parent != null) parent.addChild(this);
-    }*/
-    
     public void addChild(GameObject child)
     {
         if (node == null) throw new IllegalArgumentException("Cannot add a child to an unregistered object");
@@ -119,10 +113,11 @@ public class GameObject
         while (child != null)
         {
             child.getData().destroy();
-            child = child.next();
+            child = child.getStrictNext();
         }
 
         onUnregister();
+        transform.removeFromParent();
         renderable.destroy();
     }
 }

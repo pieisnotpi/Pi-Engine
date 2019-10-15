@@ -189,6 +189,11 @@ public class Text extends UiObject
         setText(t);
     }
 
+    public String toString()
+    {
+        return String.format("Text: '%s', Font: %s", text, font);
+    }
+
     public static float approxWidth(String text, Font font)
     {
         float x = 0, maxX = Float.MIN_VALUE;

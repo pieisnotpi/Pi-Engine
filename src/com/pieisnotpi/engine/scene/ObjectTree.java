@@ -9,7 +9,7 @@ public class ObjectTree implements Iterable<GameObject>
         private GameObject data;
         private Node prev, next, parent, child;
 
-        public Node(GameObject data, Node prev, Node next, Node parent)
+        Node(GameObject data, Node prev, Node next, Node parent)
         {
             this.prev = prev;
             this.next = next;
@@ -23,9 +23,10 @@ public class ObjectTree implements Iterable<GameObject>
 
         public void removeSelf()
         {
-            if (prev == null && parent == null) head = next;
-            else if (prev != null) prev.next = next;
+            if (this == head) head = next;
 
+            if (parent != null && this == parent.child) parent.child = next;
+            if (prev != null) prev.next = next;
             if (next != null) next.prev = prev;
 
             data.node = null;
@@ -48,7 +49,15 @@ public class ObjectTree implements Iterable<GameObject>
             else child.addToEnd(obj);
         }
 
-        public Node next()
+        public Node getNextInSequence(boolean allowChildren)
+        {
+            if (allowChildren && child != null) return child;
+            else if (next != null) return next;
+            else if (parent != null) return parent.getNextInSequence(false);
+            else return null;
+        }
+
+        public Node getStrictNext()
         {
             return next;
         }
@@ -70,6 +79,15 @@ public class ObjectTree implements Iterable<GameObject>
                 obj.node.removeSelf();
             }
             return new Node(obj, prev, next, parent);
+        }
+
+        public String toString()
+        {
+            return String.format("Data: %s%nPrev: %s%nNext: %s%nParent: %s%n%n",
+                    data.toString(),
+                    prev != null ? prev.data : null,
+                    next != null ? next.data : null,
+                    parent != null ? parent.data : null);
         }
     }
 
@@ -104,10 +122,7 @@ public class ObjectTree implements Iterable<GameObject>
 
             GameObject d = next.data;
 
-            if (next.child != null) next = next.child;
-            else if (next.next != null) next = next.next;
-            else if (next.parent != null) next = next.parent.next;
-            else next = null;
+            next = next.getNextInSequence(true);
 
             return d;
         }
@@ -117,7 +132,7 @@ public class ObjectTree implements Iterable<GameObject>
     {
         Node next;
 
-        public SurfaceIterator()
+        SurfaceIterator()
         {
             next = head;
         }
@@ -147,11 +162,6 @@ public class ObjectTree implements Iterable<GameObject>
     }
 
     private Node head;
-
-    public ObjectTree()
-    {
-        head = null;
-    }
 
     public void add(GameObject obj)
     {

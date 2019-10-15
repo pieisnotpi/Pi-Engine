@@ -6,6 +6,7 @@ import com.pieisnotpi.engine.input.joystick.Joybind;
 import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.mouse.Mousebind;
+import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Light;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
@@ -137,6 +138,7 @@ public abstract class Scene
             gameObjects.add(object);
             object.onRegister(this);
         }
+        else if(PiEngine.debug) Logger.SYSTEM.debug("Attempted to add duplicate object - " + object.toString());
     }
     
     public void removeGameObject(GameObject object)

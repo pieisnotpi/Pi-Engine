@@ -1,22 +1,9 @@
 package com.pieisnotpi.engine.rendering;
 
-import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.shaders.Material;
-import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
-import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.utility.FileUtility;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIMaterial;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AIScene;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Comparator;
-
-import static org.lwjgl.assimp.Assimp.*;
 
 public class Renderable
 {
@@ -40,7 +27,7 @@ public class Renderable
     }
 
     //TODO: ASSIMP Importing
-    public Renderable(int pass, int layer, Transform transform, String path) throws Exception
+    /*public Renderable(int pass, int layer, Transform transform, String path) throws Exception
     {
         this.pass = pass;
         this.layer = layer;
@@ -72,7 +59,7 @@ public class Renderable
             AIMesh m = AIMesh.create(pMeshes.get(i));
             meshes[i] = new Mesh(m, materials);
         }
-    }
+    }*/
 
     public int getPass()
     {
