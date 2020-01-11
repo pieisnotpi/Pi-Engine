@@ -1,11 +1,10 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text;
 
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
 import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import com.pieisnotpi.engine.ui.text.TextRenderable;
 import com.pieisnotpi.engine.utility.BufferUtility;
 
 import java.util.List;
@@ -31,15 +30,21 @@ public class TextMaterial extends Material
         int mode = GL_DYNAMIC_DRAW;
         if(isStatic) mode = GL_STATIC_DRAW;
 
-        return new Attribute[]{new Attribute("VertexPosition", shader, 3, mode, isStatic), new Attribute("VertexTexCoord", shader, 2, mode, isStatic), new Attribute("VertexTextColor", shader, 4, mode, isStatic), new Attribute("VertexOutlineColor", shader, 4, mode, isStatic)};
+        return new Attribute[]
+        {
+            new Attribute("VertexPosition", shader, 3, mode, isStatic),
+            new Attribute("VertexTexCoord", shader, 2, mode, isStatic),
+            new Attribute("VertexTextColor", shader, 4, mode, isStatic),
+            new Attribute("VertexOutlineColor", shader, 4, mode, isStatic)
+        };
     }
 
     @Override
-    public void putElements(List<? extends Renderable> buffer, VertexArray a)
+    public void putElements(List<? extends Primitive> buffer, VertexArray a)
     {
         buffer.forEach(renderable ->
         {
-            TextRenderable r = (TextRenderable) renderable;
+            TextQuad r = (TextQuad) renderable;
 
             if(!r.enabled) return;
 

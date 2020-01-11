@@ -27,14 +27,14 @@ public class Window
     public long handle;
     public boolean focused = true;
 
-    public static HintInitializer hintInitializer = new HintInitializer() {};
+    public static HintInitializer hintInitializer = new HintInitializer(){};
     public static ShaderInitializer shaderInitializer = new ShaderInitializer(){};
 
     private int vsync = 0, refreshRate;
     private long time = 0;
     private boolean alive = true, fullscreen, initialized = false;
 
-    private GameUpdate drawUpdate, inputUpdate;
+    private GameUpdate windowUpdate;
 
     protected Logger logger;
 
@@ -43,7 +43,7 @@ public class Window
     public Monitor monitor;
     public GLInstance glInstance;
     public InputManager inputManager;
-    protected Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i(), bufferRes = new Vector2i();
+    private Vector2i windowedRes = new Vector2i(0, 0), fullscreenRes, pos = new Vector2i(), originalPos = new Vector2i(), middle = new Vector2i(), bufferRes = new Vector2i();
 
     /**
      * Used to initialize a window with a shared GL context. Shared GL context is necessary for multiple windows.
@@ -86,20 +86,24 @@ public class Window
         inputManager = new InputManager(this);
         logger = new Logger("WINDOW_" + name.toUpperCase().replaceAll(" ", "_"));
 
-        drawUpdate = new GameUpdate(refreshRate, this::draw, timeStep ->
+        windowUpdate = new GameUpdate(refreshRate,
+        (timeStep) ->
         {
-            if(scene == null || scene.fps == null) return;
+            inputManager.pollInputs(timeStep);
+            draw(timeStep);
+        },
+        (timeStep) ->
+        {
+            if(scene.fps == null) return;
 
-            String time = Float.toString((float) this.time/drawUpdate.updates);
-            if(scene.fps != null) scene.fps.setText(String.format("%dfps/%smspf", drawUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
+            String time = Float.toString((float) this.time/windowUpdate.updates);
+            scene.fps.setText(String.format("%dfps/%smspf", windowUpdate.updates, time.length() > 4 ? time.substring(0, 4) : time));
 
             this.time = 0;
-        }).setName("DRAW");
-
-        inputUpdate = new GameUpdate(60, (timeStep) -> inputManager.pollInputs(timeStep)).setName("INPUT");
+        }).setName("WINDOW");
     }
 
-    public Window init() throws Exception
+    public Window init()
     {
         if(initialized) return this;
 
@@ -151,9 +155,10 @@ public class Window
         return this;
     }
 
-    public void draw(float timeStep) throws Exception
+    private void draw(float timeStep) throws Exception
     {
-        if(scene == null) return;
+        if(scene == null) throw new IllegalArgumentException("Scene cannot be null");
+        if(scene.cameras.size() == 0) throw new IllegalArgumentException("Scene must have a camera");
 
         long t = System.currentTimeMillis();
 
@@ -167,12 +172,7 @@ public class Window
 
         scene.drawUpdate(timeStep);
 
-        for(Camera camera : scene.cameras) camera.drawToBuffer();
-
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-        for(Camera camera : scene.cameras) camera.drawView(bufferRes);
+        scene.cameras.forEach(Camera::draw);
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
@@ -183,6 +183,7 @@ public class Window
     public String getName() { return name; }
     public Vector2i getMiddle() { return middle; }
     public Vector2i getWindowRes() { if(fullscreen) return fullscreenRes; else return windowedRes; }
+    public Vector2i getBufferRes() { return bufferRes; }
     public Vector2i getWindowPos() { return pos; }
     public int getRefreshRate() { return refreshRate; }
     public int getVsync() { return vsync; }
@@ -195,8 +196,6 @@ public class Window
 
         if(this.scene != null) this.scene.setWindow(null);
         this.scene = scene;
-
-        glInstance.getShaderPrograms().forEach((i, s) -> s.unsortedMeshes.clear());
 
         if(!scene.isInitialized()) scene.init();
 
@@ -211,8 +210,7 @@ public class Window
 
         glfwShowWindow(handle);
 
-        PiEngine.gameInstance.registerUpdate(inputUpdate);
-        PiEngine.gameInstance.registerUpdate(drawUpdate);
+        PiEngine.gameInstance.registerUpdate(windowUpdate);
 
         return this;
     }
@@ -223,8 +221,7 @@ public class Window
 
         glfwHideWindow(handle);
 
-        PiEngine.gameInstance.unregisterUpdate(inputUpdate);
-        PiEngine.gameInstance.unregisterUpdate(drawUpdate);
+        PiEngine.gameInstance.unregisterUpdate(windowUpdate);
 
         return this;
     }
@@ -295,7 +292,7 @@ public class Window
     {
         this.refreshRate = refreshRate;
 
-        drawUpdate.setFrequency(refreshRate);
+        windowUpdate.setFrequency(refreshRate);
 
         return this;
     }
@@ -330,6 +327,8 @@ public class Window
 
         if(fullscreen) glfwSetWindowMonitor(handle, monitor.monitorID, 0, 0, fullscreenRes.x, fullscreenRes.y, refreshRate);
         else glfwSetWindowMonitor(handle, NULL, originalPos.x, originalPos.y, windowedRes.x, windowedRes.y, refreshRate);
+
+        glfwSwapInterval(vsync);
 
         return this;
     }
@@ -373,21 +372,12 @@ public class Window
         {
             alive = false;
 
-            PiEngine.gameInstance.unregisterUpdate(drawUpdate);
-            PiEngine.gameInstance.unregisterUpdate(inputUpdate);
+            PiEngine.gameInstance.unregisterUpdate(windowUpdate);
 
             glfwFreeCallbacks(handle);
             glfwDestroyWindow(handle);
         }
     }
-
-    /*private void bind()
-    {
-        if(handle == Window.lastWindow) return;
-
-        glfwMakeContextCurrent(Window.lastWindow = handle);
-        GL.setCapabilities(capabilities);
-    }*/
 
     private void setCurrentMonitor()
     {

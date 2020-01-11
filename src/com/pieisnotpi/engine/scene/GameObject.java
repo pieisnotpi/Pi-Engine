@@ -4,31 +4,22 @@ import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
-import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
-import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class GameObject<m extends Renderable>
+public class GameObject
 {
     public GameObject() {}
     
-    public GameObject(Mesh<m> mesh)
-    {
-        this.mesh = mesh;
-    }
+    public GameObject(Renderable renderable) { this.renderable = renderable; }
     
-    protected Mesh<m> mesh;
-    protected GameObject parent;
-    protected List<GameObject> children = new ArrayList<>();
+    protected Renderable renderable;
     protected Transform transform = new Transform();
     protected Vector3f size = new Vector3f();
+    protected ObjectTree.Node node;
     protected Scene scene;
 
     public void update(float timeStep) {}
@@ -61,85 +52,72 @@ public class GameObject<m extends Renderable>
     public float getWidth() { return size.x*transform.scale.x; }
     public float getHeight() { return size.y*transform.scale.y; }
     public float getDepth() { return size.z*transform.scale.z; }
-    public Mesh<m> getMesh() { return mesh; }
+    public Renderable getRenderable() { return renderable; }
     public Transform getTransform() { return transform; }
     public Vector3f getSize() { return size; }
     public Scene getScene() { return scene; }
     
-    public void setParent(GameObject parent)
-    {
-        if(this.parent != null) this.parent.removeChild(this);
-        if(parent != null) parent.addChild(this);
-    }
-    
     public void addChild(GameObject child)
     {
-        child.parent = this;
-        children.add(child);
+        if (node == null) throw new IllegalArgumentException("Cannot add a child to an unregistered object");
         transform.addChild(child.transform);
-        if(scene != null) scene.addGameObject(child);
+        node.addChild(child);
+        child.onRegister(scene);
     }
     
     public void removeChild(GameObject child)
     {
-        if(!children.contains(child)) return;
-        
-        child.parent = null;
-        children.remove(child);
+        if (child.node != null) child.node.removeSelf();
         transform.removeChild(child.transform);
-        if(scene != null) scene.removeGameObject(child);
+        child.onUnregister();
     }
     
-    public void setMesh(Mesh<m> mesh)
+    public void setRenderable(Renderable r)
     {
         if(scene != null)
         {
-            if(this.mesh != null) scene.removeMesh(mesh);
-            if(mesh != null) scene.addMesh(mesh);
+            if(this.renderable != null) scene.removeRenderable(r);
+            if(r != null) scene.addRenderable(r);
         }
         
-        this.mesh = mesh;
+        this.renderable = r;
     }
     
-    public Mesh<m> createMesh(Material material, MeshConfig config)
+    public Renderable createRenderable(int pass, int layer, Mesh... meshes)
     {
-        setMesh(new Mesh<>(material, transform, config));
-        return mesh;
-    }
-    
-    public Mesh<m> createMesh(Mesh original)
-    {
-        return this.mesh = new Mesh<>(original, transform);
+        setRenderable(new Renderable(pass, layer, transform, meshes));
+        return renderable;
     }
     
     public void onRegister(Scene scene)
     {
         this.scene = scene;
         
-        if(this.mesh != null) scene.addMesh(this.mesh);
+        if(renderable != null) scene.addRenderable(renderable);
         else if(!getClass().isAnnotationPresent(IgnoreMeshWarning.class))
-            Logger.SYSTEM.debugErr(String.format("Object added without associated mesh%n\t%s%n", toString()));
-        
-        children.forEach(scene::addGameObject);
+            Logger.SYSTEM.debugErr(String.format("Object added without associated renderable%n\t%s%n", toString()));
     }
     
     public void onUnregister()
     {
-        if(this.scene != null && this.mesh != null) this.scene.removeMesh(mesh);
-        if(this.scene != null) children.forEach(scene::removeGameObject);
+        if(scene != null && renderable != null) scene.removeRenderable(renderable);
+        if(node != null) node.removeSelf();
     
-        this.scene = null;
-        
+        scene = null;
     }
     
     public void destroy()
     {
-        if(parent != null) parent.removeChild(this);
-        else scene.removeGameObject(this);
-        while(children.size() > 0)
+        ObjectTree.Node child = node.getChild();
+
+        while (child != null)
         {
-            GameObject child = children.remove(0);
-            child.destroy();
+            child.getData().destroy();
+            child = child.getStrictNext();
         }
+
+        onUnregister();
+        transform.removeFromParent();
+        renderable.destroy();
     }
 }

@@ -4,14 +4,13 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
 import com.pieisnotpi.engine.rendering.window.Window;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
@@ -23,13 +22,12 @@ public abstract class ShaderProgram
     public static final int primitiveRestart = Integer.MAX_VALUE - 1;
     private static final FloatBuffer vec2b = BufferUtils.createFloatBuffer(2), vec3b = BufferUtils.createFloatBuffer(3), vec4b = BufferUtils.createFloatBuffer(4), mat3b = BufferUtils.createFloatBuffer(9), mat4b = BufferUtils.createFloatBuffer(16);
 
-    public List<Mesh> unsortedMeshes;
-    public ShaderFile[] shaderFiles;
+    private ShaderFile[] shaderFiles;
     private Map<String, Integer> uniformLocations = new HashMap<>(), attribLocations = new HashMap<>();
     private Camera lastCamera;
     protected Window window;
 
-    protected int handle, lastMatrix = -1;
+    private int handle, lastMatrix = -1;
 
     public ShaderProgram(Window window, ShaderFile... shaderFiles)
     {
@@ -37,7 +35,6 @@ public abstract class ShaderProgram
         this.shaderFiles = shaderFiles;
 
         handle = glCreateProgram();
-        unsortedMeshes = new ArrayList<>(100);
     }
 
     public ShaderProgram init()
@@ -61,16 +58,6 @@ public abstract class ShaderProgram
         return this;
     }
 
-    public void addUnsortedMesh(Mesh mesh)
-    {
-        if(!unsortedMeshes.contains(mesh)) unsortedMeshes.add(mesh);
-    }
-
-    public void removeUnsortedMesh(Mesh mesh)
-    {
-        if(unsortedMeshes.contains(mesh)) unsortedMeshes.remove(mesh);
-    }
-
     /**
      * Binds uniforms that are independent of individual meshes
      * Called once per shader draw
@@ -78,7 +65,7 @@ public abstract class ShaderProgram
      */
 
     public void bindUniforms(Camera camera) {}
-
+    
     /**
      * Binds uniforms that are dependent on the current mesh
      * Called once per mesh draw
@@ -86,32 +73,13 @@ public abstract class ShaderProgram
      * @param mesh The current mesh being drawn
      */
 
-    public void bindPMUniforms(Camera camera, Mesh mesh)
+    public void bindPMUniforms(Transform transform, Camera camera, Mesh mesh)
     {
-        setUniformMat4("transform", mesh.getTransform().getBuffer());
-        if(lastMatrix != mesh.material.matrixID) setUniformMat4("camera", camera.getMatrix(mesh.material.matrixID).getBuffer());
+        setUniformMat4("transform", transform.getBuffer());
+        if(lastMatrix != mesh.getMaterial().matrixID) setUniformMat4("camera", camera.getMatrix(mesh.getMaterial().matrixID).getBuffer());
     }
 
-    public void drawUnsorted(Camera camera)
-    {
-        if(unsortedMeshes.size() == 0) return;
-
-        use();
-
-        bindUniforms(camera);
-
-        unsortedMeshes.forEach((m) ->
-        {
-            if(m.shouldBuild()) m.build();
-
-            m.bind();
-
-            bindPMUniforms(camera, m);
-            glDrawElements(m.getDrawMode(), m.indices.count, GL_UNSIGNED_INT, 0);
-        });
-    }
-
-    public void draw(Mesh mesh, Camera camera)
+    public void draw(Transform transform, Mesh mesh, Camera camera)
     {
         use();
 
@@ -124,8 +92,8 @@ public abstract class ShaderProgram
         if(mesh.shouldBuild()) mesh.build();
         mesh.bind();
 
-        bindPMUniforms(camera, mesh);
-        glDrawElements(mesh.getDrawMode(), mesh.indices.count, GL_UNSIGNED_INT, 0);
+        bindPMUniforms(transform, camera, mesh);
+        glDrawElements(mesh.getDrawMode(), mesh.getPrimCount(), GL_UNSIGNED_INT, 0);
     }
 
     public void use()

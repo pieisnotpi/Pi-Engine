@@ -44,7 +44,7 @@ public class EditorTile extends UiObject
             foreSprite = scene.getCurSprite();
 
             foreground.setQuadSprite(foreSprite);
-            foreground.setQuadColors(blankColor);
+            foreground.setColor(blankColor);
 
             placed = true;
         }
@@ -66,7 +66,7 @@ public class EditorTile extends UiObject
             backSprite = scene.getCurSprite();
 
             background.setQuadSprite(backSprite);
-            background.setQuadColors(backgroundColor);
+            background.setColor(backgroundColor);
 
             placed = true;
         }
@@ -108,7 +108,7 @@ public class EditorTile extends UiObject
     {
         if(!foreShowing && !foreground.enabled) registerFore();
 
-        foreground.setQuadColors(highlightColor);
+        foreground.setColor(highlightColor);
         foreground.setQuadSprite(scene.getCurSprite());
     }
 
@@ -117,7 +117,7 @@ public class EditorTile extends UiObject
         if(!foreShowing) unregisterFore();
 
         foreground.setQuadSprite(foreSprite);
-        foreground.setQuadColors(blankColor);
+        foreground.setColor(blankColor);
     }
 
     public void blank()
@@ -132,25 +132,25 @@ public class EditorTile extends UiObject
     private void registerFore()
     {
         foreground.enabled = true;
-        scene.tilesObject.getMesh().addRenderable(foreground);
+        scene.mesh.addPrimitive(foreground);
     }
 
     private void unregisterFore()
     {
         foreground.enabled = false;
-        scene.tilesObject.getMesh().removeRenderable(foreground);
+        scene.mesh.removePrimitive(foreground);
     }
 
     private void registerBack()
     {
         background.enabled = true;
-        scene.tilesObject.getMesh().addRenderable(background);
+        scene.mesh.addPrimitive(background);
     }
 
     private void unregisterBack()
     {
         background.enabled = false;
-        scene.tilesObject.getMesh().removeRenderable(background);
+        scene.mesh.removePrimitive(background);
     }
     
     @Override

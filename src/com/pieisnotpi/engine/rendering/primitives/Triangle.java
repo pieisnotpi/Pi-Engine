@@ -1,11 +1,10 @@
-package com.pieisnotpi.engine.rendering.shapes;
+package com.pieisnotpi.engine.rendering.primitives;
 
-import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Triangle extends Renderable
+public class Triangle extends Primitive
 {
     public Triangle(Vector3f c0, Vector3f c1, Vector3f c2)
     {
@@ -29,6 +28,20 @@ public class Triangle extends Renderable
         setPoints(c0, c1, c2);
         setColors(c0c, c1c, c2c);
         setTexCoords(c0t, c1t, c2t);
+    }
+
+    public void setColor(Color color)
+    {
+        setColors(color, color, color);
+    }
+
+    public void setColors(Color c0, Color c1, Color c2)
+    {
+        initColors();
+
+        colors[0] = (c0);
+        colors[1] = (c1);
+        colors[2] = (c2);
     }
 
     public String toString()

@@ -1,20 +1,18 @@
 package com.pieisnotpi.engine.ui.text.font;
 
-import com.pieisnotpi.engine.rendering.textures.Sprite;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Font
 {
-    protected List<CharSprite> sprites = new ArrayList<>();
+    protected Map<Character, CharSprite> sprites = new HashMap<>();
     protected Texture texture;
 
-    public boolean needsSorted = false;
+    protected boolean needsSorted = false;
     public float spaceCharSpace, newLineSpace;
     public int condensingFactor = 0;
-    public CharSprite nullChar;
 
     protected Font() {}
 
@@ -24,18 +22,35 @@ public abstract class Font
         this.spaceCharSpace = spaceCharSpace;
         this.newLineSpace = newLineSpace;
         this.condensingFactor = condensingFactor;
-
-        nullChar = new CharSprite(new Sprite(texture.image.width, texture.image.height, 0, 0, 0, 0), ' ', 0, 0, 0, 0);
     }
 
     public CharSprite getCharSprite(char c)
     {
-        for(CharSprite cs : sprites) if(c == cs.c) return cs;
-        return nullChar;
+        return sprites.get(c);
     }
 
     public Texture getTexture()
     {
         return texture;
+    }
+
+    public boolean depthSort()
+    {
+        return needsSorted;
+    }
+
+    public float spaceCharSpace()
+    {
+        return spaceCharSpace;
+    }
+
+    public float newLineSpace()
+    {
+        return newLineSpace;
+    }
+
+    public int condensingFactor()
+    {
+        return condensingFactor;
     }
 }

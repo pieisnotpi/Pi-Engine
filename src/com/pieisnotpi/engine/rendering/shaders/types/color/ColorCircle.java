@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.shaders.types.color;
 
-import com.pieisnotpi.engine.rendering.shapes.Circle;
-import com.pieisnotpi.engine.rendering.shapes.Triangle;
+import com.pieisnotpi.engine.rendering.primitives.Circle;
+import com.pieisnotpi.engine.rendering.primitives.Triangle;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 

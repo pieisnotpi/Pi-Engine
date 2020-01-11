@@ -1,11 +1,12 @@
 package com.pieisnotpi.test.scenes;
 
+import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.mesh.Transform;
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
-import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.engine.rendering.textures.Texture;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.ui.text.Text;
@@ -31,7 +32,7 @@ public class TestScene extends PauseScene
 
         name = "Test Scene 1";
 
-        addCamera(new FirstPersonCamera(90, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
+        addCamera(new FirstPersonCamera(new Vector3f(0, 2, 0), 70, 0, new Vector2f(0, 0), new Vector2f(1, 1)));
         clearColor.set(0.125f, 0.729f, 0.918f);
 
         float xOffset = -(w/2f)*Block.SIZE, zOffset = -(h/2f)*Block.SIZE;
@@ -39,8 +40,8 @@ public class TestScene extends PauseScene
         Block block;
 
         TexMaterial blocksMaterial = new TexMaterial(Camera.PERSP, Texture.getTextureFile("grass"));
-        blocksMesh = new Mesh<Quad>(blocksMaterial, new Transform(), MeshConfig.QUAD_STATIC).setRenderables(new ArrayList<>(w*h*4));
-        GameObject grass = new GameObject<>(blocksMesh);
+        blocksMesh = new Mesh<Quad>(blocksMaterial, MeshConfig.QUAD_STATIC).setPrimitives(new ArrayList<>(w*h*4));
+        GameObject grass = new GameObject(new Renderable(0, 0, new Transform(), blocksMesh));
 
         for(int x = 0; x < w; x++)
         {
@@ -54,7 +55,7 @@ public class TestScene extends PauseScene
 
                 block.cubes.forEach(cube ->
                 {
-                    for(Quad side : cube.sides) if(side.enabled) blocksMesh.addRenderable(side);
+                    for(Quad side : cube.sides) if(side.enabled) blocksMesh.addPrimitive(side);
                 });
             }
 
@@ -64,7 +65,7 @@ public class TestScene extends PauseScene
 
         blocksMesh.build();
 
-        blocksMesh.getTransform().setRotateDegrees(0, 90, 0).scale(0.001f);
+        grass.getTransform().setRotateDegrees(0, 90, 0).scale(0.001f);
         addGameObject(grass);
 
         String t3dt = "This text is waving.", t3d2t = "This text is hovering.";

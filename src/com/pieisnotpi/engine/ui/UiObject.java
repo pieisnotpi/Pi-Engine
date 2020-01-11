@@ -2,13 +2,12 @@ package com.pieisnotpi.engine.ui;
 
 import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
-import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.scene.GameObject;
 import com.pieisnotpi.engine.scene.Scene;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 
-public abstract class UiObject<m extends Renderable> extends GameObject<m>
+public abstract class UiObject extends GameObject
 {
     public enum HAlignment { NONE, LEFT, CENTER, RIGHT }
     public enum VAlignment { NONE, BOTTOM, CENTER, TOP }
@@ -23,7 +22,7 @@ public abstract class UiObject<m extends Renderable> extends GameObject<m>
 
     protected UiObject() {}
     
-    public UiObject(Mesh<m> mesh, int matrixID)
+    public UiObject(Renderable mesh, int matrixID)
     {
         super(mesh);
         this.matrixID = matrixID;
@@ -79,6 +78,7 @@ public abstract class UiObject<m extends Renderable> extends GameObject<m>
             else nx = end - getWidth() + offset.x;
 
             transform.translateAbs(nx - transform.pos.x, 0, 0);
+
         }
 
         if(!vAlign.equals(VAlignment.NONE))

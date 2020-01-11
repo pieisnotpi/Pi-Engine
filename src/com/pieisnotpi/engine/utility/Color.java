@@ -30,6 +30,19 @@ public class Color
         this.blue = blue;
         this.alpha = alpha;
     }
+    
+    public Color set(String hexadecimal)
+    {
+        int offset = 0;
+        if(hexadecimal.charAt(0) == '#') offset = 1;
+    
+        red = Integer.valueOf(hexadecimal.substring(offset, offset + 2), 16)/255f;
+        green = Integer.valueOf(hexadecimal.substring(offset + 2, offset + 4), 16)/255f;
+        blue = Integer.valueOf(hexadecimal.substring(offset + 4, offset + 6), 16)/255f;
+        alpha = 1;
+        
+        return this;
+    }
 
     public Color set(Color color)
     {
@@ -48,7 +61,7 @@ public class Color
         this.blue = blue;
         this.alpha = alpha;
 
-         return this;
+        return this;
     }
 
     public String toString()

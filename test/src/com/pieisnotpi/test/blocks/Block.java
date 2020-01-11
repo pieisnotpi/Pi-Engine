@@ -1,8 +1,8 @@
 package com.pieisnotpi.test.blocks;
 
-import com.pieisnotpi.engine.rendering.Renderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexCube;
-import com.pieisnotpi.engine.rendering.shapes.Quad;
 import com.pieisnotpi.test.blocks.model.Model;
 
 import java.util.ArrayList;
@@ -21,9 +21,9 @@ public class Block
         cubes.addAll(model.cubes.stream().map(cube -> cube.toTexCube(x, y, z, SIZE)).collect(Collectors.toList()));
     }
 
-    public List<Renderable> getRenderables()
+    public List<Primitive> getRenderables()
     {
-        List<Renderable> list = new ArrayList<>();
+        List<Primitive> list = new ArrayList<>();
         for(TexCube cube : cubes) for(Quad quad : cube.sides) if(quad.enabled) list.add(quad);
         return list;
     }

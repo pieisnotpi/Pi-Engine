@@ -1,7 +1,7 @@
 package com.pieisnotpi.engine.rendering.mesh;
 
-import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.rendering.cameras.Camera;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.rendering.shaders.Material;
 import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
 import com.pieisnotpi.engine.rendering.shaders.VertexArray;
@@ -9,83 +9,118 @@ import com.pieisnotpi.engine.rendering.shaders.buffers.Attribute;
 import com.pieisnotpi.engine.rendering.shaders.buffers.IndexBuffer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class Mesh<R extends Renderable>
+/*import org.lwjgl.assimp.AIFace;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIVector3D;*/
+
+public class Mesh<R extends Primitive>
 {
-    public Mesh original;
-    public VertexArray array;
-    public IndexBuffer indices;
-    public Material material;
-    public List<R> renderables;
-    
-    protected Transform transform;
-    protected List<Mesh> copies;
-    protected MeshConfig config;
-    protected int vertCount, primCount;
-    protected boolean shouldSort = false, shouldBuild = true;
-    
+    private VertexArray array;
+    private IndexBuffer indices;
+    private Material material;
+    private List<R> primitives;
+
+    private MeshConfig config;
+    private int vertCount, primCount, layer;
+    private boolean shouldBuild = true;
     private boolean destroyed = false;
 
-    public Mesh(Material material, Transform transform, MeshConfig config)
+    /*public Mesh(AIMesh mesh, Material[] materials)
+    {
+        int matId = mesh.mMaterialIndex();
+        if (matId >= 0 && matId < materials.length) {
+            material = materials[matId];
+        } else {
+            throw new IllegalArgumentException("No material provided. That's bad.");
+        }
+
+        config = MeshConfig.TRIANGLE_STATIC;
+
+        array = new VertexArray(material.genAttributes(config.isStatic)).init();
+        indices = new IndexBuffer(config.isStatic);
+
+        Attribute vertices = array.attributes[0];
+        *//*Attribute normals = array.attributes[1];
+        Attribute texCoords = array.attributes[2];*//*
+        Attribute texCoords = array.attributes[1];
+
+        AIFace.Buffer aiFaces = mesh.mFaces();
+        AIVector3D.Buffer aiVertices = mesh.mVertices();
+        vertices.setBufferSize(aiVertices.limit()*3);
+        indices.setBufferSize(aiVertices.limit()*4);
+        int index = 1;
+        while (aiVertices.remaining() > 0 && aiFaces.remaining() > 0)
+        {
+            AIVector3D aiVertex = aiVertices.get();
+            AIFace face = aiFaces.get();
+            vertices.buffer.put(aiVertex.x());
+            vertices.buffer.put(aiVertex.y());
+            vertices.buffer.put(aiVertex.z());
+            indices.buffer.put(face.mIndices());
+            indices.buffer.put(ShaderProgram.primitiveRestart);
+            //indices.buffer.put(faces.)
+            *//*indices.buffer.put(index);
+            indices.buffer.put(index + 1);
+            indices.buffer.put(index + 2);
+            indices.buffer.put(ShaderProgram.primitiveRestart);*//*
+            index += 3;
+        }
+
+        *//*AIVector3D.Buffer aiNormals = mesh.mNormals();
+        normals.setBufferSize(aiNormals.limit()*3);
+        while (aiNormals.remaining() > 0)
+        {
+            AIVector3D aiNormal = aiNormals.get();
+            normals.buffer.put(aiNormal.x());
+            normals.buffer.put(aiNormal.y());
+            normals.buffer.put(aiNormal.z());
+        }*//*
+
+        AIVector3D.Buffer aiTexCoords = mesh.mTextureCoords(0);
+        texCoords.setBufferSize(aiTexCoords.limit()*2);
+        while (aiTexCoords.remaining() > 0)
+        {
+            AIVector3D aiTexCoord = aiTexCoords.get();
+            texCoords.buffer.put(aiTexCoord.x());
+            texCoords.buffer.put(aiTexCoord.y());
+            //texCoords.buffer.put(aiVertex.z());
+        }
+
+        bindData();
+    }*/
+
+    public Mesh(Material material, MeshConfig config)
     {
         this.material = material;
-        this.transform = transform;
         this.config = config;
 
-        renderables = new ArrayList<>();
+        primitives = new LinkedList<>();
         array = new VertexArray(material.genAttributes(config.isStatic)).init();
         indices = new IndexBuffer(config.isStatic);
     }
 
-    public Mesh(Mesh original, Transform transform)
+    public Mesh<R> setPrimitives(List<R> primitives)
     {
-        this.original = original;
-        this.transform = transform;
-
-        original.registerCopy(this);
-
-        material = original.material;
-        array = original.array;
-        indices = original.indices;
-        vertCount = original.vertCount;
-        config = original.config;
-        primCount = original.primCount;
-        shouldSort = original.shouldSort;
-        shouldBuild = original.shouldBuild;
-    }
-
-    public Mesh<R> setTransform(Transform transform)
-    {
-        this.transform = transform;
+        this.primitives = primitives;
         return this;
     }
 
-    public Mesh<R> setSorting(boolean sorting)
+    public Mesh<R> addPrimitive(R primitive)
     {
-        shouldSort = sorting;
-        return this;
-    }
-
-    public Mesh<R> setRenderables(List<R> renderables)
-    {
-        this.renderables = renderables;
-        return this;
-    }
-
-    public Mesh<R> addRenderable(R renderable)
-    {
-        if(renderables == null) renderables = new ArrayList<>();
-        renderables.add(renderable);
+        if(primitives == null) primitives = new ArrayList<>();
+        primitives.add(primitive);
         shouldBuild = true;
         return this;
     }
 
-    public Mesh<R> removeRenderable(R renderable)
+    public Mesh<R> removePrimitive(R primitive)
     {
-        if(renderables != null)
+        if(primitives != null)
         {
-            renderables.remove(renderable);
+            primitives.remove(primitive);
             shouldBuild = true;
         }
         return this;
@@ -108,35 +143,18 @@ public class Mesh<R extends Renderable>
 
     public Mesh<R> build()
     {
-        if(original != null)
-        {
-            original.build();
+        if(primitives == null || !array.isAlive() || !indices.alive) return this;
 
-            vertCount = original.vertCount;
-            primCount = original.primCount;
-            shouldSort = original.shouldSort;
-
-            return this;
-        }
-
-        if(renderables == null || renderables.size() == 0 || !array.alive || !indices.alive) return this;
-
-        primCount = renderables.size();
+        primCount = primitives.size();
         vertCount = config.vpr*primCount;
 
         for(Attribute attribute : array.attributes) attribute.setBufferSize(attribute.size*vertCount);
 
-        material.putElements(renderables, array);
+        material.putElements(primitives, array);
         if(config.isStatic)
         {
-            renderables.forEach(Renderable::nullify);
-            renderables = null;
-        }
-
-        for(Attribute a : array.attributes)
-        {
-            a.buffer.flip();
-            a.bindData();
+            primitives.forEach(Primitive::nullify);
+            primitives = null;
         }
 
         indices.setBufferSize(vertCount + primCount);
@@ -147,31 +165,25 @@ public class Mesh<R extends Renderable>
             if(i != 0 && i != vertCount - 1 && (i + 1) % config.vpr == 0) indices.buffer.put(ShaderProgram.primitiveRestart);
         }
 
-        indices.buffer.flip();
-        indices.bindData(indices.buffer);
-
-        shouldBuild = false;
+        bindData();
 
         return this;
     }
+
+    public void bindData()
+    {
+        for(Attribute a : array.attributes)
+        {
+            a.bindData();
+        }
+        indices.bindData();
+        shouldBuild = false;
+    }
     
-    public void draw(Camera camera)
+    public void draw(Transform transform, Camera camera)
     {
-        material.shader.draw(this, camera);
+        material.shader.draw(transform, this, camera);
     }
-
-    protected void registerCopy(Mesh copy)
-    {
-        if(copies == null) copies = new ArrayList<>();
-        copies.add(copy);
-    }
-
-    protected void unregisterCopy(Mesh copy)
-    {
-        if(copies != null) copies.remove(copy);
-    }
-
-    public Transform getTransform() { return transform; }
 
     public int getVertCount() { return vertCount; }
 
@@ -179,30 +191,25 @@ public class Mesh<R extends Renderable>
 
     public int getDrawMode() { return config.drawMode; }
 
-    public int getPrimCount() { return primCount; }
+    public int getPrimCount() { return indices.size(); }
 
     public boolean shouldBuild() { return shouldBuild; }
 
-    public boolean shouldSort() { return shouldSort; }
-
     public boolean isDestroyed() { return destroyed; }
+
+    public List<R> getPrimitives() { return primitives; }
+
+    public Material getMaterial() { return material; }
 
     public void destroy()
     {
-        if(original == null)
-        {
-            array.destroy();
-            indices.destroy();
-        }
-        else original.unregisterCopy(this);
+        array.destroy();
+        indices.destroy();
 
-        if(copies != null) while(copies.size() > 0) copies.get(0).destroy();
-
-        transform.removeFromParent();
-
-        renderables = null;
+        primitives = null;
         array = null;
         indices = null;
-        transform = null;
+        
+        destroyed = true;
     }
 }

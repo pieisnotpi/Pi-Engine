@@ -10,14 +10,12 @@ import static org.lwjgl.opengl.GL15.glBufferData;
 
 public class Attribute extends GLBuffer<FloatBuffer>
 {
-    public String name;
-    public int location = -1, size;
+    public int location, size;
 
     public Attribute(String name, ShaderProgram shader, int size, int usage, boolean clearMemory)
     {
         super(GL_ARRAY_BUFFER, usage, clearMemory);
 
-        this.name = name;
         this.size = size;
         this.location = shader.getAttribLocation(name);
         this.clearMemory = clearMemory;

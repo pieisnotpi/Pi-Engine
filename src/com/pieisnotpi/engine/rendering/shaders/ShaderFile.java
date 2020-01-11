@@ -51,7 +51,7 @@ public class ShaderFile
     public void attach(ShaderProgram program)
     {
         this.program = program;
-        glAttachShader(program.handle, handle);
+        glAttachShader(program.getHandle(), handle);
     }
 
     public void setFile(File file, String name) throws IOException

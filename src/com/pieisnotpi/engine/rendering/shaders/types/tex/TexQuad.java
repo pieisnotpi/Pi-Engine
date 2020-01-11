@@ -1,7 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex;
 
-import com.pieisnotpi.engine.rendering.shaders.ShaderProgram;
-import com.pieisnotpi.engine.rendering.shapes.Quad;
+import com.pieisnotpi.engine.rendering.primitives.Quad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -38,10 +37,5 @@ public class TexQuad extends Quad
         this.sprite = sprite;
 
         setQuadTexCoords(sprite.uvx0, sprite.uvy0, sprite.uvx1, sprite.uvy1);
-    }
-
-    public void preCompile(ShaderProgram shader)
-    {
-        if(sprite.isAnimated && sprite.updateAnimation()) setQuadSprite(sprite);
     }
 }

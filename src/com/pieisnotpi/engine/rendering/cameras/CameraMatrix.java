@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 
 public class CameraMatrix
 {
-    public Matrix4f matrix, projection, view;
+    private Matrix4f matrix, projection, view;
     private FloatBuffer buffer;
     
     public CameraMatrix(Matrix4f view)
@@ -56,10 +56,5 @@ public class CameraMatrix
         matrix.set(projection);
         if(view != null) matrix.mul(view);
         matrix.get(buffer);
-    }
-    
-    private void reset()
-    {
-        matrix.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }
 }

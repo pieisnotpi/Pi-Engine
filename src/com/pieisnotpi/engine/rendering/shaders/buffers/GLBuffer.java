@@ -33,6 +33,7 @@ public abstract class GLBuffer<E extends Buffer>
 
     public GLBuffer bindData()
     {
+        buffer.flip();
         bind();
         bufferDataCall();
         if(clearMemory) buffer.limit(0);
@@ -52,6 +53,11 @@ public abstract class GLBuffer<E extends Buffer>
         else createBuffer(size);
 
         return this;
+    }
+
+    public int size()
+    {
+        return buffer.limit();
     }
 
     public void destroy()

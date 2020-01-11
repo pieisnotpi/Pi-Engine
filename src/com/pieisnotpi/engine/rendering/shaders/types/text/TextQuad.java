@@ -1,53 +1,67 @@
 package com.pieisnotpi.engine.rendering.shaders.types.text;
 
-import com.pieisnotpi.engine.rendering.textures.Sprite;
-import com.pieisnotpi.engine.ui.text.TextRenderable;
+import com.pieisnotpi.engine.rendering.primitives.Primitive;
 import com.pieisnotpi.engine.ui.text.font.CharSprite;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.Arrays;
+
 import static com.pieisnotpi.engine.utility.MathUtility.*;
 
-public class TextQuad extends TextRenderable
+public class TextQuad extends Primitive
 {
-    public int line = 0;
-    public float xRot = 0, yRot = 0, zRot = 0;
-    protected Sprite sprite;
-    public CharSprite cSprite;
+    public int line;
+    private float xRot = 0, yRot = 0, zRot = 0;
+    public CharSprite sprite;
 
-    public TextQuad(float x, float y, float z, float width, float height, CharSprite cSprite, Color textColor, Color outlineColor, int line)
+    public Color[] textColors, outlineColors;
+
+    public TextQuad(float x, float y, float z, float width, float height, CharSprite sprite, Color textColor, Color outlineColor, int line)
     {
-        super();
+        super(4);
 
         this.line = line;
-        this.cSprite = cSprite;
-        this.sprite = cSprite.sprite;
+        this.sprite = sprite;
+
+        texCoords = new Vector2f[vertCount];
+        textColors = new Color[vertCount];
+        outlineColors = new Color[vertCount];
+
+        Arrays.fill(textColors, new Color(1, 1, 1));
+        Arrays.fill(outlineColors, new Color(0, 0, 0));
 
         setPoints(new Vector3f(x, y, z), new Vector3f(x + width, y, z), new Vector3f(x, y + height, z), new Vector3f(x + width, y + height, z));
         setTexCoords(new Vector2f(sprite.uvx0, sprite.uvy0), new Vector2f(sprite.uvx1, sprite.uvy0), new Vector2f(sprite.uvx0, sprite.uvy1), new Vector2f(sprite.uvx1, sprite.uvy1));
-        setQuadTextColor(textColor, textColor, textColor, textColor);
-        setQuadOutlineColor(outlineColor, outlineColor, outlineColor, outlineColor);
+        setTextColor(textColor, textColor, textColor, textColor);
+        setOutlineColor(outlineColor, outlineColor, outlineColor, outlineColor);
     }
 
-    public void setQuadTextColor(Color color)
+    public void setTextColor(Color color)
     {
-        setQuadTextColor(color, color, color, color);
+        setTextColor(color, color, color, color);
     }
 
-    public void setQuadTextColor(Color c0, Color c1, Color c2, Color c3)
+    public void setTextColor(Color c0, Color c1, Color c2, Color c3)
     {
-        setTextColors(c0, c1, c2, c3);
+        textColors[0].set(c0);
+        textColors[1].set(c1);
+        textColors[2].set(c2);
+        textColors[3].set(c3);
     }
 
-    public void setQuadOutlineColor(Color color)
+    public void setOutlineColor(Color color)
     {
-        setQuadOutlineColor(color, color, color, color);
+        setOutlineColor(color, color, color, color);
     }
 
-    public void setQuadOutlineColor(Color c0, Color c1, Color c2, Color c3)
+    public void setOutlineColor(Color c0, Color c1, Color c2, Color c3)
     {
-        setOutlineColors(c0, c1, c2, c3);
+        outlineColors[0].set(c0);
+        outlineColors[1].set(c1);
+        outlineColors[2].set(c2);
+        outlineColors[3].set(c3);
     }
 
     public void setPos(float x, float y, float z)
@@ -124,5 +138,14 @@ public class TextQuad extends TextRenderable
         zRot += amount;
 
         rotateAxisZ(amount, pointX, pointY, points);
+    }
+
+    @Override
+    public void nullify()
+    {
+        super.nullify();
+
+        textColors = null;
+        outlineColors = null;
     }
 }

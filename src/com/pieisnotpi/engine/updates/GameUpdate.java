@@ -13,8 +13,8 @@ public class GameUpdate
      */
 
     public String name = "GAME";
-    public long lastUpdateTime = 0, lastTimeTaken = 0, totalTimeTaken = 0;
-    public int updates, period, frequency;
+    public long lastUpdateTime = 0, lastTimeTaken = 0, totalTimeTaken = 0, period;
+    public int updates, frequency;
     private GameUpdateAction updateAction;
     private GameUpdateAction perSecondAction;
 
@@ -25,7 +25,7 @@ public class GameUpdate
         this.perSecondAction = null;
 
         updates = 0;
-        period = 1000/frequency;
+        period = 1000L/frequency;
     }
 
     public GameUpdate(int frequency, GameUpdateAction action, GameUpdateAction perSecond)
@@ -35,7 +35,7 @@ public class GameUpdate
         this.perSecondAction = perSecond;
 
         updates = 0;
-        period = 1000/frequency;
+        period = 1000L/frequency;
     }
 
     public GameUpdate setName(String name)
@@ -47,19 +47,20 @@ public class GameUpdate
     public GameUpdate setFrequency(int frequency)
     {
         this.frequency = frequency;
-        period = 1000/frequency;
+        period = 1000L/frequency;
 
         return this;
     }
 
-    public void update(long time) throws Exception
+    public void update() throws Exception
     {
+        long time = System.currentTimeMillis();
         if(!shouldUpdate(time)) return;
 
         updateAction.runAction((time - lastUpdateTime)/1000f);
         lastUpdateTime = time;
         totalTimeTaken += lastTimeTaken = System.currentTimeMillis() - time;
-        if(lastTimeTaken > frequency) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run", name, lastTimeTaken));
+        if(lastTimeTaken > period*2) Logger.SYSTEM.debugErr(String.format("Game update '%s' took %dms to run", name, lastTimeTaken));
         updates++;
     }
 
@@ -69,7 +70,7 @@ public class GameUpdate
         totalTimeTaken = 0;
     }
 
-    public boolean shouldUpdate(long time)
+    private boolean shouldUpdate(long time)
     {
         return updates < frequency && lastUpdateTime + period <= time;
     }

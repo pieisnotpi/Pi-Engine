@@ -55,8 +55,7 @@ public abstract class GameInstance
 
             for(GameUpdate update : updates)
             {
-                if(update.lastUpdateTime <= 0) update.lastUpdateTime = System.currentTimeMillis() - update.frequency - 1;
-                update.update(System.currentTimeMillis());
+                update.update();
                 if(update.updates != update.frequency) finished = false;
             }
 
@@ -85,7 +84,6 @@ public abstract class GameInstance
                 }
             }
         }
-
     }
     
     public void registerUpdate(GameUpdate update)

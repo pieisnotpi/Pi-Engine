@@ -1,6 +1,6 @@
 package com.pieisnotpi.engine.rendering.shaders.types.tex;
 
-import com.pieisnotpi.engine.rendering.shapes.Cube;
+import com.pieisnotpi.engine.rendering.primitives.Cube;
 import com.pieisnotpi.engine.rendering.textures.Sprite;
 
 public class TexCube extends Cube

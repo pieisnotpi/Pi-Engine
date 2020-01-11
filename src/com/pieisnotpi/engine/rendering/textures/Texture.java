@@ -13,7 +13,7 @@ public class Texture
     public static final int FILTER_NEAREST = GL_NEAREST, FILTER_LINEAR = GL_LINEAR;
 
     public Vector2i res;
-    public int texFilter, handle = -1;
+    public int texFilter, handle;
     public Image image;
     
     public Texture(String path)

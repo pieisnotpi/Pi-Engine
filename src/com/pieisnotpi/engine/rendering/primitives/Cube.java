@@ -1,4 +1,4 @@
-package com.pieisnotpi.engine.rendering.shapes;
+package com.pieisnotpi.engine.rendering.primitives;
 
 import com.pieisnotpi.engine.scene.Scene;
 

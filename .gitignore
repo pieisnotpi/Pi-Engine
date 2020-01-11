@@ -1,0 +1,8 @@
+.idea
+libs
+out
+natives
+builds
+Pi Engine.iml
+test/src/assets/sounds
+todo.txt

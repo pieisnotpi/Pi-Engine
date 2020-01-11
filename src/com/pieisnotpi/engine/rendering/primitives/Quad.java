@@ -1,10 +1,9 @@
-package com.pieisnotpi.engine.rendering.shapes;
+package com.pieisnotpi.engine.rendering.primitives;
 
-import com.pieisnotpi.engine.rendering.Renderable;
 import com.pieisnotpi.engine.utility.Color;
 import org.joml.Vector3f;
 
-public class Quad extends Renderable
+public class Quad extends Primitive
 {
     public Quad(float x, float y, float z, float width, float height, float depth)
     {
@@ -93,18 +92,25 @@ public class Quad extends Renderable
         points[3].z += dif;
     }
 
-    public void setQuadColors(Color color)
+    public void setColor(Color color)
     {
         setColors(color, color, color, color);
     }
 
-    public void setQuadColors(Color c0, Color c1, Color c2, Color c3)
+    public void setColors(Color c0, Color c1, Color c2, Color c3)
     {
-        setColors(c0, c1, c2, c3);
+        initColors();
+
+        colors[0] = (c0);
+        colors[1] = (c1);
+        colors[2] = (c2);
+        colors[3] = (c3);
     }
 
     public void setQuadTexCoords(float x0, float y0, float x1, float y1)
     {
+        initTexCoords();
+
         texCoords[0].set(x0, y0);
         texCoords[1].set(x1, y0);
         texCoords[2].set(x0, y1);

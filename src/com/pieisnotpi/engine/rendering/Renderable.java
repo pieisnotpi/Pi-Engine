@@ -1,116 +1,91 @@
 package com.pieisnotpi.engine.rendering;
 
-import com.pieisnotpi.engine.utility.Color;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.Transform;
 
-import java.util.Arrays;
+import java.util.Comparator;
 
 public class Renderable
 {
-    public int vertCount;
-    public Vector3f[] points;
-    public Vector2f[] texCoords;
-    public Vector3f[] normals;
-    public Color[] colors;
-    public boolean enabled = true;
+    public static final Comparator<Renderable> comparator = Comparator.comparingInt(r -> r.layer);
 
-    public float getX() { return 0; }
-    public float getY() { return 0; }
-    public float getZ() { return 0; }
+    private Mesh[] meshes;
+    private Transform transform;
+    private int pass, layer;
 
-    public Renderable(int vertCount)
+    public Renderable(int pass, Transform transform, Mesh... meshes)
     {
-        this.vertCount = vertCount;
-        points = new Vector3f[vertCount];
+        this(pass, 0, transform, meshes);
     }
     
-    public void setX(float x, int index)
+    public Renderable(int pass, int layer, Transform transform, Mesh... meshes)
     {
-        float dif = x - points[index].x;
-
-        for(Vector3f point : points) point.x += dif;
-        normalize();
+        this.pass = pass;
+        this.layer = layer;
+        this.transform = transform;
+        this.meshes = meshes;
     }
 
-    public void setY(float y, int index)
+    //TODO: ASSIMP Importing
+    /*public Renderable(int pass, int layer, Transform transform, String path) throws Exception
     {
-        float dif = y - points[index].y;
+        this.pass = pass;
+        this.layer = layer;
+        this.transform = transform;
 
-        for(Vector3f point : points) point.y += dif;
-        normalize();
-    }
+        File f = FileUtility.findFile(path);
+        if (f == null) throw new FileNotFoundException("Couldn't find file " + path);
+        AIScene scene = aiImportFile(f.getAbsolutePath(), aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals);
+        if (scene == null) throw new FileNotFoundException("Invalid/nonexistent file provided");
 
-    public void setZ(float z, int index)
-    {
-        float dif = z - points[index].z;
+        int numMaterials = scene.mNumMaterials();
+        //ADSMaterial[] materials = new ADSMaterial[numMaterials];
+        Material[] materials = new TexMaterial[numMaterials];
+        PointerBuffer pMaterials = scene.mMaterials();
 
-        for(Vector3f point : points) point.z += dif;
-        normalize();
-    }
-
-    public void setPoints(Vector3f... points)
-    {
-        if(points.length == 0) return;
-
-        for(int a = 0, b = 0; a < this.points.length; a++, b++)
+        for (int i = 0; i < numMaterials; i++)
         {
-            if(b >= points.length) b = 0;
-            if(points[b] != null) this.points[a] = points[b];
+            AIMaterial m = AIMaterial.create(pMaterials.get(0));
+            //materials[i] = new ADSMaterial(m);
+            materials[i] = new TexMaterial(Camera.PERSP, Texture.getTextureFile("grass"));
         }
 
-        normalize();
-    }
+        int numMeshes = scene.mNumMeshes();
+        PointerBuffer pMeshes = scene.mMeshes();
+        meshes = new Mesh[numMeshes];
 
-    public void setColors(Color... colors)
-    {
-        initColors();
-
-        for(int a = 0, b = 0; a < this.colors.length; a++, b++)
+        for (int i = 0; i < numMeshes; i++)
         {
-            if(b >= colors.length) b = 0;
-            if(colors[b] != null) this.colors[a] = colors[b];
+            AIMesh m = AIMesh.create(pMeshes.get(i));
+            meshes[i] = new Mesh(m, materials);
         }
+    }*/
+
+    public int getPass()
+    {
+        return pass;
     }
 
-    public void setTexCoords(Vector2f... texCoords)
+    public int getLayer()
     {
-        initTexCoords();
+        return layer;
+    }
 
-        for(int a = 0, b = 0; a < this.texCoords.length; a++, b++)
+    public Mesh[] getMeshes()
+    {
+        return meshes;
+    }
+
+    public Transform getTransform()
+    {
+        return transform;
+    }
+
+    public void destroy()
+    {
+        for (Mesh mesh : meshes)
         {
-            if(b >= texCoords.length) b = 0;
-            if(texCoords[b] != null) this.texCoords[a] = texCoords[b];
+            mesh.destroy();
         }
-    }
-
-    public void normalize()
-    {
-        initNormals();
-        
-        for(int i = 0; i < points.length; i++) points[i].normalize(normals[i]);
-    }
-
-    public void nullify()
-    {
-        points = null;
-        colors = null;
-        normals = null;
-        texCoords = null;
-    }
-    
-    private void initColors()
-    {
-        if(colors == null) colors = new Color[vertCount];
-    }
-    
-    private void initNormals()
-    {
-        if(normals == null) { normals = new Vector3f[vertCount]; Arrays.fill(normals, new Vector3f());}
-    }
-    
-    private void initTexCoords()
-    {
-        if(texCoords == null) texCoords = new Vector2f[vertCount];
     }
 }

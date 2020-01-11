@@ -15,18 +15,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Text extends UiObject<TextQuad>
+public class Text extends UiObject
 {
     public String text;
     public List<TextQuad> chars;
-    public ArrayList<TextEffect> effects;
+    public List<TextEffect> effects;
 
-    public boolean effectsEnabled = false;
-    public float newlineSpace;
+    private boolean effectsEnabled = false;
 
     private Color textColor, outlineColor;
     private Font font;
     private TextMaterial material;
+    private Mesh<TextQuad> mesh;
 
     public Text(Font font, String text, Vector3f pos, int matrixID, TextEffect... effects)
     {
@@ -49,10 +49,10 @@ public class Text extends UiObject<TextQuad>
         }
 
         chars = new ArrayList<>(100);
-        mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), transform, MeshConfig.QUAD);
-        mesh.setSorting(font.needsSorted);
-        transform.setTranslate(pos.x, pos.y, pos.z);
-        chars = mesh.renderables;
+        mesh = new Mesh<>(material = new TextMaterial(matrixID, font.getTexture()), MeshConfig.QUAD);
+        transform.setTranslate(pos);
+        chars = mesh.getPrimitives();
+        renderable = createRenderable(1, 0, mesh);
 
         setText(text);
     }
@@ -96,18 +96,23 @@ public class Text extends UiObject<TextQuad>
     {
         return chars;
     }
+    
+    public Mesh<TextQuad> getMesh()
+    {
+        return mesh;
+    }
 
     public void setTextColor(Color textColor)
     {
         this.textColor = textColor;
-        chars.forEach(c -> c.setQuadTextColor(textColor));
+        chars.forEach(c -> c.setTextColor(textColor));
         mesh.flagForBuild();
     }
     
     public void setOutlineColor(Color outlineColor)
     {
         this.outlineColor = outlineColor;
-        chars.forEach(c -> c.setQuadOutlineColor(textColor));
+        chars.forEach(c -> c.setOutlineColor(textColor));
         mesh.flagForBuild();
     }
     
@@ -128,12 +133,11 @@ public class Text extends UiObject<TextQuad>
         size.set(0);
 
         text = value;
-        chars.forEach(TextRenderable::nullify);
+        chars.forEach(TextQuad::nullify);
         chars.clear();
 
         float xOffset = 0, yOffset = 0, maxX = Float.MIN_VALUE, maxY = -Float.MIN_VALUE;
 
-        newlineSpace = font.newLineSpace;
         int line = 0;
 
         for(int i = 0; i < text.length(); i++)
@@ -149,14 +153,14 @@ public class Text extends UiObject<TextQuad>
             if(c == '\n' && i != text.length() - 1)
             {
                 xOffset = 0;
-                yOffset -= newlineSpace;
+                yOffset -= font.newLineSpace;
                 line++;
                 continue;
             }
 
             CharSprite sprite = font.getCharSprite(c);
 
-            if(sprite.equals(font.nullChar)) continue;
+            if(sprite == null) continue;
 
             float x0 = xOffset + sprite.offsetX, y0 = yOffset + sprite.offsetY, x1 = sprite.sizeX, y1 = sprite.sizeY;
 
@@ -165,7 +169,7 @@ public class Text extends UiObject<TextQuad>
             maxX = Float.max(maxX, x0 + x1);
             maxY = Float.max(maxY, y0 + y1);
 
-            chars.add(new TextQuad(x0, y0, 0.0001f*i, x1, y1, sprite, textColor, outlineColor, line));
+            chars.add(new TextQuad(x0, y0, 0/*0.001f*i*/, x1, y1, sprite, textColor, outlineColor, line));
         }
 
         size.set(maxX, maxY, 0);
@@ -174,16 +178,20 @@ public class Text extends UiObject<TextQuad>
         if(effectsEnabled) effects.forEach(TextEffect::onTextUpdated);
         mesh.flagForBuild();
         align();
-
     }
 
     public void setFont(Font font)
     {
         this.font = font;
-        ((TextMaterial) mesh.material).textures[0] = font.getTexture();
+        material.textures[0] = font.getTexture();
         String t = text;
         text = "";
         setText(t);
+    }
+
+    public String toString()
+    {
+        return String.format("Text: '%s', Font: %s", text, font);
     }
 
     public static float approxWidth(String text, Font font)
@@ -207,18 +215,12 @@ public class Text extends UiObject<TextQuad>
 
             CharSprite sprite = font.getCharSprite(c);
 
-            if(sprite == font.nullChar) continue;
+            if(sprite == null) continue;
 
             x += (sprite.sizeX - 1);
             maxX = Float.max(maxX, x);
         }
 
         return maxX;
-    }
-
-    public void destroy()
-    {
-        super.destroy();
-        mesh.destroy();
     }
 }
