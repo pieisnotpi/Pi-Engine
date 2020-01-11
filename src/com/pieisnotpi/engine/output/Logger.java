@@ -18,7 +18,7 @@ public class Logger
      * timeFormat: String used with var dateFormat
      */
 
-    public static String standardLogFormat = "[%2$s|%3$s|%1$s]: %4$s", standardTimeFormat = "%1$tH:%1$tM:%1$tS";
+    private static String standardLogFormat = "[%2$s|%3$s|%1$s]: %4$s", standardTimeFormat = "%1$tH:%1$tM:%1$tS";
 
     private static final String LOG = "LOG", ERR = "ERR", DEBUG = "DEBUG", DEBUG_ERR = "DEBUG_ERR";
     public static final Logger OPENGL = new Logger("OPENGL"), SYSTEM = new Logger("SYSTEM"), AUDIO = new Logger("AUDIO");

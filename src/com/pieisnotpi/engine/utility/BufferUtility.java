@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 
 public class BufferUtility
 {
-    public static void putColors(FloatBuffer buffer, Color... colors)
+    public static void putColors(FloatBuffer buffer, Color[] colors)
     {
         for(Color color : colors)
         {
@@ -18,7 +18,7 @@ public class BufferUtility
         }
     }
 
-    public static void putVec3s(FloatBuffer buffer, Vector3f... vectors)
+    public static void putVec3s(FloatBuffer buffer, Vector3f[] vectors)
     {
         for(Vector3f vector : vectors)
         {
@@ -28,7 +28,7 @@ public class BufferUtility
         }
     }
 
-    public static void putVec2s(FloatBuffer buffer, Vector2f... vectors)
+    public static void putVec2s(FloatBuffer buffer, Vector2f[] vectors)
     {
         for(Vector2f vector : vectors)
         {

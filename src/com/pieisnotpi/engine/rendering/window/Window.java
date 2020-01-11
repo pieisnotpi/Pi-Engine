@@ -328,6 +328,8 @@ public class Window
         if(fullscreen) glfwSetWindowMonitor(handle, monitor.monitorID, 0, 0, fullscreenRes.x, fullscreenRes.y, refreshRate);
         else glfwSetWindowMonitor(handle, NULL, originalPos.x, originalPos.y, windowedRes.x, windowedRes.y, refreshRate);
 
+        glfwSwapInterval(vsync);
+
         return this;
     }
 

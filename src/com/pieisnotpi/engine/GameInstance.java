@@ -76,7 +76,7 @@ public abstract class GameInstance
                 for(GameUpdate update : updates) sleepTime = Long.min(sleepTime, (update.lastUpdateTime + update.period) - time);
 
                 if(sleepTime > 0 && sleepTime != Long.MAX_VALUE)
-                try { Thread.sleep(sleepTime - 1); }
+                try { Thread.sleep(sleepTime); }
                 catch(InterruptedException e)
                 {
                     e.printStackTrace();

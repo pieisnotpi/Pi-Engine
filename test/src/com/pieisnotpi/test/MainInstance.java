@@ -31,6 +31,7 @@ class MainInstance extends GameInstance
         Window w0, w1;
 
         windows.add(w0 = new Window("Pi Engine", 600, 600, PiEngine.getMonitor(0)).init());
+        w0.setVsync(1);
 
         scenes[0][0] = new TestScene().init();
         scenes[1][0] = new TestScene2().init();

@@ -23,9 +23,12 @@ public class ObjectTree implements Iterable<GameObject>
 
         public void removeSelf()
         {
+            // If this is the first item of the tree
             if (this == head) head = next;
 
+            // If this is the first child of its parent
             if (parent != null && this == parent.child) parent.child = next;
+
             if (prev != null) prev.next = next;
             if (next != null) next.prev = prev;
 

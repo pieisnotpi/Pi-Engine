@@ -43,11 +43,11 @@ public class VertexArray
 
     public String toString()
     {
-        String temp = "";
+        StringBuilder temp = new StringBuilder();
 
-        for(int i = 0; i < attributes.length; i++) temp += "a" + i + ": (" + attributes[i] + "), ";
+        for(int i = 0; i < attributes.length; i++) temp.append(String.format("a %d: (%s), ", i, attributes[i]));
 
-        return temp;
+        return temp.toString();
     }
 
     public boolean isAlive()
